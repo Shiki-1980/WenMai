@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# API keys — config.yaml contains secrets, use config.sample.yaml instead
+pipeline/config.yaml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Obsidian workspace (personal UI state)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json

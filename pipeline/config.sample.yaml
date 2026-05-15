@@ -1,0 +1,23 @@
+vault:
+  path: "/Users/lsslcj/Desktop/writing/WenMai"       # 项目根目录（模板和 pipeline 在这里）
+  novel: "novels/万古劫烬"                             # 小说内容目录（相对于 vault.path）
+
+llm:
+  provider: "deepseek"          # deepseek | anthropic | openai | openai_compatible
+  model: "deepseek-v4-flash"
+  api_key: "${DEEPSEEK_API_KEY}"                  # 设置环境变量 DEEPSEEK_API_KEY，或直接填 key
+  api_base: "https://api.deepseek.com"
+  temperature: 0.8
+  max_tokens: 16384
+
+  # Claude 示例
+  # provider: "anthropic"
+  # model: "claude-sonnet-4-6"
+  # api_key: "${ANTHROPIC_API_KEY}"
+  # max_tokens: 16384
+
+generation:
+  chapter_words: 4000           # 每章目标字数
+  summary_max_chars: 400          # 摘要最大字数
+  context_recent_summaries: 5     # 加载最近 N 章摘要
+  context_max_entity_cards: 30    # 最多加载多少实体卡
