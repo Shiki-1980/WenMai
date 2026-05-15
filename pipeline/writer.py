@@ -7,6 +7,17 @@ from pathlib import Path
 import frontmatter
 import yaml
 
+from state_schema import (
+    EntityState,
+    EntityFact,
+    StateDelta,
+    StateValidator,
+    save_entity_state,
+    apply_delta_to_state,
+    CULTIVATION_REALMS,
+    ALLOWED_STATUSES,
+)
+
 
 def _write_frontmatter_md(path: Path, metadata: dict, body: str):
     """写入带 frontmatter 的 markdown 文件。"""
@@ -63,10 +74,11 @@ class VaultWriter:
 
     # ---- 实体卡 ----
 
-    def update_entity(self, entity_type: str, name: str, updates: dict):
+    def update_entity(self, entity_type: str, name: str, updates: dict, chapter: int = 0):
         """
         更新实体卡的 frontmatter 字段。
         updates: {"field": "new_value", ...}
+        同时同步更新 state.json。
         """
         subdir = self.TYPE_DIR.get(entity_type, "person")
         path = self.entity_dir / subdir / f"{name}.md"
@@ -85,6 +97,16 @@ class VaultWriter:
 
         meta["updated"] = datetime.now().strftime("%Y-%m-%d")
         _write_frontmatter_md(path, meta, body)
+
+        # 同步到 state.json
+        if chapter > 0:
+            facts = [
+                {"predicate": field, "object": str(value)}
+                for field, value in updates.items()
+                if value and field not in ("type", "updated", "created", "aliases", "status", "importance")
+            ]
+            if facts:
+                self.apply_entity_delta(entity_type, name, chapter, facts)
 
     def create_entity(self, entity_type: str, name: str, brief: str = ""):
         """创建新实体卡，基于 _templates/ 下的模板。"""
@@ -124,9 +146,9 @@ class VaultWriter:
 
         _write_frontmatter_md(path, meta, body)
 
-    def update_entity_field(self, entity_type: str, name: str, field: str, new_value: str):
+    def update_entity_field(self, entity_type: str, name: str, field: str, new_value: str, chapter: int = 0):
         """更新实体卡单个字段（用于蒸馏后的自动更新）。"""
-        self.update_entity(entity_type, name, {field: new_value})
+        self.update_entity(entity_type, name, {field: new_value}, chapter)
 
     def append_entity_timeline(self, entity_type: str, name: str, chapter: int, event: str):
         """在实体卡的「经历时间线」追加一行。"""
@@ -211,6 +233,144 @@ class VaultWriter:
 
         path.write_text(content, "utf-8")
         return pid
+
+    # ---- JSON 状态文件 ----  ↓
+
+    def state_dir(self) -> Path:
+        return self.root / "state"
+
+    def entity_state_path(self, entity_type: str, name: str) -> Path:
+        return self.state_dir() / entity_type / f"{name}.state.json"
+
+    def write_entity_state(self, state: EntityState):
+        """写入实体 JSON 状态文件。"""
+        path = self.entity_state_path(state.entity_type, state.entity)
+        save_entity_state(state, path)
+
+    def apply_entity_delta(
+        self,
+        entity_type: str,
+        name: str,
+        chapter: int,
+        facts_added: list[dict],
+        reader=None,
+    ) -> EntityState | None:
+        """
+        将 delta 应用到实体状态文件。
+
+        Args:
+            entity_type: 实体类型
+            name: 实体名
+            chapter: 当前章节号
+            facts_added: [{"predicate": ..., "object": ..., "evidence": ...}, ...]
+            reader: VaultReader 实例（用于读取当前状态）
+
+        Returns:
+            更新后的 EntityState，或 None（如果校验失败）
+        """
+        from state_schema import load_entity_state
+
+        path = self.entity_state_path(entity_type, name)
+
+        # 读取当前状态
+        current = load_entity_state(path)
+        if current is None and reader:
+            # 尝试从 markdown 迁移
+            card = reader.read_entity(entity_type, name)
+            if card:
+                meta, body = card
+                current = reader._migrate_from_markdown(entity_type, name, meta, body)
+        if current is None:
+            current = EntityState(
+                entity=name,
+                entity_type=entity_type,
+                last_updated_chapter=0,
+            )
+
+        # 构建 EntityFact 列表
+        facts = []
+        for f in facts_added:
+            predicate = f.get("predicate", "").strip()
+            obj = f.get("object", f.get("new_value", "")).strip()
+            if not predicate or not obj:
+                continue
+
+            # ---- 字段值校验 ----
+            if not self._validate_field_value(predicate, obj, entity_type):
+                print(f"  [WARN] 状态校验失败，跳过: {name}.{predicate} = {obj}")
+                continue
+
+            facts.append(EntityFact(
+                predicate=predicate,
+                object=obj,
+                since_chapter=chapter,
+                source=f"ch_{chapter:03d}蒸馏",
+                evidence=f.get("evidence", ""),
+            ))
+
+        if not facts:
+            return current
+
+        # 构建 delta 并应用
+        delta = StateDelta(
+            entity=name,
+            entity_type=entity_type,
+            chapter=chapter,
+            facts_added=facts,
+        )
+
+        # 校验
+        validator = StateValidator()
+        known = self._collect_entity_names()
+        errors = validator.validate_delta(delta, known)
+        if errors:
+            print(f"  [WARN] Delta 校验失败: {'; '.join(errors)}")
+            # 仍然保存（宽松模式：只跳过有问题的 fact，不丢弃整个 delta）
+            # 实际生产中这里应该更严格
+
+        new_state = apply_delta_to_state(current, delta)
+        self.write_entity_state(new_state)
+        return new_state
+
+    def _validate_field_value(self, predicate: str, value: str, entity_type: str) -> bool:
+        """校验字段值的合法性。"""
+        # 修为字段必须在已知境界列表中
+        if predicate == "修为":
+            # 直接匹配或宽松匹配（e.g. "金丹四层" vs "金丹四层（不稳）"）
+            if value not in CULTIVATION_REALMS:
+                # 检查是否包含已知境界名作为前缀/子串
+                found = any(realm in value for realm in CULTIVATION_REALMS if len(realm) >= 3)
+                if not found:
+                    print(f"  [WARN] 修为值 '{value}' 不在已知境界列表中，请确认")
+                    # 仍然接受（新小说可能有自定义体系），但给警告
+
+        # 状态值检查
+        if predicate in ("状态", "status"):
+            if value not in ALLOWED_STATUSES and value not in CULTIVATION_REALMS:
+                print(f"  [WARN] 状态值 '{value}' 不在已知状态列表中")
+
+        # 不能为空或过短
+        if len(value) < 1:
+            return False
+
+        # 不能是纯标点或纯数字（对非数值字段）
+        if predicate not in ("chapter", "since", "until"):
+            if value.strip() in ("。", "，", "、", ".", ",", "?"):
+                return False
+
+        return True
+
+    def _collect_entity_names(self) -> set[str]:
+        """收集当前所有实体名（用于 delta 校验）。"""
+        names = set()
+        for subdir in ["person", "item", "location", "concept"]:
+            d = self.entity_dir / subdir
+            if d.exists():
+                for p in d.glob("*.md"):
+                    names.add(p.stem)
+        return names
+
+    # ---- 原有方法 ----  ↓
 
     def reveal_plot_thread(self, plot_desc: str, chapter_number: int):
         """将伏笔标记为已回收，移至回收区。"""

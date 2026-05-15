@@ -1,0 +1,49 @@
+{
+  "entity": "萧忘川",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "所在",
+      "object": "青石镇东荒庙",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "修为",
+      "object": "意境级初期（已超凡脱俗，入微见道）。虽未至神游天地的境界，但已能以意境压制真武境以下武者，神识可覆盖整个青石镇。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "半张九转融血丹方、寒蝉玉佩的仿品（用于感应真品）、墨玉扳指（隐世盟信物，内含小型储物空间）",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "状态良好，但受隐世盟盟规约束，不得直接插手凡俗争斗，只能以暗示和引导的方式行事。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "确认陆沉是否为可造之材，以及其背后苍山血案的真相。若陆沉值得培养，便引其入隐世盟；若不值得，则确保寒蝉玉佩的秘密不会落入镇武司手中。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身份",
+      "object": "隐世盟外事长老，负责在凡俗中发掘值得吸纳的修行者，同时监控各大势力动向。表面身份是青石镇东荒庙的落魄修行者。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    }
+  ]
+}

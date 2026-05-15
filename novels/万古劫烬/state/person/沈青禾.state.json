@@ -1,0 +1,49 @@
+{
+  "entity": "沈青禾",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "所在",
+      "object": "青石镇·孙百草药铺",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "修为",
+      "object": "尚未正式踏入修行之路，仅因常年采药、接触药性，体内有微弱的草木灵气流转，大约相当于“开脉境”初期的感知力，但无法主动运功。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "采药背篓、短柄药锄、一套孙百草赠予的银针（用于急救解毒）、一枚暗藏的寒蝉玉佩碎片（未告诉任何人）",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "健康，但心中有沉重的秘密——她知道自己父母之死与“苍山血案”有关，却不知真相全貌。白天采药时专注于草木，夜晚常独自对着玉佩碎片发呆。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "帮助陆沉修复经脉，借此机会查明父母之死的真相；同时保护青石镇不被镇武司的搜捕波及。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身份",
+      "object": "青石镇采药少女，孙百草药铺的学徒兼助手",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    }
+  ]
+}

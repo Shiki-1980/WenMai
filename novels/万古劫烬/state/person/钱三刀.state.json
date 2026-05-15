@@ -1,0 +1,49 @@
+{
+  "entity": "钱三刀",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "所在",
+      "object": "青石镇",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "修为",
+      "object": "真武境中期。擅使刀法，尤精于贴身短打与追袭擒拿。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "<!-- 物品 -->",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "精力充沛，但久追陆沉未果，心浮气躁，亟需立功展现自身价值，对陆沉的“前暗影卫”身份既贪婪又忌惮。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "活捉陆沉，拷问出苍山血案的内情，以此为晋升之阶。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身份",
+      "object": "镇武司铁衣卫百户，赵铁衣麾下最得力的追捕先锋。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    }
+  ]
+}

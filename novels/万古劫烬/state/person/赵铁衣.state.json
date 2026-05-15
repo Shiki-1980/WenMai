@@ -1,0 +1,49 @@
+{
+  "entity": "赵铁衣",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "所在",
+      "object": "青石镇",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "修为",
+      "object": "真武境巅峰。在凡俗武者中已是顶尖高手，一身横练外功与内家真气炉火纯青。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "玄铁锁魂钩（镇武司制式重武器，可锁拿敌人兵刃，亦可投掷追击）、镇武司密令铁牌（象征其身份与权力，持之可调动地方官府及卫所力量）、九转融血丹（半张丹方）（于密档中保管，为诱饵或筹码）。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "身体处于巅峰状态，但因连日在青石镇追捕无果，且感受到暗中的隐世盟及裴玉带来的压力，精神略有焦躁，越发冷酷，行事趋于极端。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "将陆沉缉拿归案，活要见人死要见尸。同时，暗中调查青石镇与苍山血案之间的关联，寻找关键证物寒蝉玉佩。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身份",
+      "object": "大乾镇武司铁衣卫统领，直属镇武司总司，专职追捕高阶叛逆武者。在青石镇一役中担任追捕陆沉行动的最高指挥官。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    }
+  ]
+}

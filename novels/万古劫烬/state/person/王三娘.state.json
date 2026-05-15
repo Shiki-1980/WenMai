@@ -1,0 +1,49 @@
+{
+  "entity": "王三娘",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "所在",
+      "object": "青石镇中街茶馆",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "修为",
+      "object": "无修为，是凡胎境一层的普通镇民",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "<!-- 物品 -->",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "健康状况良好，但因为镇长李守正宣布通缉陆沉一事感到隐隐不安，精神有些紧绷。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "维持茶馆营生，同时在镇武司眼皮底下，尽可能为落难的“外乡人”（暗指陆沉）提供力所能及的庇护和帮助。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身份",
+      "object": "青石镇茶馆老板娘，消息灵通人士，对镇中大小事务了如指掌。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    }
+  ]
+}

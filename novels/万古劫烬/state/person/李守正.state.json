@@ -1,0 +1,49 @@
+{
+  "entity": "李守正",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "所在",
+      "object": "青石镇镇公所",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "修为",
+      "object": "气海境中期（修炼祖传《青木诀》，主修内息绵长与感知，非正面搏杀型），真实战力约等于气海境后期外门武者",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "祖传旱烟杆（内藏三根淬毒银针）、镇公所印信、青石镇户籍册、祖宅地契、一份暗藏的与隐世盟往来书信（父亲辈遗物）",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "近日操劳过度，略感疲乏，仍在强撑；内心矛盾重重，既想保全镇民，又不敢违逆镇武司",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "在镇武司、隐世盟两股力量间周旋，避免青石镇成为苍山血案的陪葬品；设法让陆沉悄无声息地离开，以免本镇被血洗",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身份",
+      "object": "青石镇镇长，兼镇内民团总教头，世代扎根于此的乡绅望族",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    }
+  ]
+}

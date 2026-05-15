@@ -1,0 +1,42 @@
+{
+  "entity": "孙百草",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "所在",
+      "object": "青石镇 镇东槐柳巷内的“百草堂”",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "修为",
+      "object": "开脉境中期（偏重养生与药物修行，战力极弱，约等于凡胎二境）",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "健康但精神微倦，因近期镇武司入驻及陌生伤员出现而整夜未合眼",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "保全自己和沈青禾的性命，在镇武司与陆沉的夹缝中守住药铺；同时尝试找出能帮陆沉修复经脉的办法，因为他隐约觉得此人身上的“九脉寸断”之伤不简单",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身份",
+      "object": "青石镇百草堂药铺郎中，祖传三代的乡村大夫，精通草药与简易丹术。表面上是与世无争的乡野医者，实则对镇中各方势力了如指掌，是少数能看出陆沉身份不简单的人。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    }
+  ]
+}

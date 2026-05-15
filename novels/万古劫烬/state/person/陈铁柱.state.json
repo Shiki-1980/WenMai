@@ -1,0 +1,49 @@
+{
+  "entity": "陈铁柱",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "所在",
+      "object": "青石镇铁匠铺（镇西主街尽头）",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "修为",
+      "object": "开脉境中期（勉强能催动真气淬炼铁器，但实战能力仅相当于寻常武者）",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "祖传打铁锤“玄铁锤头”（钝器，无品级，但极为沉重坚韧）、锻铁炉一座、短剑一柄（已交付陆沉）、家传铁匠笔记",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "ch_10中被钱三刀以掌力震伤，左腿骨折，内脏轻度震荡，目前正在孙百草药铺养伤，精神略有颓丧但不失刚毅",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "养好伤势，恢复后继续为陆沉完成短剑的后续淬火工序",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身份",
+      "object": "青石镇铁匠铺主人，本镇唯一能打造凡铁级兵器的匠人",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    }
+  ]
+}

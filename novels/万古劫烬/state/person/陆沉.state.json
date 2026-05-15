@@ -1,0 +1,49 @@
+{
+  "entity": "陆沉",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "所在",
+      "object": "中原九州·青石镇",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "修为",
+      "object": "本为真武境巅峰，因遭暗算导致“经脉碎裂”，目前仅发挥出开脉境实力。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "折雪断剑（地级兵刃）、半枚龙纹佩（涉及皇室秘辛）。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "经脉隐痛，每日需靠内力压制寒毒。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "寻找南疆丛林的医圣修复经脉，并查清“苍山血案”真相。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    },
+    {
+      "predicate": "身份",
+      "object": "前大乾王朝“暗影卫”精锐，现为被镇武司全境通缉的“逆武者”。",
+      "since_chapter": 0,
+      "source": "从 markdown body 迁移",
+      "evidence": ""
+    }
+  ]
+}

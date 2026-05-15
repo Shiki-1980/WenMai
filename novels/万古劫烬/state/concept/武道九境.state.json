@@ -1,0 +1,14 @@
+{
+  "entity": "武道九境",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "category",
+      "object": "world_building",
+      "since_chapter": 0,
+      "source": "从 markdown frontmatter 迁移",
+      "evidence": ""
+    }
+  ]
+}

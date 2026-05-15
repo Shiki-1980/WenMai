@@ -1,20 +1,36 @@
 """Context 组装器 —— 把检索结果拼成 LLM 可用的纯净上下文。"""
 
+from state_schema import state_to_markdown_fragment
 
-def _format_entity_card(name: str, ent: dict) -> str:
-    """将一张实体卡格式化为 prompt 片段。"""
+
+def _format_entity_card(name: str, ent: dict, reader=None) -> str:
+    """将一张实体卡格式化为 prompt 片段。
+    优先使用 state.json 中的结构化状态，回退到 frontmatter。
+    """
     meta = ent["metadata"]
     etype = meta.get("_type", "?")
     lines = [f"### [{etype}] {name}"]
-    if meta.get("status"):
-        lines.append(f"- 状态：{meta['status']}")
-    key_fields = ["修为", "身份", "所在", "持有", "当前状态", "能力", "效果", "category"]
-    for k, v in meta.items():
-        if k.startswith("_"):
-            continue
-        if k in key_fields or k in ("importance",):
-            lines.append(f"- {k}：{v}")
-    # concept 类型给足空间（1M context 不用省）
+
+    # 尝试从 state.json 获取权威状态
+    state_text = ""
+    if reader:
+        state = reader.read_entity_state(etype, name)
+        if state and state.facts:
+            state_text = state_to_markdown_fragment(state)
+            lines.append(state_text)
+
+    # 回退到 frontmatter 状态
+    if not state_text:
+        if meta.get("status"):
+            lines.append(f"- 状态：{meta['status']}")
+        key_fields = ["修为", "身份", "所在", "持有", "当前状态", "能力", "效果", "category"]
+        for k, v in meta.items():
+            if k.startswith("_"):
+                continue
+            if k in key_fields or k in ("importance",):
+                lines.append(f"- {k}：{v}")
+
+    # concept 类型给足空间
     body_limit = 5000 if etype == "concept" else 3000
     lines.append(f"\n{ent['body'][:body_limit]}")
     return "\n".join(lines)
@@ -42,7 +58,7 @@ class ContextBuilder:
         entity_cards_text = ""
         entity_names = []
         for name, ent in retrieved.get("entity_cards", {}).items():
-            entity_cards_text += _format_entity_card(name, ent) + "\n\n"
+            entity_cards_text += _format_entity_card(name, ent, self.reader) + "\n\n"
             entity_names.append(name)
 
         # 顶层世界规则 —— 始终加载「世界观.md」

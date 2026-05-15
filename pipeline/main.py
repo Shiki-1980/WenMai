@@ -22,6 +22,7 @@ from context_builder import ContextBuilder
 from generator import LLMGenerator
 from distiller import ChapterDistiller
 from writer import VaultWriter
+from state_schema import EntityFact, StateDelta, apply_delta_to_state, load_entity_state, save_entity_state
 
 CONFIG = Path(__file__).parent / "config.yaml"
 
@@ -461,6 +462,34 @@ def _create_stubs_for_missing_links(reader, writer, template_dir: Path):
         print(f"  [stub] {name}")
 
 
+def _auto_enrich(gen, reader, writer, content_root, template_dir):
+    """轻量自动 enrich —— 每 10 章检查实体卡同步状态，不做全量 LLM 重写。"""
+    total_chapters = reader.chapter_count()
+
+    # 查找需要关注的实体
+    needs_attention = []
+    for etype, name in reader.all_entity_names():
+        state = reader.read_entity_state(etype, name)
+        appeared = reader.summaries_for_entity(name)
+        if not appeared:
+            continue
+        max_ch = max(appeared)
+        last_updated = state.last_updated_chapter if state else 0
+        # 如果实体出现在最近的章节中，但状态未更新
+        if max_ch > last_updated and max_ch >= total_chapters - 5:
+            needs_attention.append((etype, name, last_updated, max_ch))
+
+    if needs_attention:
+        print(f"    发现 {len(needs_attention)} 个实体可能需要 enrich：")
+        for etype, name, last, max_ch in needs_attention[:5]:
+            print(f"      [{etype}] {name}: 最后更新 ch_{last}, 最新出现 ch_{max_ch}")
+        if len(needs_attention) > 5:
+            print(f"      ... 还有 {len(needs_attention) - 5} 个")
+        print(f"    提示：运行 `python main.py enrich` 手动更新这些实体卡。")
+    else:
+        print(f"    所有实体卡已同步。")
+
+
 def cmd_enrich(args):
     """增量更新实体卡：对近期章节出现过的实体，用新剧情刷新卡片内容。"""
     content_root, template_dir, _ = _get_paths()
@@ -692,10 +721,28 @@ def _write_one_chapter(
                 if ent:
                     writer.update_entity_field(
                         ent["type"], update["entity"],
-                        update["field"], update["new_value"]
+                        update["field"], update["new_value"],
+                        chapter_number,
                     )
             except Exception as e:
                 print(f"  [WARN] 更新实体 {update['entity']} 失败: {e}")
+
+        # ── 新：应用 entity_deltas 到 state.json ──
+        for ent_delta in result.get("entity_deltas", []):
+            entity_name = ent_delta.get("entity", "")
+            entity_type = ent_delta.get("entity_type", "person")
+            facts = ent_delta.get("facts", [])
+            if not entity_name or not facts:
+                continue
+            try:
+                new_state = writer.apply_entity_delta(
+                    entity_type, entity_name, chapter_number, facts,
+                    reader=reader,
+                )
+                if new_state:
+                    print(f"  -> state.json 已更新: {entity_name} (+{len(facts)} facts)")
+            except Exception as e:
+                print(f"  [WARN] state.json 更新 {entity_name} 失败: {e}")
 
         for new_ent in result.get("new_entities", []):
             writer.create_entity(
@@ -703,6 +750,33 @@ def _write_one_chapter(
                 new_ent["name"],
                 new_ent.get("brief", ""),
             )
+            # 新实体也初始化 state.json
+            try:
+                stub_state = EntityFact(
+                    predicate="状态",
+                    object="active",
+                    since_chapter=chapter_number,
+                    source=f"ch_{chapter_number:03d}创建",
+                    evidence="新角色首次登场",
+                )
+                init_state = load_entity_state(
+                    writer.entity_state_path(new_ent.get("type", "person"), new_ent["name"])
+                )
+                if init_state is None:
+                    from state_schema import EntityState as ES
+                    init_state = ES(
+                        entity=new_ent["name"],
+                        entity_type=new_ent.get("type", "person"),
+                        last_updated_chapter=chapter_number,
+                        facts=[stub_state],
+                    )
+                    save_entity_state(
+                        init_state,
+                        writer.entity_state_path(new_ent.get("type", "person"), new_ent["name"]),
+                    )
+            except Exception as e:
+                print(f"  [WARN] 新实体 state.json 初始化失败: {e}")
+
             print(f"  -> 新实体: [{new_ent.get('type', 'person')}] {new_ent['name']}")
 
         for plot in result.get("new_plots", []):
@@ -885,6 +959,11 @@ def cmd_write(args):
             word_count=args.words,
         )
 
+        # ── 自动 enrich：每写 10 章后自动刷新实体卡 ──
+        if ch_num % 10 == 0 and ch_num > 0:
+            print(f"\n  ⚡ 已写 10 章，自动运行 enrich...")
+            _auto_enrich(gen, reader, writer, content_root, template_dir)
+
         if not args.yes:
             ans = input("\n继续写下一章？[Y/n/q] ")
             if ans.lower() == "q":
@@ -958,8 +1037,26 @@ def cmd_distill(args):
                 parent = ent.parent.name
                 writer.update_entity_field(
                     parent, update["entity"],
-                    update["field"], update["new_value"]
+                    update["field"], update["new_value"],
+                    args.chapter,  # 传入章节号，触发 state.json 同步
                 )
+
+        # ── 新：应用 entity_deltas 到 state.json ──
+        for ent_delta in result.get("entity_deltas", []):
+            entity_name = ent_delta.get("entity", "")
+            entity_type = ent_delta.get("entity_type", "person")
+            facts = ent_delta.get("facts", [])
+            if not entity_name or not facts:
+                continue
+            try:
+                writer.apply_entity_delta(
+                    entity_type, entity_name, args.chapter, facts,
+                    reader=reader,
+                )
+                print(f"  -> state.json 已更新: {entity_name}")
+            except Exception as e:
+                print(f"  [WARN] state.json 更新 {entity_name} 失败: {e}")
+
         for new_ent in result.get("new_entities", []):
             writer.create_entity(
                 new_ent.get("type", "person"),
