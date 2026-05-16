@@ -786,30 +786,24 @@ def _write_one_chapter(
     chapter_outline: str,
     word_count: int,
 ):
-    """写一章的完整流程。"""
+    """写一章的完整流程（Agent 循环 + 工具检索）。"""
     print(f"\n{'='*40}")
     print(f"  开始写作 第 {chapter_number} 章")
     print(f"{'='*40}")
 
-    arc_entities = []
-    if isinstance(arc_meta.get("key_entities"), list):
-        arc_entities = arc_meta["key_entities"]
-
-    # 1. 检索
-    print("[1/4] 检索相关实体...")
-    retrieved = retriever.retrieve_for_chapter(chapter_outline, arc_entities)
-    entity_names = list(retrieved["entity_cards"].keys())
-    print(f"  -> 找到 {len(entity_names)} 个相关实体: {', '.join(entity_names[:10])}")
-
-    # 2. 组装 context
-    print("[2/4] 组装上下文...")
+    # 1. 组装最小上下文（大纲 + 基本参数）
+    print("[1/3] 组装上下文...")
     context = builder.build_chapter_context(
-        arc_meta, arc_body, chapter_number, chapter_outline, retrieved, word_count
+        arc_meta, arc_body, chapter_number, chapter_outline, word_count
     )
 
-    # 3. 生成
-    print("[3/4] 生成章节...")
-    chapter_text = gen.generate_chapter(context)
+    # 2. Agent 循环生成（LLM 通过工具按需检索）
+    print("[2/3] Agent 循环写作...")
+    from tools import ToolExecutor
+    tool_exec = ToolExecutor(reader, {
+        "chapter_number": chapter_number,
+    })
+    chapter_text = gen.generate_chapter_with_tools(context, tool_exec)
     if not chapter_text:
         print("  [ERROR] LLM 生成失败")
         return None
@@ -818,8 +812,8 @@ def _write_one_chapter(
     lines = chapter_text.strip().split("\n")
     title_line = lines[0].strip("# ").strip() if lines else f"第{chapter_number}章"
 
-    # 4. 蒸馏
-    print("[4/4] 蒸馏章节...")
+    # 3. 蒸馏
+    print("[3/3] 蒸馏章节...")
     result = distiller.distill(chapter_number, chapter_text)
     if result:
         print(f"  -> 实体变化: {len(result.get('entity_updates', []))} 个")
