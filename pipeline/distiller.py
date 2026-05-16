@@ -179,7 +179,7 @@ class ChapterDistiller:
                 f"## 关键残留\n{delta.get('key_residue', '')}"
             ),
             "entity_updates": entity_updates,
-            "entity_deltas": delta.get("entity_deltas", []),
+            "entity_deltas": self._normalize_deltas(delta.get("entity_deltas", [])),
             "new_entities": delta.get("new_entities", []),
             "new_plots": delta.get("new_plots", []),
             "revealed_plots": delta.get("revealed_plots", []),
@@ -216,6 +216,38 @@ class ChapterDistiller:
             "validation_issues": issues,
             "degraded": True,
         }
+
+    def _normalize_deltas(self, entity_deltas: list) -> list:
+        """将 Settler 的 changes dict 转换为 writer 的 facts 数组格式。
+
+        Settler 输出: {"entity": "陆沉", "changes": {"修为": {"action": "change", ...}}}
+        Writer 期望: {"entity": "陆沉", "entity_type": "person", "facts": [{"predicate": "修为", ...}]}
+        """
+        normalized = []
+        for ent_delta in entity_deltas:
+            entity_name = ent_delta.get("entity", "")
+            entity_type = ent_delta.get("entity_type", "person")
+            changes = ent_delta.get("changes", {})
+
+            facts = []
+            for pred, change in changes.items():
+                action = change.get("action", "change")
+                facts.append({
+                    "predicate": pred,
+                    "object": change.get("new_value", ""),
+                    "old_value": change.get("old_value", ""),
+                    "action": action,
+                    "evidence": change.get("evidence", ""),
+                })
+
+            if facts:
+                normalized.append({
+                    "entity": entity_name,
+                    "entity_type": entity_type,
+                    "facts": facts,
+                })
+
+        return normalized
 
     def _build_index_updates(self, chapter_number: int, delta: dict) -> dict:
         """构建倒排索引更新。"""
