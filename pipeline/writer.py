@@ -11,11 +11,11 @@ from state_schema import (
     EntityState,
     EntityFact,
     StateDelta,
-    StateValidator,
+    NovelSchema,
+    OverridePolicy,
     save_entity_state,
     apply_delta_to_state,
-    CULTIVATION_REALMS,
-    ALLOWED_STATUSES,
+    load_entity_state,
 )
 
 
@@ -319,46 +319,47 @@ class VaultWriter:
             facts_added=facts,
         )
 
-        # 校验
-        validator = StateValidator()
+        # 校验（如果有 schema）
         known = self._collect_entity_names()
-        errors = validator.validate_delta(delta, known)
-        if errors:
-            print(f"  [WARN] Delta 校验失败: {'; '.join(errors)}")
-            # 仍然保存（宽松模式：只跳过有问题的 fact，不丢弃整个 delta）
-            # 实际生产中这里应该更严格
+        schema = self._load_schema()
+        if schema:
+            errors = schema.validate_delta(delta, known)
+            if errors:
+                print(f"  [WARN] Delta 校验失败: {'; '.join(errors)}")
+            # 检查 override 违规
+            for fact in facts:
+                violation = schema.check_override_violation(fact, current)
+                if violation:
+                    print(f"  [WARN] Override 违规: {violation}")
 
         new_state = apply_delta_to_state(current, delta)
         self.write_entity_state(new_state)
         return new_state
 
-    def _validate_field_value(self, predicate: str, value: str, entity_type: str) -> bool:
-        """校验字段值的合法性。"""
-        # 修为字段必须在已知境界列表中
-        if predicate == "修为":
-            # 直接匹配或宽松匹配（e.g. "金丹四层" vs "金丹四层（不稳）"）
-            if value not in CULTIVATION_REALMS:
-                # 检查是否包含已知境界名作为前缀/子串
-                found = any(realm in value for realm in CULTIVATION_REALMS if len(realm) >= 3)
-                if not found:
-                    print(f"  [WARN] 修为值 '{value}' 不在已知境界列表中，请确认")
-                    # 仍然接受（新小说可能有自定义体系），但给警告
-
-        # 状态值检查
-        if predicate in ("状态", "status"):
-            if value not in ALLOWED_STATUSES and value not in CULTIVATION_REALMS:
-                print(f"  [WARN] 状态值 '{value}' 不在已知状态列表中")
-
-        # 不能为空或过短
+    def _validate_field_value(self, predicate: str, value: str, entity_type: str, schema: NovelSchema | None = None) -> bool:
+        """校验字段值的合法性。优先使用 schema，无 schema 时宽松通过。"""
         if len(value) < 1:
             return False
 
-        # 不能是纯标点或纯数字（对非数值字段）
-        if predicate not in ("chapter", "since", "until"):
-            if value.strip() in ("。", "，", "、", ".", ",", "?"):
-                return False
+        # 不能是纯标点
+        if value.strip() in ("。", "，", "、", ".", ",", "?"):
+            return False
+
+        if schema:
+            pdef = schema.get_predicate_def(entity_type, predicate)
+            if pdef and pdef.type == "enum" and pdef.values:
+                if value not in pdef.values:
+                    print(f"  [WARN] '{predicate}' 值 '{value}' 不在 schema 允许列表中: {pdef.values[:10]}...")
+                    # 仍然接受（schema 可能不完整），但给警告
 
         return True
+
+    def _load_schema(self) -> NovelSchema | None:
+        """加载当前小说的 schema（惰性）。"""
+        path = self.root / "novel_schema.json"
+        if path.exists():
+            return NovelSchema.load(self.root)
+        return None
 
     def _collect_entity_names(self) -> set[str]:
         """收集当前所有实体名（用于 delta 校验）。"""

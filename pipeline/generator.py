@@ -5,6 +5,7 @@ import os
 import re
 from typing import Optional
 
+import certifi
 import httpx
 import yaml
 
@@ -53,6 +54,7 @@ class LLMGenerator:
             },
             json=body,
             timeout=300,
+            verify=certifi.where(),
         )
         resp.raise_for_status()
         data = resp.json()
@@ -74,6 +76,7 @@ class LLMGenerator:
                 "messages": [{"role": "user", "content": user}],
             },
             timeout=300,
+            verify=certifi.where(),
         )
         resp.raise_for_status()
         data = resp.json()

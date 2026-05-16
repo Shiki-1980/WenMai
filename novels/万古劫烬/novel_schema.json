@@ -1,0 +1,329 @@
+{
+  "novel": "万古大荒",
+  "schema_version": 2,
+  "generated_at": "2026-05-16",
+  "generated_by": "LLM: deepseek-v4-flash",
+  "override_policy": {
+    "locked": [
+      "person.血脉",
+      "person.天赋",
+      "world_rules.power_system",
+      "world_rules.世界规则"
+    ],
+    "append_only": [
+      "person.功法列表",
+      "person.技能列表",
+      "person.关系"
+    ]
+  },
+  "retrieval": {
+    "min_recall": 3,
+    "max_hop": 1,
+    "max_entity_cards": 30
+  },
+  "entity_schemas": {
+    "person": {
+      "label": "人物",
+      "predicates": {
+        "修为": {
+          "type": "enum",
+          "category": "实力",
+          "priority": 1,
+          "override": "override_allowed",
+          "values": [
+            "开脉境",
+            "气海境",
+            "凝神境",
+            "真武境",
+            "天人境",
+            "意境级",
+            "法相境",
+            "涅槃境",
+            "至尊境"
+          ],
+          "description": "当前修为境界"
+        },
+        "身份": {
+          "type": "string",
+          "category": "基础",
+          "priority": 2,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前身份或称号"
+        },
+        "所在": {
+          "type": "string",
+          "category": "空间",
+          "priority": 3,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前所在地点"
+        },
+        "持有": {
+          "type": "list",
+          "category": "物品",
+          "priority": 4,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前持有的物品列表"
+        },
+        "功法": {
+          "type": "string",
+          "category": "能力",
+          "priority": 5,
+          "override": "append_only",
+          "values": [],
+          "description": "主要修炼功法"
+        },
+        "天赋": {
+          "type": "string",
+          "category": "天赋",
+          "priority": 6,
+          "override": "locked",
+          "values": [],
+          "description": "先天体质或特殊天赋"
+        },
+        "技能": {
+          "type": "list",
+          "category": "能力",
+          "priority": 7,
+          "override": "append_only",
+          "values": [],
+          "description": "掌握的武技或特殊技能"
+        },
+        "关系": {
+          "type": "list",
+          "category": "关系",
+          "priority": 8,
+          "override": "append_only",
+          "values": [],
+          "description": "与其他实体的关系"
+        },
+        "目标": {
+          "type": "string",
+          "category": "动机",
+          "priority": 9,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前主要目标"
+        },
+        "身体状态": {
+          "type": "string",
+          "category": "状态",
+          "priority": 10,
+          "override": "override_allowed",
+          "values": [],
+          "description": "身体异常或伤势描述"
+        },
+        "血脉": {
+          "type": "string",
+          "category": "天赋",
+          "priority": 11,
+          "override": "locked",
+          "values": [],
+          "description": "血统或种族"
+        }
+      },
+      "tags": [
+        "#character"
+      ],
+      "markdown_template": "---\ntype: person\nstatus: {{active_status}}\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 身份：{{身份}}\n- 血脉：{{血脉}}\n\n## 当前状态\n- 修为：{{修为}}\n- 身体状态：{{身体状态}}\n- 所在：{{所在}}\n- 目标：{{目标}}\n\n## 能力\n- 功法：{{功法}}\n- 技能：{{#each 技能}}{{this}}, {{/each}}\n\n## 持有物\n{{#each 持有}}- {{this}}\n{{/each}}\n\n## 关系\n{{#each 关系}}- {{this}}\n{{/each}}"
+    },
+    "item": {
+      "label": "物品",
+      "predicates": {
+        "类型": {
+          "type": "enum",
+          "category": "分类",
+          "priority": 1,
+          "override": "locked",
+          "values": [
+            "武器",
+            "法宝",
+            "丹药",
+            "功法秘籍",
+            "材料",
+            "信物",
+            "天材地宝",
+            "灵石"
+          ],
+          "description": "物品类型"
+        },
+        "品级": {
+          "type": "enum",
+          "category": "属性",
+          "priority": 2,
+          "override": "locked",
+          "values": [
+            "凡品",
+            "下品",
+            "中品",
+            "上品",
+            "极品",
+            "圣品",
+            "仙品"
+          ],
+          "description": "品质等级"
+        },
+        "所有者": {
+          "type": "string",
+          "category": "归属",
+          "priority": 3,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前持有者"
+        },
+        "所在": {
+          "type": "string",
+          "category": "空间",
+          "priority": 4,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前所在地点"
+        },
+        "状态": {
+          "type": "string",
+          "category": "状态",
+          "priority": 5,
+          "override": "override_allowed",
+          "values": [],
+          "description": "物品状态（如完好、破损、消耗中）"
+        },
+        "描述": {
+          "type": "string",
+          "category": "信息",
+          "priority": 6,
+          "override": "append_only",
+          "values": [],
+          "description": "简短描述"
+        }
+      },
+      "tags": [
+        "#item"
+      ],
+      "markdown_template": "---\ntype: item\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基本属性\n- 类型：{{类型}}\n- 品级：{{品级}}\n- 状态：{{状态}}\n\n## 归属\n- 所有者：{{所有者}}\n- 所在：{{所在}}\n\n## 描述\n{{描述}}"
+    },
+    "location": {
+      "label": "地点",
+      "predicates": {
+        "类型": {
+          "type": "enum",
+          "category": "分类",
+          "priority": 1,
+          "override": "locked",
+          "values": [
+            "城镇",
+            "宗门",
+            "学院",
+            "秘境",
+            "房间",
+            "洞府",
+            "禁地",
+            "森林",
+            "沙漠",
+            "冰原",
+            "遗迹"
+          ],
+          "description": "地点类型"
+        },
+        "所属势力": {
+          "type": "string",
+          "category": "归属",
+          "priority": 2,
+          "override": "override_allowed",
+          "values": [],
+          "description": "掌控该地点的势力"
+        },
+        "层级": {
+          "type": "enum",
+          "category": "属性",
+          "priority": 3,
+          "override": "locked",
+          "values": [
+            "凡境",
+            "灵境",
+            "玄境",
+            "圣境"
+          ],
+          "description": "灵气浓度或危险等级"
+        },
+        "危险等级": {
+          "type": "enum",
+          "category": "属性",
+          "priority": 4,
+          "override": "override_allowed",
+          "values": [
+            "安全",
+            "低危",
+            "中危",
+            "高危",
+            "绝地"
+          ],
+          "description": "对普通武者的危险程度"
+        },
+        "状态": {
+          "type": "string",
+          "category": "状态",
+          "priority": 5,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前特殊状态（如正在崩塌、被封锁）"
+        },
+        "描述": {
+          "type": "string",
+          "category": "信息",
+          "priority": 6,
+          "override": "append_only",
+          "values": [],
+          "description": "详细描述"
+        }
+      },
+      "tags": [
+        "#location"
+      ],
+      "markdown_template": "---\ntype: location\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基本信息\n- 类型：{{类型}}\n- 所属势力：{{所属势力}}\n- 层级：{{层级}}\n- 危险等级：{{危险等级}}\n- 状态：{{状态}}\n\n## 描述\n{{描述}}"
+    },
+    "concept": {
+      "label": "概念",
+      "predicates": {
+        "类型": {
+          "type": "enum",
+          "category": "分类",
+          "priority": 1,
+          "override": "locked",
+          "values": [
+            "境界",
+            "能量体系",
+            "制度",
+            "规则",
+            "组织势力",
+            "种族",
+            "灾难",
+            "历史事件"
+          ],
+          "description": "概念类别"
+        },
+        "所属体系": {
+          "type": "string",
+          "category": "归属",
+          "priority": 2,
+          "override": "locked",
+          "values": [],
+          "description": "属于哪个更大的体系"
+        },
+        "详细描述": {
+          "type": "string",
+          "category": "信息",
+          "priority": 3,
+          "override": "append_only",
+          "values": [],
+          "description": "概念的具体说明"
+        }
+      },
+      "tags": [
+        "#concept"
+      ],
+      "markdown_template": "---\ntype: concept\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 类型\n- 类型：{{类型}}\n- 所属体系：{{所属体系}}\n\n## 详细描述\n{{详细描述}}"
+    }
+  }
+}

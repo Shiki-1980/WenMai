@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "entities": {
+    "孙百草": {
+      "canonical": "孙百草",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "李守正": {
+      "canonical": "李守正",
+      "aliases": [
+        "李镇长",
+        "守正伯"
+      ],
+      "auto_aliases": []
+    },
+    "柳寒烟": {
+      "canonical": "柳寒烟",
+      "aliases": [
+        "寒烟",
+        "柳统领"
+      ],
+      "auto_aliases": []
+    },
+    "沈青禾": {
+      "canonical": "沈青禾",
+      "aliases": [
+        "青禾",
+        "小禾"
+      ],
+      "auto_aliases": []
+    },
+    "王三娘": {
+      "canonical": "王三娘",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "萧忘川": {
+      "canonical": "萧忘川",
+      "aliases": [
+        "隐世盟外事长老",
+        "忘川先生"
+      ],
+      "auto_aliases": []
+    },
+    "赵铁衣": {
+      "canonical": "赵铁衣",
+      "aliases": [
+        "铁面判官",
+        "赵统领"
+      ],
+      "auto_aliases": []
+    },
+    "钱三刀": {
+      "canonical": "钱三刀",
+      "aliases": [
+        "铁面追魂刀",
+        "钱百户"
+      ],
+      "auto_aliases": []
+    },
+    "陆沉": {
+      "canonical": "陆沉",
+      "aliases": [
+        "无名氏",
+        "弃子拾三"
+      ],
+      "auto_aliases": []
+    },
+    "陈铁柱": {
+      "canonical": "陈铁柱",
+      "aliases": [
+        "老铁",
+        "铁柱",
+        "陈铁匠"
+      ],
+      "auto_aliases": []
+    },
+    "武道九境": {
+      "canonical": "武道九境",
+      "aliases": [
+        "万古大荒",
+        "实力等级"
+      ],
+      "auto_aliases": []
+    }
+  }
+}

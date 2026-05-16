@@ -1,6 +1,6 @@
 """Context 组装器 —— 把检索结果拼成 LLM 可用的纯净上下文。"""
 
-from state_schema import state_to_markdown_fragment
+from state_schema import state_to_markdown_fragment, NovelSchema
 
 
 def _format_entity_card(name: str, ent: dict, reader=None) -> str:
@@ -16,7 +16,8 @@ def _format_entity_card(name: str, ent: dict, reader=None) -> str:
     if reader:
         state = reader.read_entity_state(etype, name)
         if state and state.facts:
-            state_text = state_to_markdown_fragment(state)
+            schema = getattr(reader, '_schema', None)
+            state_text = state_to_markdown_fragment(state, schema)
             lines.append(state_text)
 
     # 回退到 frontmatter 状态

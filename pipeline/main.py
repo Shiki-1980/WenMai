@@ -22,7 +22,12 @@ from context_builder import ContextBuilder
 from generator import LLMGenerator
 from distiller import ChapterDistiller
 from writer import VaultWriter
-from state_schema import EntityFact, StateDelta, apply_delta_to_state, load_entity_state, save_entity_state
+from state_schema import (
+    EntityFact, EntityState, StateDelta, NovelSchema,
+    apply_delta_to_state, load_entity_state, save_entity_state,
+)
+from commit_store import CommitStore, build_commit_from_writer, DisambigRecord
+from md_renderer import MarkdownRenderer
 
 CONFIG = Path(__file__).parent / "config.yaml"
 
@@ -462,6 +467,99 @@ def _create_stubs_for_missing_links(reader, writer, template_dir: Path):
         print(f"  [stub] {name}")
 
 
+def refresh_single_entity_markdown(reader, writer, state, etype, name, schema, renderer):
+    """刷新单个实体的 markdown 文件：只更新 frontmatter，保留 body。"""
+    from writer import _write_frontmatter_md
+
+    card = reader.read_entity(etype, name)
+    if not card:
+        return
+    original_meta, original_body = card
+
+    # 从 state.json 生成新的 frontmatter
+    importance = original_meta.get("importance", "major")
+    new_fm = renderer.render_frontmatter(state, importance=importance)
+
+    # 保留原始 frontmatter 中 state.json 没有的信息
+    preserve_keys = {"aliases", "first_appearance", "last_appearance", "created", "type"}
+    for k in preserve_keys:
+        if k in original_meta and k not in new_fm:
+            v = original_meta[k]
+            if v:
+                new_fm[k] = v
+
+    new_fm["updated"] = __import__('datetime').datetime.now().strftime("%Y-%m-%d")
+
+    subdir = writer.TYPE_DIR.get(etype, "person")
+    card_path = writer.entity_dir / subdir / f"{name}.md"
+    _write_frontmatter_md(card_path, new_fm, original_body)
+
+
+def _post_write_commit(reader, writer, retriever, chapter_number, result, content_root):
+    """写后处理：保存 commit + 重新渲染受影响的实体 markdown。"""
+    try:
+        # 加载 schema
+        schema = NovelSchema.load(Path(str(content_root)))
+
+        # 构建 commit
+        disambigs = [
+            DisambigRecord(
+                candidate=d.get("candidate", ""),
+                resolved_to=d.get("resolved_to"),
+                confidence=d.get("confidence", 0.0),
+                action=d.get("action", "auto"),
+            )
+            for d in result.get("disambiguations", [])
+        ]
+
+        commit = build_commit_from_writer(
+            chapter=chapter_number,
+            entity_deltas=result.get("entity_deltas", []),
+            new_entities=[e.get("name", "") for e in result.get("new_entities", [])],
+            disambiguations=disambigs,
+            plots_added=result.get("new_plots", []),
+            plots_resolved=result.get("revealed_plots", []),
+            retrieval_stats=result.get("hit_details", {}),
+        )
+        store = CommitStore(Path(str(content_root)))
+        store.save_commit(commit)
+
+        # 重新渲染受影响的实体 markdown
+        renderer = MarkdownRenderer(schema)
+        affected = set()
+        for delta in result.get("entity_deltas", []):
+            affected.add(delta.get("entity", ""))
+        for ent in result.get("new_entities", []):
+            affected.add(ent.get("name", ""))
+
+        for entity_name in affected:
+            if not entity_name:
+                continue
+            # 找到实体类型
+            etype = "person"
+            for t in ["person", "item", "location", "concept"]:
+                if reader.read_entity(t, entity_name):
+                    etype = t
+                    break
+
+            state = reader.read_entity_state(etype, entity_name)
+            if state:
+                refresh_single_entity_markdown(
+                    reader, writer, state, etype, entity_name, schema, renderer,
+                )
+                print(f"  -> markdown frontmatter 已刷新: {entity_name}")
+
+        # 更新 entity_index
+        if affected:
+            try:
+                retriever.rebuild_index()
+            except Exception as e:
+                print(f"  [WARN] 重建 entity_index 失败: {e}")
+
+    except Exception as e:
+        print(f"  [WARN] write commit 保存失败: {e}")
+
+
 def _auto_enrich(gen, reader, writer, content_root, template_dir):
     """轻量自动 enrich —— 每 10 章检查实体卡同步状态，不做全量 LLM 重写。"""
     total_chapters = reader.chapter_count()
@@ -488,6 +586,30 @@ def _auto_enrich(gen, reader, writer, content_root, template_dir):
         print(f"    提示：运行 `python main.py enrich` 手动更新这些实体卡。")
     else:
         print(f"    所有实体卡已同步。")
+
+
+def cmd_rebuild_index(args):
+    """从实体卡重建 entity_index（Trie + 分词倒排）。"""
+    content_root, template_dir, _ = _get_paths()
+    reader = VaultReader(str(content_root))
+    retriever = EntityRetriever(reader)
+    retriever.rebuild_index()
+    print("完成。运行 `python main.py status` 查看状态。")
+
+
+def cmd_init_schema(args):
+    """生成/更新 novel_schema.json。"""
+    content_root, template_dir, _ = _get_paths()
+    gen = LLMGenerator(str(CONFIG))
+    reader = VaultReader(str(content_root))
+
+    from schema_gen import init_schema_for_novel
+    schema = init_schema_for_novel(gen, reader, content_root, force=args.force)
+    if schema:
+        print(f"\nSchema 已就绪: {content_root / 'novel_schema.json'}")
+        print(f"运行 `python main.py status` 查看状态。")
+    else:
+        print("\nSchema 生成失败。检查 API 配置后重试。")
 
 
 def cmd_enrich(args):
@@ -788,6 +910,12 @@ def _write_one_chapter(
 
         writer.update_entity_index(result.get("index_updates", {}))
 
+    # ── 保存 commit + 渲染 markdown ──
+    _post_write_commit(
+        reader, writer, retriever,
+        chapter_number, result, content_root,
+    )
+
     print(f"\n第 {chapter_number} 章完成！")
     return chapter_text
 
@@ -1078,6 +1206,32 @@ def cmd_status(args):
     content_root, _, _ = _get_paths()
     reader = VaultReader(str(content_root))
 
+    # Schema 状态
+    schema = NovelSchema.load(Path(str(content_root)))
+    if schema:
+        print(f"Schema: v{schema.schema_version} ({schema.generated_at})")
+        for etype in ["person", "item", "location", "concept"]:
+            preds = schema.get_predicates(etype)
+            print(f"  {etype}: {len(preds)} predicates {list(preds.keys())[:8]}...")
+    else:
+        print("Schema: 未生成 (运行 `python main.py init-schema` 生成)")
+
+    # Index 状态
+    idx_path = Path(str(content_root)) / "index"
+    alias_idx = idx_path / "entity_alias_index.json"
+    term_idx = idx_path / "entity_term_index.json"
+    print(f"Index:")
+    print(f"  alias_index: {'已存在' if alias_idx.exists() else '未生成'}")
+    print(f"  term_index: {'已存在' if term_idx.exists() else '未生成'}")
+    if not alias_idx.exists() and not term_idx.exists():
+        print(f"  → 运行 `python main.py rebuild-index` 初始化索引")
+
+    # Commit 状态
+    store = CommitStore(Path(str(content_root)))
+    commit_count = store.commit_count()
+    print(f"Commits: {commit_count} 个章节提交")
+    print()
+
     total_ch = reader.chapter_count()
     print(f"已写章节: {total_ch} 章")
 
@@ -1191,6 +1345,11 @@ def main():
     sub.add_parser("enrich", help="补全所有 stub 实体卡")
     sub.add_parser("worldbuild", help="基于主线生成世界观设定")
 
+    p_schema = sub.add_parser("init-schema", help="生成/更新 novel_schema.json")
+    p_schema.add_argument("--force", "-f", action="store_true", help="强制重新生成")
+
+    sub.add_parser("rebuild-index", help="从实体卡重建 entity_index（Trie + 分词倒排）")
+
     args = parser.parse_args()
 
     if args.command == "plan":
@@ -1207,6 +1366,10 @@ def main():
         cmd_enrich(args)
     elif args.command == "worldbuild":
         cmd_worldbuild(args)
+    elif args.command == "init-schema":
+        cmd_init_schema(args)
+    elif args.command == "rebuild-index":
+        cmd_rebuild_index(args)
     else:
         parser.print_help()
 

@@ -11,6 +11,7 @@ import yaml
 from state_schema import (
     EntityState,
     EntityFact,
+    NovelSchema,
     load_entity_state,
     state_to_markdown_fragment,
 )

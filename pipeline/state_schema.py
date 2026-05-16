@@ -4,7 +4,9 @@ Entity facts are the single source of truth for character/item/location state.
 Markdown frontmatter is retained as human-readable projection, but all programmatic
 reads MUST go through state.json.
 
-Design inspired by InkOS's CurrentStateFactSchema, adapted for WenMai's entity model.
+The schema is now per-novel: each novel has its own novel_schema.json that defines
+entity types, predicates, allowed values, override policies, and markdown templates.
+No more hardcoded cultivation realms or predicate lists.
 """
 
 from __future__ import annotations
@@ -12,57 +14,307 @@ from __future__ import annotations
 import copy
 import json
 from dataclasses import dataclass, field, asdict
+from enum import Enum
 from pathlib import Path
 from typing import Optional
 
-# ── 允许的实体类型 ──────────────────────────────────────────────
+
+# ── 常量 ──────────────────────────────────────────────────────
 ENTITY_TYPES = ("person", "item", "location", "concept")
+SCHEMA_FILENAME = "novel_schema.json"
 
-# ── 按实体类型定义的允许谓词 ──────────────────────────────────────
-ALLOWED_PREDICATES: dict[str, set[str]] = {
-    "person": {
-        "修为", "身份", "所在", "持有", "状态", "目标",
-        "身体状态", "精神状态", "关系", "能力", "功法",
-    },
-    "item": {
-        "current_holder", "location", "status", "category",
-        "owner", "condition",
-    },
-    "location": {
-        "parent_location", "掌控者/势力", "status", "population",
-        "danger_level",
-    },
-    "concept": {
-        "category", "status", "scope",
-    },
-}
 
-# ── 允许的修为境界值（从世界观 concept 卡抽取，可扩展）────────────
-CULTIVATION_REALMS = [
-    # 凡胎三境
-    "开脉境", "开脉境初期", "开脉境中期", "开脉境巅峰",
-    "气海境", "气海境初期", "气海境中期", "气海境巅峰",
-    "凝神境", "凝神境初期", "凝神境中期", "凝神境巅峰",
-    # 超凡三境
-    "真武境", "真武境初期", "真武境中期", "真武境巅峰",
-    "天人境", "天人境初期", "天人境中期", "天人境巅峰",
-    "意境级", "意境级初期", "意境级中期", "意境级巅峰",
-    # 入圣三境
-    "法相境", "法相境初期", "法相境中期", "法相境巅峰",
-    "涅槃境", "涅槃境初期", "涅槃境中期", "涅槃境巅峰",
-    "至尊境", "至尊境初期", "至尊境中期", "至尊境巅峰",
-    # 特殊
-    "凡人", "未知", "无法修炼",
-    # 简写
-    "开脉", "气海", "凝神", "真武", "天人", "意境", "法相", "涅槃", "至尊",
-]
+# ── Override Policy ────────────────────────────────────────────
 
-# ── 允许的状态值 ────────────────────────────────────────────────
-ALLOWED_STATUSES = {
-    "active", "injured", "incapacitated", "captured", "dead",
-    "stub", "minor", "supporting", "major", "protagonist",
-}
+class OverridePolicy(Enum):
+    """字段的覆盖策略。"""
+    LOCKED = "locked"                  # 一旦设定，任何章节不可覆盖
+    APPEND_ONLY = "append_only"        # 只能新增，不能删除或修改已有值
+    OVERRIDE_ALLOWED = "override_allowed"  # 章节级可覆盖（默认）
 
+
+# ── Schema 数据类 ──────────────────────────────────────────────
+
+@dataclass
+class PredicateDef:
+    """一个谓词的定义（来自 novel_schema.json）。"""
+    name: str                        # 谓词名 e.g. "修为"
+    type: str                        # "enum" | "string" | "list"
+    category: str = ""               # 分组 e.g. "实力", "基础", "能力"
+    priority: int = 99               # 显示排序，越小越靠前
+    override: OverridePolicy = OverridePolicy.OVERRIDE_ALLOWED
+    values: list[str] = field(default_factory=list)   # enum 类型的允许值
+    description: str = ""            # 给 LLM 看的说明
+
+    def to_dict(self) -> dict:
+        return {
+            "type": self.type,
+            "category": self.category,
+            "priority": self.priority,
+            "override": self.override.value,
+            "values": self.values,
+            "description": self.description,
+        }
+
+    @classmethod
+    def from_dict(cls, name: str, data: dict) -> "PredicateDef":
+        override_raw = data.get("override", "override_allowed")
+        if isinstance(override_raw, str):
+            override = OverridePolicy(override_raw)
+        else:
+            override = OverridePolicy.OVERRIDE_ALLOWED
+        return cls(
+            name=name,
+            type=data.get("type", "string"),
+            category=data.get("category", ""),
+            priority=data.get("priority", 99),
+            override=override,
+            values=data.get("values", []),
+            description=data.get("description", ""),
+        )
+
+
+@dataclass
+class EntitySchema:
+    """一种实体类型的 schema 定义。"""
+    entity_type: str                 # "person" | "item" | "location" | "concept"
+    label: str = ""                  # 中文标签 e.g. "人物"
+    predicates: dict[str, PredicateDef] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
+    markdown_template: str = ""      # JSON → Markdown 渲染模板
+
+    def get_predicate(self, name: str) -> PredicateDef | None:
+        return self.predicates.get(name)
+
+    def predicates_sorted(self) -> list[PredicateDef]:
+        """按 priority 排序的谓词列表。"""
+        return sorted(self.predicates.values(), key=lambda p: p.priority)
+
+    def predicates_by_category(self) -> dict[str, list[PredicateDef]]:
+        """按 category 分组的谓词。"""
+        groups: dict[str, list[PredicateDef]] = {}
+        for p in self.predicates.values():
+            cat = p.category or "其他"
+            if cat not in groups:
+                groups[cat] = []
+            groups[cat].append(p)
+        return groups
+
+    def to_dict(self) -> dict:
+        return {
+            "label": self.label,
+            "predicates": {name: p.to_dict() for name, p in self.predicates.items()},
+            "tags": self.tags,
+            "markdown_template": self.markdown_template,
+        }
+
+    @classmethod
+    def from_dict(cls, entity_type: str, data: dict) -> "EntitySchema":
+        predicates = {}
+        for name, pdata in data.get("predicates", {}).items():
+            predicates[name] = PredicateDef.from_dict(name, pdata)
+        return cls(
+            entity_type=entity_type,
+            label=data.get("label", ""),
+            predicates=predicates,
+            tags=data.get("tags", []),
+            markdown_template=data.get("markdown_template", ""),
+        )
+
+
+class NovelSchema:
+    """从 novel_schema.json 加载的整本小说 schema。
+
+    使用方式:
+        schema = NovelSchema.load(Path("novels/万古劫烬"))
+        person_preds = schema.get_predicates("person")
+        schema.validate_fact(fact, "person")
+    """
+
+    def __init__(self):
+        self.novel: str = ""
+        self.schema_version: int = 1
+        self.generated_at: str = ""
+        self.generated_by: str = ""
+        self.entity_schemas: dict[str, EntitySchema] = {}
+        # 全局 override policy
+        self.locked_fields: list[str] = field(default_factory=list)
+        self.append_only_fields: list[str] = field(default_factory=list)
+        # 检索配置
+        self.min_recall: int = 3
+        self.max_hop: int = 1
+        self.max_entity_cards: int = 30
+
+    # ── 查询接口 ──
+
+    def get_entity_schema(self, entity_type: str) -> EntitySchema | None:
+        return self.entity_schemas.get(entity_type)
+
+    def get_predicates(self, entity_type: str) -> dict[str, PredicateDef]:
+        es = self.get_entity_schema(entity_type)
+        return es.predicates if es else {}
+
+    def get_predicate_def(self, entity_type: str, predicate: str) -> PredicateDef | None:
+        es = self.get_entity_schema(entity_type)
+        return es.predicates.get(predicate) if es else None
+
+    def get_allowed_values(self, entity_type: str, predicate: str) -> list[str]:
+        """返回 enum 类型谓词的允许值列表；非 enum 返回空列表。"""
+        pdef = self.get_predicate_def(entity_type, predicate)
+        return pdef.values if pdef and pdef.type == "enum" else []
+
+    def get_override_policy(self, entity_type: str, predicate: str) -> OverridePolicy:
+        """返回某谓词的覆盖策略。"""
+        pdef = self.get_predicate_def(entity_type, predicate)
+        return pdef.override if pdef else OverridePolicy.OVERRIDE_ALLOWED
+
+    def get_all_entity_types(self) -> list[str]:
+        return list(self.entity_schemas.keys())
+
+    # ── 校验 ──
+
+    def validate_fact(self, fact: "EntityFact", entity_type: str) -> list[str]:
+        """校验单条事实，返回错误列表（空 = 通过）。"""
+        errors = []
+
+        if not fact.predicate or not fact.predicate.strip():
+            errors.append("事实谓词为空")
+            return errors
+        if not fact.object or not fact.object.strip():
+            errors.append(f"'{fact.predicate}' 的值不能为空")
+        if not isinstance(fact.since_chapter, int) or fact.since_chapter < 1:
+            errors.append(f"since_chapter 必须是正整数，得到 {fact.since_chapter}")
+        if fact.until_chapter is not None:
+            if not isinstance(fact.until_chapter, int) or fact.until_chapter <= fact.since_chapter:
+                errors.append(f"until_chapter ({fact.until_chapter}) 必须 > since_chapter ({fact.since_chapter})")
+
+        # 检查谓词是否在 schema 中定义
+        pdef = self.get_predicate_def(entity_type, fact.predicate)
+        if pdef is None:
+            # 未定义的谓词：不硬阻断，但记录（LLM 可能产出 schema 之外的新属性）
+            pass
+        else:
+            # enum 类型检查值是否在允许列表中
+            if pdef.type == "enum" and pdef.values:
+                if fact.object not in pdef.values:
+                    errors.append(
+                        f"'{fact.predicate}' 的值 '{fact.object}' 不在允许列表中: {pdef.values}"
+                    )
+
+        return errors
+
+    def validate_delta(self, delta: "StateDelta", known_entities: set[str]) -> list[str]:
+        """校验整个 delta。"""
+        errors = []
+        if delta.entity not in known_entities:
+            errors.append(f"实体 '{delta.entity}' 不在已知实体列表中")
+        if delta.entity_type not in ENTITY_TYPES:
+            errors.append(f"实体类型 '{delta.entity_type}' 不合法，允许: {ENTITY_TYPES}")
+        for fact in delta.facts_added:
+            errors.extend(self.validate_fact(fact, delta.entity_type))
+        return errors
+
+    def check_override_violation(
+        self, fact: "EntityFact", existing_state: "EntityState | None"
+    ) -> str | None:
+        """检查一条新事实是否违反 override policy。
+        返回错误描述，或 None（无违反）。
+        """
+        policy = self.get_override_policy(fact.entity_type if hasattr(fact, 'entity_type') else "person", fact.predicate)
+
+        if policy == OverridePolicy.LOCKED and existing_state:
+            old = existing_state.get_fact(fact.predicate)
+            if old and old.object != fact.object:
+                return (
+                    f"LOCKED 字段 '{fact.predicate}' 尝试从 '{old.object}' 改为 "
+                    f"'{fact.object}' — 拒绝写入"
+                )
+
+        if policy == OverridePolicy.APPEND_ONLY and existing_state:
+            old = existing_state.get_fact(fact.predicate)
+            if old and old.object != fact.object:
+                return (
+                    f"APPEND_ONLY 字段 '{fact.predicate}' 不允许修改已有值 '{old.object}'"
+                )
+
+        return None
+
+    # ── I/O ──
+
+    def to_dict(self) -> dict:
+        return {
+            "novel": self.novel,
+            "schema_version": self.schema_version,
+            "generated_at": self.generated_at,
+            "generated_by": self.generated_by,
+            "override_policy": {
+                "locked": self.locked_fields,
+                "append_only": self.append_only_fields,
+            },
+            "retrieval": {
+                "min_recall": self.min_recall,
+                "max_hop": self.max_hop,
+                "max_entity_cards": self.max_entity_cards,
+            },
+            "entity_schemas": {
+                etype: es.to_dict() for etype, es in self.entity_schemas.items()
+            },
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "NovelSchema":
+        s = cls()
+        s.novel = data.get("novel", "")
+        s.schema_version = data.get("schema_version", 1)
+        s.generated_at = data.get("generated_at", "")
+        s.generated_by = data.get("generated_by", "")
+        op = data.get("override_policy", {})
+        s.locked_fields = op.get("locked", [])
+        s.append_only_fields = op.get("append_only", [])
+        ret = data.get("retrieval", {})
+        s.min_recall = ret.get("min_recall", 3)
+        s.max_hop = ret.get("max_hop", 1)
+        s.max_entity_cards = ret.get("max_entity_cards", 30)
+        for etype, edata in data.get("entity_schemas", {}).items():
+            s.entity_schemas[etype] = EntitySchema.from_dict(etype, edata)
+        return s
+
+    @classmethod
+    def load(cls, novel_dir: Path) -> "NovelSchema | None":
+        """从 novel_schema.json 加载 schema。"""
+        path = novel_dir / SCHEMA_FILENAME
+        if not path.exists():
+            return None
+        try:
+            data = json.loads(path.read_text("utf-8"))
+            return cls.from_dict(data)
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            print(f"  [WARN] 加载 novel_schema.json 失败: {e}")
+            return None
+
+    def save(self, novel_dir: Path):
+        """保存到 novel_schema.json。"""
+        path = novel_dir / SCHEMA_FILENAME
+        path.write_text(
+            json.dumps(self.to_dict(), ensure_ascii=False, indent=2),
+            "utf-8",
+        )
+
+    # ── 向后兼容：无 schema 时的默认行为 ──
+
+    @classmethod
+    def default(cls) -> "NovelSchema":
+        """返回一个宽松的默认 schema（用于尚无 novel_schema.json 的老项目）。"""
+        s = cls()
+        s.novel = "(default)"
+        for etype in ENTITY_TYPES:
+            s.entity_schemas[etype] = EntitySchema(entity_type=etype)
+        return s
+
+
+# ═══════════════════════════════════════════════════════════════
+# 状态数据类（与 schema 无关，保持不变）
+# ═══════════════════════════════════════════════════════════════
 
 @dataclass
 class EntityFact:
@@ -76,7 +328,6 @@ class EntityFact:
 
     def to_dict(self) -> dict:
         d = asdict(self)
-        # 去掉 None 值
         return {k: v for k, v in d.items() if v is not None}
 
 
@@ -112,6 +363,10 @@ class EntityState:
             if f.until_chapter is None
         }
 
+    def get_active_facts_list(self) -> list[EntityFact]:
+        """返回所有当前有效的事实列表。"""
+        return [f for f in self.facts if f.until_chapter is None]
+
 
 @dataclass
 class StateDelta:
@@ -123,69 +378,9 @@ class StateDelta:
     facts_retired: list[tuple[str, str]] = field(default_factory=list)  # (predicate, object)
 
 
-class StateValidator:
-    """状态校验器 —— 在写入前检查数据合法性。"""
-
-    def __init__(self, known_entity_names: set[str] | None = None):
-        self.known_names = known_entity_names or set()
-
-    def validate_fact(self, fact: EntityFact, entity_type: str) -> list[str]:
-        """验证单条事实，返回错误列表（空列表表示通过）。"""
-        errors = []
-
-        # predicate 不能为空
-        if not fact.predicate or not fact.predicate.strip():
-            errors.append(f"事实谓词为空")
-            return errors
-
-        # object 不能为空
-        if not fact.object or not fact.object.strip():
-            errors.append(f"'{fact.predicate}' 的值不能为空")
-
-        # since_chapter 必须是正整数
-        if not isinstance(fact.since_chapter, int) or fact.since_chapter < 1:
-            errors.append(f"since_chapter 必须是正整数，得到 {fact.since_chapter}")
-
-        # until_chapter 如果存在，必须 > since_chapter
-        if fact.until_chapter is not None:
-            if not isinstance(fact.until_chapter, int) or fact.until_chapter <= fact.since_chapter:
-                errors.append(
-                    f"until_chapter ({fact.until_chapter}) 必须大于 since_chapter ({fact.since_chapter})"
-                )
-
-        # 谓词检查：对特定谓词做值域校验
-        if fact.predicate == "修为":
-            if fact.object not in CULTIVATION_REALMS:
-                # 不阻断，但给出警告（新小说可能有自定义境界）
-                pass
-
-        if fact.predicate == "状态" or fact.predicate == "status":
-            if fact.object not in ALLOWED_STATUSES and fact.object not in CULTIVATION_REALMS:
-                pass  # 宽松通过，只警告
-
-        # 实体类型对应的谓词白名单检查
-        allowed = ALLOWED_PREDICATES.get(entity_type, set())
-        if allowed and fact.predicate not in allowed:
-            # 不硬阻断（LLM 可能产出白名单外的合理谓词），但记录
-            pass
-
-        return errors
-
-    def validate_delta(self, delta: StateDelta, known_entities: set[str]) -> list[str]:
-        """验证整个 delta，返回错误列表。"""
-        errors = []
-
-        if delta.entity not in known_entities:
-            errors.append(f"实体 '{delta.entity}' 不在已知实体列表中")
-
-        if delta.entity_type not in ENTITY_TYPES:
-            errors.append(f"实体类型 '{delta.entity_type}' 不合法，允许: {ENTITY_TYPES}")
-
-        for fact in delta.facts_added:
-            errors.extend(self.validate_fact(fact, delta.entity_type))
-
-        return errors
-
+# ═══════════════════════════════════════════════════════════════
+# I/O 函数
+# ═══════════════════════════════════════════════════════════════
 
 def load_entity_state(state_path: Path) -> EntityState | None:
     """从 .state.json 文件加载实体状态。"""
@@ -228,20 +423,16 @@ def apply_delta_to_state(state: EntityState, delta: StateDelta) -> EntityState:
     """Immutable apply: 将 delta 应用到 EntityState，返回新状态。"""
     new_facts = copy.deepcopy(state.facts)
 
-    # 退休被覆盖的旧事实
     for fact in delta.facts_added:
-        # 找到同谓词的活跃事实，标记为退休
         for old_fact in new_facts:
             if old_fact.predicate == fact.predicate and old_fact.until_chapter is None:
                 old_fact.until_chapter = delta.chapter
 
-    # 处理显式退休
     for predicate, _object in delta.facts_retired:
         for old_fact in new_facts:
             if old_fact.predicate == predicate and old_fact.until_chapter is None:
                 old_fact.until_chapter = delta.chapter
 
-    # 添加新事实
     new_facts.extend(delta.facts_added)
 
     return EntityState(
@@ -252,22 +443,29 @@ def apply_delta_to_state(state: EntityState, delta: StateDelta) -> EntityState:
     )
 
 
-def state_to_markdown_fragment(state: EntityState) -> str:
-    """从 state.json 生成 markdown 状态摘要（供 prompt 用）。"""
+def state_to_markdown_fragment(state: EntityState, schema: NovelSchema | None = None) -> str:
+    """从 state.json 生成 markdown 状态摘要（供 prompt 用）。
+
+    如果有 schema，按 schema 定义的 priority 排序；
+    否则使用简单字母序。
+    """
     active = state.get_all_active_facts()
     if not active:
-        return f"（无结构化状态记录）"
+        return "（无结构化状态记录）"
 
     lines = []
-    priority_order = ["修为", "身份", "所在", "持有", "状态", "目标", "身体状态"]
 
-    for pred in priority_order:
-        if pred in active:
-            lines.append(f"- {pred}：{active[pred]}")
+    if schema:
+        # 按 schema 的 priority 排序
+        pdefs = schema.get_predicates(state.entity_type)
+        ordered = sorted(
+            active.items(),
+            key=lambda item: pdefs[item[0]].priority if item[0] in pdefs else 99,
+        )
+    else:
+        ordered = list(active.items())
 
-    # 其余谓词
-    for pred, val in active.items():
-        if pred not in priority_order:
-            lines.append(f"- {pred}：{val}")
+    for pred, val in ordered:
+        lines.append(f"- {pred}：{val}")
 
     return "\n".join(lines)
