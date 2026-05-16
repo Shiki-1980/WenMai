@@ -122,12 +122,20 @@
           "override": "locked",
           "values": [],
           "description": "血统或种族"
+        },
+        "详细描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 12,
+          "override": "append_only",
+          "values": [],
+          "description": "角色的详细描述、背景故事、外貌性格等。每次章节可追加新信息，不覆盖已有描述。"
         }
       },
       "tags": [
         "#character"
       ],
-      "markdown_template": "---\ntype: person\nstatus: {{active_status}}\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 身份：{{身份}}\n- 血脉：{{血脉}}\n\n## 当前状态\n- 修为：{{修为}}\n- 身体状态：{{身体状态}}\n- 所在：{{所在}}\n- 目标：{{目标}}\n\n## 能力\n- 功法：{{功法}}\n- 技能：{{#each 技能}}{{this}}, {{/each}}\n\n## 持有物\n{{#each 持有}}- {{this}}\n{{/each}}\n\n## 关系\n{{#each 关系}}- {{this}}\n{{/each}}"
+      "markdown_template": "---\ntype: person\nstatus: {{active_status}}\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 身份：{{身份}}\n- 血脉：{{血脉}}\n\n## 当前状态\n- 修为：{{修为}}\n- 身体状态：{{身体状态}}\n- 所在：{{所在}}\n- 目标：{{目标}}\n\n## 能力\n- 功法：{{功法}}\n- 技能：{{#each 技能}}{{this}}, {{/each}}\n\n## 持有物\n{{#each 持有}}- {{this}}\n{{/each}}\n\n## 关系\n{{#each 关系}}- {{this}}\n{{/each}}\n\n## 详细描述\n{{详细描述}}"
     },
     "item": {
       "label": "物品",

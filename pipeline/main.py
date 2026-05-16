@@ -495,8 +495,23 @@ def refresh_single_entity_markdown(reader, writer, state, etype, name, schema, r
     _write_frontmatter_md(card_path, new_fm, original_body)
 
 
-def _post_write_commit(reader, writer, retriever, chapter_number, result, content_root):
+def _post_write_commit(reader, writer, retriever, chapter_number, result, content_root, degraded: bool = False):
     """写后处理：保存 commit + 重新渲染受影响的实体 markdown。"""
+    if degraded:
+        print("  [STATE-DEGRADED] 跳过状态更新和 markdown 刷新")
+        # 仍然保存 commit 用于审计（标记 degraded）
+        try:
+            store = CommitStore(Path(str(content_root)))
+            from commit_store import ChapterCommit
+            commit = ChapterCommit(
+                chapter=chapter_number,
+                retrieval_stats={"status": "state-degraded"},
+            )
+            store.save_commit(commit)
+        except Exception:
+            pass
+        return
+
     try:
         # 加载 schema
         schema = NovelSchema.load(Path(str(content_root)))
@@ -812,9 +827,12 @@ def _write_one_chapter(
     lines = chapter_text.strip().split("\n")
     title_line = lines[0].strip("# ").strip() if lines else f"第{chapter_number}章"
 
-    # 3. 蒸馏
+    # 3. 蒸馏（Observer → Settler → Validator）
     print("[3/3] 蒸馏章节...")
-    result = distiller.distill(chapter_number, chapter_text)
+    distill_result = distiller.distill(chapter_number, chapter_text)
+    result = distill_result.data
+    if distill_result.degraded:
+        print(f"  [STATE-DEGRADED] 状态校验失败，正文保存但状态未更新")
     if result:
         print(f"  -> 实体变化: {len(result.get('entity_updates', []))} 个")
         print(f"  -> 新实体: {len(result.get('new_entities', []))} 个")
@@ -824,7 +842,7 @@ def _write_one_chapter(
     print("\n写回 vault...")
     writer.write_chapter(chapter_number, title_line, chapter_text)
 
-    if result:
+    if result and not distill_result.degraded:
         writer.write_summary(
             chapter_number,
             result.get("summary_meta", {}),
@@ -908,6 +926,7 @@ def _write_one_chapter(
     _post_write_commit(
         reader, writer, retriever,
         chapter_number, result, content_root,
+        degraded=distill_result.degraded,
     )
 
     print(f"\n第 {chapter_number} 章完成！")

@@ -291,7 +291,9 @@ class VaultWriter:
         facts = []
         for f in facts_added:
             predicate = f.get("predicate", "").strip()
+            action = f.get("action", "change")
             obj = f.get("object", f.get("new_value", "")).strip()
+
             if not predicate or not obj:
                 continue
 
@@ -299,6 +301,12 @@ class VaultWriter:
             if not self._validate_field_value(predicate, obj, entity_type):
                 print(f"  [WARN] 状态校验失败，跳过: {name}.{predicate} = {obj}")
                 continue
+
+            # append_description: 追加到已有描述
+            if action == "append_description":
+                old_fact = current.get_fact(predicate)
+                if old_fact:
+                    obj = f"{old_fact.object}\n\n{obj}"
 
             facts.append(EntityFact(
                 predicate=predicate,

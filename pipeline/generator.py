@@ -147,7 +147,8 @@ class LLMGenerator:
     # ── 简单调用（蒸馏/大纲/非 Agent 场景）─────────────────────
 
     def _call_openai_compatible(
-        self, system: str, user: str, json_mode: bool = False
+        self, system: str, user: str, json_mode: bool = False,
+        temperature: float | None = None,
     ) -> str:
         """OpenAI 兼容 API（无 tools）。"""
         messages = [
@@ -157,7 +158,7 @@ class LLMGenerator:
         body = {
             "model": self.model,
             "messages": messages,
-            "temperature": self.temperature,
+            "temperature": temperature if temperature is not None else self.temperature,
             "max_tokens": self.max_tokens,
         }
         if json_mode:
@@ -199,12 +200,58 @@ class LLMGenerator:
         data = resp.json()
         return data["content"][0]["text"]
 
-    def generate(self, system: str, user: str, json_mode: bool = False) -> str:
+    def generate(self, system: str, user: str, json_mode: bool = False,
+                 temperature: float | None = None) -> str:
         """统一接口（无 tools）。"""
         if self.provider == "anthropic":
             return self._call_anthropic(system, user)
         else:
-            return self._call_openai_compatible(system, user, json_mode)
+            return self._call_openai_compatible(system, user, json_mode, temperature)
+
+    # ── 蒸馏三阶段 ────────────────────────────────────────────
+
+    def observe(self, chapter_text: str, known_entities: list[str],
+                current_states: str) -> str:
+        """Observer: 自由文本观察，过度提取事实变化。temp 0.6"""
+        from prompts.observer import OBSERVER_SYSTEM, OBSERVER_USER
+        prompt = OBSERVER_USER.format(
+            chapter_text=chapter_text,
+            current_states=current_states[:5000],
+        )
+        known = ", ".join(known_entities[:50])
+        system = OBSERVER_SYSTEM.replace("{known_entities}", known)
+        return self.generate(system, prompt, json_mode=False, temperature=0.6)
+
+    def settle(self, observations: str, known_entities: list[str],
+               current_states: str, retry_hint: str = "") -> dict:
+        """Settler: 将观察转化为 JSON delta。temp 0.25"""
+        from prompts.settler import SETTLER_SYSTEM, SETTLER_USER
+        known = ", ".join(known_entities[:50])
+        system = SETTLER_SYSTEM
+
+        user_text = SETTLER_USER.format(
+            observations=observations,
+            current_states=current_states[:5000],
+            known_entities=known,
+        )
+        if retry_hint:
+            user_text += f"\n\n{retry_hint}"
+
+        raw = self.generate(system, user_text, json_mode=True, temperature=0.25)
+        return self._parse_json(raw)
+
+    def validate_state(self, chapter_text: str, observations: str,
+                       old_state: str, new_state: str) -> dict:
+        """State Validator: 比较新旧状态，检测矛盾。temp 0.15"""
+        from prompts.state_validator import VALIDATOR_SYSTEM, VALIDATOR_USER
+        prompt = VALIDATOR_USER.format(
+            chapter_summary=chapter_text[:2000],
+            observations=observations[:3000],
+            old_state=old_state[:5000],
+            new_state=new_state[:5000],
+        )
+        raw = self.generate(VALIDATOR_SYSTEM, prompt, json_mode=True, temperature=0.15)
+        return self._parse_json(raw)
 
     # ── 保留旧 API 兼容 ────────────────────────────────────────
 

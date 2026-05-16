@@ -120,8 +120,10 @@ SCHEMA_GEN_USER = """请为以下小说生成 novel_schema.json。
 1. 从世界观中提取所有可枚举值（境界/血脉类型/势力/地点等）
 2. person 必须有：修为(如果有修炼体系)/身份/所在/持有/功法/天赋/技能/关系/目标/身体状态
 3. 该小说独有的属性（灵根/异能/科技等级/超能力等）必须纳入
-4. markdown_template 中的 {{变量}} 必须与 predicates 中的 key 一一对应
-5. 不要省略任何 entity_schema 类型（四种都要有）
+4. person 类型必须包含 "详细描述" 谓词（type: string, category: 描述, override: append_only, priority: 99）
+   - 描述人物的外貌、性格、背景故事等。每次章节可追加新信息。
+5. markdown_template 中的 {{变量}} 必须与 predicates 中的 key 一一对应
+6. 不要省略任何 entity_schema 类型（四种都要有）
 
 请输出 JSON："""
 
