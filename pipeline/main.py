@@ -798,33 +798,45 @@ def _parse_entity_list(raw: str, gen) -> list[dict]:
 
 
 def cmd_rename(args):
-    """重命名当前小说。"""
+    """重命名小说。默认重命名当前活跃小说，也可指定任意小说。"""
     cfg = _load_config()
     vault_path = Path(cfg["vault"]["path"])
-    novel_rel = cfg["vault"].get("novel", "")
-    if not novel_rel:
-        print("错误：config.yaml 中 vault.novel 未设置")
-        return
 
-    old_path = vault_path / novel_rel
+    # 确定要重命名的小说
+    if args.name:
+        old_rel = f"novels/{args.name}"
+    else:
+        old_rel = cfg["vault"].get("novel", "")
+        if not old_rel:
+            print("错误：未指定小说名，且 config.yaml 中 vault.novel 未设置")
+            print("用法: python main.py rename [小说名] --to 新名称")
+            return
+
+    old_path = vault_path / old_rel
     if not old_path.exists():
         print(f"错误：小说目录不存在: {old_path}")
+        novels_dir = vault_path / "novels"
+        if novels_dir.exists():
+            existing = [d.name for d in novels_dir.iterdir() if d.is_dir()]
+            if existing:
+                print(f"现有小说: {', '.join(existing)}")
         return
 
-    new_rel = f"novels/{args.new_name}"
+    new_rel = f"novels/{args.to}"
     new_path = vault_path / new_rel
-
     if new_path.exists():
         print(f"错误：目标已存在: {new_path}")
         return
 
     old_path.rename(new_path)
-    cfg["vault"]["novel"] = new_rel
-    with open(CONFIG, "w") as f:
-        _yaml_lib.dump(cfg, f, allow_unicode=True, default_flow_style=False)
+    print(f"已重命名: {old_rel} → {new_rel}")
 
-    print(f"已重命名: {novel_rel} → {new_rel}")
-    print(f"config.yaml 已更新")
+    # 如果重命名的是活跃小说，更新 config.yaml
+    if old_rel == cfg["vault"].get("novel", ""):
+        cfg["vault"]["novel"] = new_rel
+        with open(CONFIG, "w") as f:
+            _yaml_lib.dump(cfg, f, allow_unicode=True, default_flow_style=False)
+        print(f"config.yaml 已更新")
 
 
 def cmd_init_schema(args):
@@ -1580,7 +1592,9 @@ def main():
     p_init.add_argument("--chapters", "-n", type=int, default=30, help="第一卷章节数")
     p_init.add_argument("--force", "-f", action="store_true", help="覆盖已有文件")
 
-    sub.add_parser("rename", help="重命名当前小说").add_argument("new_name", help="新名称")
+    p_rename = sub.add_parser("rename", help="重命名小说")
+    p_rename.add_argument("name", nargs="?", help="要重命名的小说（默认: 当前活跃小说）")
+    p_rename.add_argument("--to", "-t", required=True, help="新名称")
 
     p_schema = sub.add_parser("init-schema", help="生成/更新 novel_schema.json")
     p_schema.add_argument("--force", "-f", action="store_true", help="强制重新生成")
