@@ -37,13 +37,13 @@ def _load_config():
         return _yaml_lib.safe_load(f)
 
 
-def _get_paths():
+def _get_paths(novel_override: str | None = None):
     """返回 (content_root, template_dir, vault_path)。确保小说目录结构存在。"""
     cfg = _load_config()
     vault_path = Path(cfg["vault"]["path"])
-    novel_rel = cfg["vault"].get("novel", "")
+    novel_rel = novel_override or cfg["vault"].get("novel", "")
     if not novel_rel:
-        print("错误：config.yaml 中 vault.novel 未设置")
+        print("错误：未指定小说。使用 --novel <名称> 或设置 config.yaml 中的 vault.novel")
         sys.exit(1)
 
     content_root = vault_path / novel_rel
@@ -605,7 +605,7 @@ def _auto_enrich(gen, reader, writer, content_root, template_dir):
 
 def cmd_rebuild_index(args):
     """从实体卡重建 entity_index（Trie + 分词倒排）。"""
-    content_root, template_dir, _ = _get_paths()
+    content_root, template_dir, _ = _get_paths(getattr(args, 'novel', None))
     reader = VaultReader(str(content_root))
     retriever = EntityRetriever(reader)
     retriever.rebuild_index()
@@ -797,6 +797,46 @@ def _parse_entity_list(raw: str, gen) -> list[dict]:
     return entities
 
 
+def cmd_list(args):
+    """列出所有小说。"""
+    cfg = _load_config()
+    vault_path = Path(cfg["vault"]["path"])
+    novels_dir = vault_path / "novels"
+    if not novels_dir.exists():
+        print("（无小说）")
+        return
+
+    active = cfg["vault"].get("novel", "")
+    for d in sorted(novels_dir.iterdir()):
+        if d.is_dir():
+            marker = " ← 当前" if f"novels/{d.name}" == active else ""
+            # 统计章节数
+            ch_count = len(list((d / "chapter").glob("ch_*.md")))
+            entity_count = sum(1 for _ in (d / "entity").rglob("*.md"))
+            print(f"  {d.name}  ({ch_count}章, {entity_count}实体){marker}")
+
+
+def cmd_switch(args):
+    """切换活跃小说。"""
+    cfg = _load_config()
+    vault_path = Path(cfg["vault"]["path"])
+    novel_rel = f"novels/{args.name}"
+    novel_path = vault_path / novel_rel
+    if not novel_path.exists():
+        print(f"错误：小说不存在: {novel_path}")
+        novels_dir = vault_path / "novels"
+        if novels_dir.exists():
+            existing = [d.name for d in novels_dir.iterdir() if d.is_dir()]
+            if existing:
+                print(f"现有小说: {', '.join(existing)}")
+        return
+
+    cfg["vault"]["novel"] = novel_rel
+    with open(CONFIG, "w") as f:
+        _yaml_lib.dump(cfg, f, allow_unicode=True, default_flow_style=False)
+    print(f"已切换到: {args.name}")
+
+
 def cmd_rename(args):
     """重命名小说。默认重命名当前活跃小说，也可指定任意小说。"""
     cfg = _load_config()
@@ -841,7 +881,7 @@ def cmd_rename(args):
 
 def cmd_init_schema(args):
     """生成/更新 novel_schema.json。"""
-    content_root, template_dir, _ = _get_paths()
+    content_root, template_dir, _ = _get_paths(getattr(args, 'novel', None))
     gen = LLMGenerator(str(CONFIG))
     reader = VaultReader(str(content_root))
 
@@ -856,7 +896,7 @@ def cmd_init_schema(args):
 
 def cmd_enrich(args):
     """增量更新实体卡：对近期章节出现过的实体，用新剧情刷新卡片内容。"""
-    content_root, template_dir, _ = _get_paths()
+    content_root, template_dir, _ = _get_paths(getattr(args, 'novel', None))
     gen = LLMGenerator(str(CONFIG))
     reader = VaultReader(str(content_root))
     writer = VaultWriter(str(content_root), str(template_dir))
@@ -1269,7 +1309,7 @@ def cmd_worldbuild(args):
 
 def cmd_write(args):
     """按篇章大纲逐章写作。"""
-    content_root, template_dir, _ = _get_paths()
+    content_root, template_dir, _ = _get_paths(getattr(args, 'novel', None))
     gen = LLMGenerator(str(CONFIG))
     reader = VaultReader(str(content_root))
     retriever = EntityRetriever(reader)
@@ -1341,7 +1381,7 @@ def cmd_write(args):
 
 def cmd_write_one(args):
     """写单独一章。"""
-    content_root, template_dir, _ = _get_paths()
+    content_root, template_dir, _ = _get_paths(getattr(args, 'novel', None))
     gen = LLMGenerator(str(CONFIG))
     reader = VaultReader(str(content_root))
     retriever = EntityRetriever(reader)
@@ -1377,7 +1417,7 @@ def cmd_write_one(args):
 
 def cmd_distill(args):
     """重新蒸馏指定章节（手动修改后使用）。"""
-    content_root, template_dir, _ = _get_paths()
+    content_root, template_dir, _ = _get_paths(getattr(args, 'novel', None))
     gen = LLMGenerator(str(CONFIG))
     reader = VaultReader(str(content_root))
     distiller = ChapterDistiller(gen, reader)
@@ -1560,7 +1600,12 @@ def main():
     parser = argparse.ArgumentParser(description="Novel Pipeline")
     sub = parser.add_subparsers(dest="command")
 
+    # 所有需要操作小说的命令共享 --novel
+    def _add_novel_arg(p):
+        p.add_argument("--novel", "-N", help="小说名称（默认: config.yaml 中的活跃小说）")
+
     p_plan = sub.add_parser("plan", help="生成篇章大纲")
+    _add_novel_arg(p_plan)
     p_plan.add_argument("--direction", "-d", required=True, help="接下来想写的大方向")
     p_plan.add_argument("--num-chapters", "-n", type=int, default=30)
     p_plan.add_argument("--name", help="篇章名称（可选）")
@@ -1568,22 +1613,28 @@ def main():
                         help="同时生成实体卡（默认开启）")
 
     p_write = sub.add_parser("write", help="按篇章大纲逐章写作")
+    _add_novel_arg(p_write)
     p_write.add_argument("--arc", "-a", required=True, help="篇章名称")
     p_write.add_argument("--words", "-w", type=int, default=3000)
     p_write.add_argument("--force", "-f", action="store_true", help="强制重写已存在章节")
     p_write.add_argument("--yes", "-y", action="store_true", help="自动连续写，不询问")
 
     p_one = sub.add_parser("write-one", help="写单独一章")
+    _add_novel_arg(p_one)
     p_one.add_argument("--chapter", "-c", type=int, required=True)
     p_one.add_argument("--outline", "-o", help="本章概要（可选）")
     p_one.add_argument("--words", "-w", type=int, default=3000)
 
     p_distill = sub.add_parser("distill", help="重新蒸馏章节")
+    _add_novel_arg(p_distill)
     p_distill.add_argument("--chapter", "-c", type=int, required=True)
 
-    sub.add_parser("status", help="查看写作状态")
-    sub.add_parser("enrich", help="补全所有 stub 实体卡")
-    sub.add_parser("worldbuild", help="基于主线生成世界观设定")
+    p_status = sub.add_parser("status", help="查看写作状态")
+    _add_novel_arg(p_status)
+    p_enrich = sub.add_parser("enrich", help="补全所有 stub 实体卡")
+    _add_novel_arg(p_enrich)
+    p_worldbuild = sub.add_parser("worldbuild", help="基于主线生成世界观设定")
+    _add_novel_arg(p_worldbuild)
 
     p_init = sub.add_parser("init", help="一键初始化新小说项目")
     p_init.add_argument("name", help="小说名称")
@@ -1597,9 +1648,14 @@ def main():
     p_rename.add_argument("--to", "-t", required=True, help="新名称")
 
     p_schema = sub.add_parser("init-schema", help="生成/更新 novel_schema.json")
+    _add_novel_arg(p_schema)
     p_schema.add_argument("--force", "-f", action="store_true", help="强制重新生成")
 
-    sub.add_parser("rebuild-index", help="从实体卡重建 entity_index（Trie + 分词倒排）")
+    p_rebuild = sub.add_parser("rebuild-index", help="从实体卡重建 entity_index")
+    _add_novel_arg(p_rebuild)
+
+    sub.add_parser("list", help="列出所有小说")
+    sub.add_parser("switch", help="切换活跃小说").add_argument("name", help="小说名称")
 
     args = parser.parse_args()
 
@@ -1625,6 +1681,10 @@ def main():
         cmd_rebuild_index(args)
     elif args.command == "rename":
         cmd_rename(args)
+    elif args.command == "list":
+        cmd_list(args)
+    elif args.command == "switch":
+        cmd_switch(args)
     else:
         parser.print_help()
 
