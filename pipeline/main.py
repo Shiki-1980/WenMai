@@ -616,12 +616,28 @@ def cmd_init(args):
     """一键初始化新小说：目录→世界观→主线→实体→schema→大纲→索引。"""
     cfg = _load_config()
     vault_path = Path(cfg["vault"]["path"])
-    novel_name = args.name
-    novel_path = vault_path / "novels" / novel_name
     template_dir = vault_path / "_templates"
     today = datetime.now().strftime("%Y-%m-%d")
 
     gen = LLMGenerator(str(CONFIG))
+
+    # 自动生成书名
+    if not args.name:
+        print("正在根据描述生成书名...")
+        name_raw = gen.generate(
+            "你是小说命名助手。根据用户描述，生成一个简洁有力的小说书名（4-8字）。只输出书名，不要引号、不要解释。",
+            f"题材: {args.genre}\n描述: {args.desc}",
+            temperature=0.9,
+        )
+        novel_name = name_raw.strip().strip("《》\"'「」『』").split("\n")[0].strip()
+        # 去掉文件系统不兼容字符
+        novel_name = re.sub(r'[<>:"/\\|?*]', '', novel_name).strip()
+        novel_name = novel_name or "未命名"
+        print(f"  -> LLM 命名: {novel_name}")
+    else:
+        novel_name = args.name
+
+    novel_path = vault_path / "novels" / novel_name
 
     print(f"\n{'='*50}")
     print(f"  初始化小说: {novel_name}")
@@ -646,7 +662,7 @@ def cmd_init(args):
     world_path = novel_path / "plot" / "世界观.md"
     world_system = (
         f"你是资深{args.genre}题材世界观架构师。根据用户描述，构建一个自洽、有层次、有冲突空间的世界。\n\n"
-        "必须包含：力量体系（完整等级列表）、地理（主要区域）、势力格局（至少3个势力）、世界规则（至少5条铁律）。\n"
+        "必须包含：力量体系（完整等级列表）、地理（主要区域）、势力格局、世界规则。\n"
         "直接输出完整的 markdown 文档（含 frontmatter），不要任何前言。"
     )
     world_raw = gen.generate(world_system, f"## 用户描述\n{args.desc}\n\n请生成完整的世界观设定。")
@@ -1637,7 +1653,7 @@ def main():
     _add_novel_arg(p_worldbuild)
 
     p_init = sub.add_parser("init", help="一键初始化新小说项目")
-    p_init.add_argument("name", help="小说名称")
+    p_init.add_argument("name", nargs="?", help="小说名称（不填则 LLM 自动生成）")
     p_init.add_argument("--genre", "-g", default="xuanhuan", help="题材 (xuanhuan/xianxia/urban/scifi)")
     p_init.add_argument("--desc", "-d", required=True, help="一句话描述故事")
     p_init.add_argument("--chapters", "-n", type=int, default=30, help="第一卷章节数")
