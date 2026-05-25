@@ -1,0 +1,28 @@
+{
+  "entity": "斗气体系",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - [[魔力体系]]：依赖外界元素，不稳定但爆发强（法师/术士职业） - [[斗气体系]]：强化肉体，通过战斗积累怒气（战士/骑士职业） - [[精神体系]]：操控意志，擅长幻术与诅咒（刺客/牧师职业）",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

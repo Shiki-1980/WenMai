@@ -1,0 +1,28 @@
+{
+  "entity": "苦修院",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - **领袖**：教皇[[奥古斯丁一世]]（[[源能圣者·上品]]）。 - **核心力量**：由[[圣殿骑士团]]、[[审判庭]]、[[苦修院]]组成的高阶战力，共计12位[[圣者]]、3位[[神子级]]苦修士。 - **行动方针**：寻找并净化所有“异端”，包括[[暗影议会]]、[[亡灵帝国]]残党、[[混沌邪教徒]]，也压制[[龙族议会]]的独立倾向。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

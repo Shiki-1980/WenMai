@@ -1,0 +1,28 @@
+{
+  "entity": "黑暗精灵",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - **领袖**：[[魔尊·阿兹莫德]]（[[源能真神·下品]]），一千年前被[[光明圣庭]]联合[[龙族议会]]封印于深渊底层，近几年已破解封印，但仅恢复七成力量。 - **核心力量**：[[阴影刺客团]]（100人）、[[恶魔召唤师]]（30人）、[[咒术师联盟]]（50人），另有[[堕天使]]翼人叛徒与[[黑暗精灵]]佣兵团。 - **行动方针**：瓦解光明圣庭的统治，释放被封印的远古怪物，",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

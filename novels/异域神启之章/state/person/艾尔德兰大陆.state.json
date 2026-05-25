@@ -1,0 +1,28 @@
+{
+  "entity": "艾尔德兰大陆",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: | [[源能真神]] | 神祇 | 完全掌握一条法则分支，创造独立半位面，寿命近乎无限，但受[[世界意志]]限制。 | | [[源能创世者]] | 位面主 | 传说中曾创造[[艾尔德兰大陆]]的存在，已无人见证，仅存于[[光之圣典]]与[[暗影史诗]]末端。 |",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

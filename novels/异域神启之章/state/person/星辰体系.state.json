@@ -1,0 +1,28 @@
+{
+  "entity": "星辰体系",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - [[精神体系]]：操控意志，擅长幻术与诅咒（刺客/牧师职业） - [[星辰体系]]：借天体运转之力，极难掌握但可预知未来（占星师职业）",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

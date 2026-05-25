@@ -1,0 +1,28 @@
+{
+  "entity": "四星",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - **领袖**：会长[[尤利娅·风暴之子]]（[[源能神子·中品]]），本体为[[龙族]]后裔，以人类形态行走。 - **核心力量**：旗下有[[五星冒险者]]16人、[[四星]]冒险者200+，以及[[游侠部队]]“[[黑夜守望者]]”。拥有全球唯一的[[跨大陆传送阵]]维护权。 - **行动方针**：接受一切非反社会性质的委托（跑腿、探索、讨伐、护送、情报刺探），按等级付酬。会员必须遵守《公",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

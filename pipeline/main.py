@@ -9,6 +9,7 @@ Usage:
 """
 
 import argparse
+import json
 import re
 import sys
 from datetime import datetime
@@ -660,91 +661,191 @@ def cmd_init(args):
     # ── Step 1: 生成世界观 ──
     print("\n[1/6] 生成世界观...")
     world_path = novel_path / "plot" / "世界观.md"
-    world_system = (
-        f"你是资深{args.genre}题材世界观架构师。根据用户描述，构建一个自洽、有层次、有冲突空间的世界。\n\n"
-        "必须包含：力量体系（完整等级列表）、地理（主要区域）、势力格局、世界规则。\n"
-        "直接输出完整的 markdown 文档（含 frontmatter），不要任何前言。"
-    )
-    world_raw = gen.generate(world_system, f"## 用户描述\n{args.desc}\n\n请生成完整的世界观设定。")
-    if not world_raw:
-        print("  [ERROR] 世界观生成失败"); return
-    world_raw = _clean_llm_output(world_raw)
-    world_path.write_text(world_raw, "utf-8")
-    world_body = world_raw
-    print("  -> 世界观已保存")
+    if world_path.exists() and not args.force:
+        print("  -> 世界观已存在，跳过")
+        world_body = world_path.read_text("utf-8")
+    else:
+        world_system = (
+            f"你是资深{args.genre}题材世界观架构师。根据用户描述，构建一个自洽、有层次、有冲突空间的世界。\n\n"
+            "必须包含：力量体系（完整等级列表）、地理（主要区域）、势力格局、世界规则。\n\n"
+            "格式要求：所有实体（人名/地名/势力名/功法名/物品名/概念）必须用 [[wikilink]] 包裹。\n"
+            "例如：[[青云宗]]位于[[中原九州]]北部，掌门[[玄真子]]修炼[[太虚剑诀]]已达[[真武境]]巅峰。\n"
+            "直接输出完整的 markdown 文档（含 frontmatter），不要任何前言。"
+        )
+        world_raw = gen.generate(world_system, f"## 用户描述\n{args.desc}\n\n请生成完整的世界观设定。")
+        if not world_raw:
+            print("  [ERROR] 世界观生成失败"); return
+        world_raw = _clean_llm_output(world_raw)
+        world_path.write_text(world_raw, "utf-8")
+        world_body = world_raw
+        print("  -> 世界观已保存")
 
     # ── Step 2: 生成主线 ──
     print("\n[2/6] 生成主线...")
     main_path = novel_path / "plot" / "主线.md"
-    from prompts.init_novel import INIT_MAIN_PLOT_SYSTEM, INIT_MAIN_PLOT_USER
-    main_prompt = INIT_MAIN_PLOT_USER.format(
-        novel_name=novel_name, genre=args.genre, description=args.desc,
-        world_setting=world_body[:4000],
-    )
-    main_raw = gen.generate(
-        INIT_MAIN_PLOT_SYSTEM.replace("{genre}", args.genre).replace("{date}", today),
-        main_prompt,
-    )
-    if main_raw:
-        main_raw = _clean_llm_output(main_raw)
-        main_path.write_text(main_raw, "utf-8")
-        print("  -> 主线已保存")
+    if main_path.exists() and not args.force:
+        print("  -> 主线已存在，跳过")
+    else:
+        from prompts.init_novel import INIT_MAIN_PLOT_SYSTEM, INIT_MAIN_PLOT_USER
+        main_prompt = INIT_MAIN_PLOT_USER.format(
+            novel_name=novel_name, genre=args.genre, description=args.desc,
+            world_setting=world_body[:4000],
+        )
+        main_raw = gen.generate(
+            INIT_MAIN_PLOT_SYSTEM.replace("{genre}", args.genre).replace("{date}", today),
+            main_prompt,
+        )
+        if main_raw:
+            main_raw = _clean_llm_output(main_raw)
+            main_path.write_text(main_raw, "utf-8")
+            print("  -> 主线已保存")
 
     reader = VaultReader(str(novel_path))
 
-    # ── Step 3: 生成实体卡 ──
-    print("\n[3/6] 生成实体卡...")
+    # ── Step 3: 提取实体列表 + 生成 state.json + 渲染 markdown ──
+    print("\n[3/6] 生成实体...")
     main = reader.read_main_plot()
     main_body = main[1] if main else ""
-    entity_system = (
-        "你是小说设定提取助手。根据主线剧情和世界观，列出所有重要实体。\n"
-        "只输出 JSON 数组，不要任何前言。"
-    )
-    entity_raw = gen.generate(entity_system, (
-        f"## 主线\n{main_body[:3000]}\n\n## 世界观\n{world_body[:2000]}\n\n"
-        f"提取所有重要实体，输出 JSON 数组：\n"
-        f'[{{"name":"实体名","type":"person|item|location|concept",'
-        f'"importance":"protagonist|major|supporting|minor",'
-        f'"aliases":["别名"],"brief":"一句话描述"}},...]'
-    ), json_mode=True)
-    entities = _parse_entity_list(entity_raw, gen)
+    entity_list_path = novel_path / "index" / "entity_list.json"
 
-    import frontmatter as _fm
+    # 3a. 提取实体列表 —— wikilink 解析 + 溯源 + 去重，全部先占位 stub
+    if entity_list_path.exists() and not args.force:
+        entities = json.loads(entity_list_path.read_text("utf-8"))
+        print(f"  -> 实体列表已存在 ({len(entities)} 个)，跳过提取")
+    else:
+        from reader import parse_links
+
+        # 从两个源文件解析 wikilink，记录出处
+        def _extract_with_source(text: str, source_file: str) -> dict[str, dict]:
+            """从文本中提取 wikilink，记录每个实体首次出现的上下文。"""
+            result = {}
+            lines = text.split("\n")
+            for i, line in enumerate(lines):
+                links = parse_links(line)
+                for link in links:
+                    if link not in result:
+                        # 取前后各一行作为上下文
+                        prev_line = lines[i-1].strip() if i > 0 else ""
+                        next_line = lines[i+1].strip() if i+1 < len(lines) else ""
+                        context = f"{prev_line} {line.strip()} {next_line}"[:200]
+                        result[link] = {
+                            "name": link,
+                            "source_file": source_file,
+                            "source_context": context.strip(),
+                        }
+            return result
+
+        world_entities = _extract_with_source(world_body, "plot/世界观.md")
+        main_entities = _extract_with_source(main_body, "plot/主线.md")
+
+        # 合并去重（主线优先，因为主线信息更精确）
+        all_raw = dict(world_entities)
+        all_raw.update(main_entities)  # main overrides world on conflict
+
+        print(f"  -> wikilink 解析：世界观 {len(world_entities)} + 主线 {len(main_entities)} → 去重 {len(all_raw)} 个")
+
+        # LLM 分类 + 重要性判定（只做分类，不生成具体内容）
+        if len(all_raw) <= 30:
+            classify_raw = gen.generate(
+                "你是小说实体分类助手。为每个实体判断 type 和 importance。\n"
+                "type: person/item/location/concept\n"
+                "importance: protagonist(主角,仅1个)/major(主线核心)/supporting(有戏份)/minor(仅提及)\n"
+                "只输出 JSON 映射，不要任何前言。",
+                f"## 主线摘要\n{main_body[:2000]}\n\n## 实体列表\n"
+                + "\n".join(sorted(all_raw.keys()))
+                + "\n\n输出 JSON: {{\"实体名\":{\"type\":\"...\",\"importance\":\"...\"}},...}",
+                json_mode=True,
+            )
+            classifications = gen._parse_json(classify_raw) if classify_raw else {}
+        else:
+            classifications = {}
+
+        # 组装最终实体列表
+        entities = []
+        for name, info in all_raw.items():
+            cls = classifications.get(name, {})
+            entities.append({
+                "name": name,
+                "type": cls.get("type", "person"),
+                "importance": cls.get("importance", "supporting"),
+                "aliases": [],
+                "brief": "",
+                "source_file": info["source_file"],
+                "source_context": info["source_context"],
+            })
+
+        entity_list_path.write_text(json.dumps(entities, ensure_ascii=False, indent=2), "utf-8")
+        print(f"  -> 实体列表已保存: {len(entities)} 个 (主角1, major {sum(1 for e in entities if e['importance']=='major')}, "
+              f"supporting {sum(1 for e in entities if e['importance']=='supporting')}, minor {sum(1 for e in entities if e['importance']=='minor')})")
+
+    # 3b. 生成 state.json —— 只有 protagonist 调 LLM，其余 stub
+    print("  生成 state.json...")
+    from state_schema import EntityState as ES
+    retriever = EntityRetriever(reader)
+
     for ent in entities:
-        name, etype, imp, aliases, brief = (
-            ent["name"], ent.get("type", "person"),
-            ent.get("importance", "major"),
-            ent.get("aliases", []), ent.get("brief", ""),
-        )
-        subdir = writer.TYPE_DIR.get(etype, "person")
-        card_path = writer.entity_dir / subdir / f"{name}.md"
+        name, etype, imp = ent["name"], ent.get("type", "person"), ent.get("importance", "major")
+        state_path = writer.entity_state_path(etype, name)
+        if state_path.exists() and not args.force:
+            continue
+
+        if imp == "protagonist":
+            # 主角：LLM 生成完整 state
+            state_raw = gen.generate(
+                "你是小说设定助手。根据主线背景，为主角生成结构化 JSON 状态。\n"
+                "输出严格 JSON：{\"facts\":[{\"predicate\":\"...\",\"object\":\"...\"},...]}\n"
+                "人物谓词用：修为,身份,所在,持有,功法,天赋,技能,关系,目标,身体状态,详细描述\n"
+                "只输出 JSON，不要任何前言。",
+                f"主角: {name}\n主线背景: {main_body[:3000]}\n世界观: {world_body[:2000]}",
+                json_mode=True,
+            )
+            facts = gen._parse_json(state_raw).get("facts", []) if state_raw else []
+        else:
+            # 其余实体：stub，记录出处，等待 enrich 补全
+            facts = [
+                {"predicate": "状态", "object": "stub"},
+                {"predicate": "详细描述", "object": ent.get("brief", "")},
+            ]
+            # 记录来源信息
+            facts.append({
+                "predicate": "来源", "object": f"{ent.get('source_file','?')}: {ent.get('source_context','')[:200]}"
+            })
+
+        state = ES(entity=name, entity_type=etype, last_updated_chapter=0,
+                    facts=[EntityFact(predicate=f["predicate"], object=f["object"],
+                                      since_chapter=0, source="init") for f in facts])
+        save_entity_state(state, state_path)
+
+        # 别名索引
+        retriever.entity_index.add_entity(name, aliases=ent.get("aliases", []))
+        imp_label = {"protagonist": "主角", "major": "主要", "supporting": "配角", "minor": "次要"}.get(imp, "?")
+        print(f"    [{imp_label}] {name}: {len(facts)} facts → state.json ({ent.get('source_file', '?')})")
+
+    retriever.entity_index.save()
+
+    # 3c. 从 state.json 渲染 markdown 实体卡
+    print("  渲染 markdown 实体卡...")
+    reader = VaultReader(str(novel_path))
+    schema = NovelSchema.load(novel_path) or NovelSchema.default()
+    renderer = MarkdownRenderer(schema)
+
+    for ent in entities:
+        name, etype, imp = ent["name"], ent.get("type", "person"), ent.get("importance", "major")
+        state = load_entity_state(writer.entity_state_path(etype, name))
+        if not state:
+            continue
+        card_path = writer.entity_dir / writer.TYPE_DIR.get(etype, "person") / f"{name}.md"
         if card_path.exists() and not args.force:
             continue
 
-        if imp in ("protagonist", "major"):
-            card_text = gen.generate(
-                f"为「{name}」撰写完整设定卡。用 Obsidian markdown + frontmatter + [[wikilink]]。直接输出。",
-                f"主线: {main_body[:2000]}\n\n为「{name}」(类型:{etype}, 重要度:{imp}, 简述:{brief}) 生成设定卡。",
-            )
-            if card_text:
-                card_text = _clean_llm_output(card_text)
-                try:
-                    card = _fm.loads(card_text)
-                    card_meta, card_body = dict(card.metadata), card.content
-                except Exception:
-                    card_meta, card_body = {"type": etype, "status": "active"}, card_text
-            else:
-                card_meta, card_body = {"type": etype, "status": "active", "importance": imp}, f"# {name}\n\n{brief}\n"
-        else:
-            card_meta = {"type": etype, "status": "stub", "importance": imp}
-            card_body = f"# {name}\n\n## 描述\n{brief}\n（待后续 enrich 补全）\n"
-
-        card_meta["aliases"] = aliases
-        card_meta["created"] = card_meta["updated"] = today
+        body = renderer.render_entity_body(state, importance=imp)
+        fm = renderer.render_frontmatter(state, importance=imp)
+        fm["aliases"] = ent.get("aliases", [])
+        fm["source_file"] = ent.get("source_file", "")
+        fm["source_context"] = ent.get("source_context", "")[:200]
+        fm["created"] = fm["updated"] = today
         from writer import _write_frontmatter_md
-        _write_frontmatter_md(card_path, card_meta, card_body)
-        imp_label = {"protagonist": "主角", "major": "主要", "supporting": "配角", "minor": "次要"}.get(imp, "?")
-        print(f"  -> [{imp_label}] {name} ({etype})")
+        _write_frontmatter_md(card_path, fm, body)
 
     reader = VaultReader(str(novel_path))
 
@@ -758,23 +859,26 @@ def cmd_init(args):
     arc_start, arc_end = 1, args.chapters
     arc_name = f"arc_{arc_start:03d}_{arc_end:03d}"
     arc_path = novel_path / "plot" / "arcs" / f"{arc_name}.md"
-    from prompts.generate_outline import OUTLINE_USER
-    outline_raw = gen.generate_outline(OUTLINE_USER.format(
-        main_plot=main_body[:2000], world_setting=world_body[:3000],
-        current_chapter=0, recent_summaries="（新小说，无历史章节）",
-        entity_states=reader.entity_state_summary(), active_plots="",
-        user_direction=args.desc, num_chapters=args.chapters,
-        start_chapter=arc_start, end_chapter=arc_end, words_per_chapter=4000,
-    ))
-    if outline_raw:
-        outline_raw = outline_raw.strip()
-        if not outline_raw.startswith("---"):
-            all_names = sorted(name for _, name in reader.all_entity_names())
-            key_ents = "\n".join(f"  - \"[[{n}]]\"" for n in all_names)
-            outline_raw = f"---\ntype: arc\nstatus: planned\nchapter_range: \"{arc_start}-{arc_end}\"\ntitle: \"\"\nkey_entities:\n{key_ents}\nconstraints: \"\"\n---\n\n{outline_raw}"
-        arc_path.parent.mkdir(parents=True, exist_ok=True)
-        arc_path.write_text(outline_raw, "utf-8")
-        print(f"  -> {arc_name} 已保存")
+    if arc_path.exists() and not args.force:
+        print(f"  -> {arc_name} 已存在，跳过")
+    else:
+        from prompts.generate_outline import OUTLINE_USER
+        outline_raw = gen.generate_outline(OUTLINE_USER.format(
+            main_plot=main_body[:2000], world_setting=world_body[:3000],
+            current_chapter=0, recent_summaries="（新小说，无历史章节）",
+            entity_states=reader.entity_state_summary(), active_plots="",
+            user_direction=args.desc, num_chapters=args.chapters,
+            start_chapter=arc_start, end_chapter=arc_end, words_per_chapter=4000,
+        ))
+        if outline_raw:
+            outline_raw = outline_raw.strip()
+            if not outline_raw.startswith("---"):
+                all_names = sorted(name for _, name in reader.all_entity_names())
+                key_ents = "\n".join(f"  - \"[[{n}]]\"" for n in all_names)
+                outline_raw = f"---\ntype: arc\nstatus: planned\nchapter_range: \"{arc_start}-{arc_end}\"\ntitle: \"\"\nkey_entities:\n{key_ents}\nconstraints: \"\"\n---\n\n{outline_raw}"
+            arc_path.parent.mkdir(parents=True, exist_ok=True)
+            arc_path.write_text(outline_raw, "utf-8")
+            print(f"  -> {arc_name} 已保存")
 
     # ── Step 6: 重建索引 ──
     print("\n[6/6] 重建索引...")
@@ -795,22 +899,6 @@ def cmd_init(args):
     print(f"\n  下一步: python main.py write --arc {arc_name} -y")
 
 
-def _parse_entity_list(raw: str, gen) -> list[dict]:
-    """解析实体列表 JSON。"""
-    entities = []
-    if raw:
-        try:
-            parsed = gen._parse_json(raw)
-            if isinstance(parsed, list):
-                entities = parsed
-            elif isinstance(parsed, dict):
-                entities = parsed.get("entities", [])
-        except Exception:
-            pass
-    if not entities:
-        entities = [{"name": "主角", "type": "person", "importance": "protagonist", "aliases": [], "brief": "主角"}]
-    entities.sort(key=lambda e: {"protagonist": 0, "major": 1, "supporting": 2, "minor": 3}.get(e.get("importance", "major"), 3))
-    return entities
 
 
 def cmd_list(args):
@@ -893,6 +981,124 @@ def cmd_rename(args):
         with open(CONFIG, "w") as f:
             _yaml_lib.dump(cfg, f, allow_unicode=True, default_flow_style=False)
         print(f"config.yaml 已更新")
+
+
+def cmd_audit(args):
+    """审核并修改已生成的内容。不传 --revise 则只展示摘要，传了则修改。"""
+    content_root, template_dir, _ = _get_paths(getattr(args, 'novel', None))
+    gen = LLMGenerator(str(CONFIG))
+    reader = VaultReader(str(content_root))
+
+    if not args.revise:
+        # 只展示摘要
+        print("=" * 50)
+        print("  当前项目摘要")
+        print("=" * 50)
+
+        world = reader.read_world_bible()
+        print(f"\n## 世界观 ({'已生成' if world else '缺失'})")
+        if world:
+            print(world[1][:400] + "...")
+
+        main = reader.read_main_plot()
+        print(f"\n## 主线 ({'已生成' if main else '缺失'})")
+        if main:
+            print(main[1][:400] + "...")
+
+        print(f"\n## 实体 ({len(reader.all_entity_names())} 个)")
+        for etype, name in reader.all_entity_names():
+            card = reader.read_entity(etype, name)
+            imp = card[0].get("importance", "?") if card else "?"
+            print(f"  [{etype}] {name} (importance={imp})")
+
+        print(f"\n## 大纲")
+        for arc_name in reader.list_arcs():
+            arc = reader.read_arc(arc_name)
+            if arc:
+                meta, _ = arc
+                print(f"  {arc_name}: {meta.get('chapter_range', '?')} [{meta.get('status', '?')}]")
+
+        print(f"\n运行 `python main.py audit -r \"你的修改请求\"` 来修改。")
+        return
+
+    # ── 修改模式 ──
+    target = args.target
+    print(f"正在审核并修改: {target}")
+    print(f"修改请求: {args.revise}\n")
+
+    if target in ("world", "all"):
+        world = reader.read_world_bible()
+        if world:
+            print("[世界] 修改世界观...")
+            revised = gen.generate(
+                "你是小说世界观架构师。根据修改请求，修订下面的世界观设定。只修改请求涉及的部分，其余保持不变。直接输出完整修订后的 markdown。",
+                f"## 修改请求\n{args.revise}\n\n## 当前世界观\n{world}",
+            )
+            if revised:
+                revised = _clean_llm_output(revised)
+                (content_root / "plot" / "世界观.md").write_text(revised, "utf-8")
+                print("  -> 世界观已更新")
+
+    if target in ("plot", "all"):
+        main = reader.read_main_plot()
+        if main:
+            print("[主线] 修改主线...")
+            revised = gen.generate(
+                "你是小说故事架构师。根据修改请求修订下面的主线。只修改请求涉及的部分。直接输出完整修订后的 markdown。",
+                f"## 修改请求\n{args.revise}\n\n## 当前主线\n{main}",
+            )
+            if revised:
+                revised = _clean_llm_output(revised)
+                (content_root / "plot" / "主线.md").write_text(revised, "utf-8")
+                print("  -> 主线已更新")
+
+    if target in ("entities", "all"):
+        print("[实体] 修改实体卡...")
+        for etype, name in reader.all_entity_names():
+            card = reader.read_entity(etype, name)
+            if not card:
+                continue
+            meta, body = card
+            imp = meta.get("importance", "minor")
+            if imp not in ("protagonist", "major"):
+                continue  # 只修改重要实体
+
+            print(f"  - {name}...")
+            revised = gen.generate(
+                f"你是小说设定助手。根据修改请求修订实体「{name}」的设定卡。只修改请求涉及的部分。直接输出完整修订后的 markdown + frontmatter。",
+                f"## 修改请求\n{args.revise}\n\n## 当前设定卡\n{body}",
+            )
+            if revised:
+                revised = _clean_llm_output(revised)
+                try:
+                    card = __import__('frontmatter').loads(revised)
+                    card_meta, card_body = dict(card.metadata), card.content
+                except Exception:
+                    card_meta = dict(meta)
+                    card_body = revised
+                card_meta["updated"] = datetime.now().strftime("%Y-%m-%d")
+                from writer import _write_frontmatter_md
+                subdir = {"person": "person", "item": "item", "location": "location", "concept": "concept"}.get(etype, "person")
+                _write_frontmatter_md(content_root / "entity" / subdir / f"{name}.md", card_meta, card_body)
+                print(f"    -> 已更新")
+
+    if target in ("outline", "all"):
+        for arc_name in reader.list_arcs():
+            arc = reader.read_arc(arc_name)
+            if not arc:
+                continue
+            meta, body = arc
+            print(f"[大纲] 修改 {arc_name}...")
+            revised = gen.generate(
+                "你是小说大纲编辑。根据修改请求修订篇章大纲。只修改请求涉及的部分。直接输出完整修订后的 markdown + frontmatter。",
+                f"## 修改请求\n{args.revise}\n\n## 当前大纲\n{body}",
+            )
+            if revised:
+                revised = _clean_llm_output(revised)
+                (content_root / "plot" / "arcs" / f"{arc_name}.md").write_text(revised, "utf-8")
+                print(f"    -> 已更新")
+
+    print(f"\n审核修改完成。运行 `python main.py audit` 查看当前摘要。")
 
 
 def cmd_init_schema(args):
@@ -1054,7 +1260,7 @@ def _backfill_arc_entities(reader, writer, arc_path: Path):
     if not all_names:
         return
     try:
-        post = _fm.load(str(arc_path))
+        post = _fm.loads(arc_path.read_text("utf-8"))
         meta = dict(post.metadata)
         body = post.content
     except Exception:
@@ -1673,6 +1879,11 @@ def main():
     sub.add_parser("list", help="列出所有小说")
     sub.add_parser("switch", help="切换活跃小说").add_argument("name", help="小说名称")
 
+    p_audit = sub.add_parser("audit", help="审核并修改已生成的内容（世界观/主线/实体/大纲）")
+    _add_novel_arg(p_audit)
+    p_audit.add_argument("--revise", "-r", help="修改请求（如'主角性格太弱，加强'）")
+    p_audit.add_argument("--target", "-t", default="all", help="修改目标: world/plot/entities/outline/all")
+
     args = parser.parse_args()
 
     if args.command == "init":
@@ -1701,6 +1912,8 @@ def main():
         cmd_list(args)
     elif args.command == "switch":
         cmd_switch(args)
+    elif args.command == "audit":
+        cmd_audit(args)
     else:
         parser.print_help()
 

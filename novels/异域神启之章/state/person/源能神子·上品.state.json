@@ -1,0 +1,28 @@
+{
+  "entity": "源能神子·上品",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 自动排斥任何**超过[[源能真神·上品]]** 的外来者降临（强行降临会导致位面撕裂） - 对本土突破[[源能神子·上品]] 的生灵进行[[升格考验]]（随机灾难或心智诱惑），失败则被抹杀 - 当大规模外位面入侵（如深渊邪神军团）时，世界意志会“授权”给某些天命冒险者，临时赋予[[规则级]]能力",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

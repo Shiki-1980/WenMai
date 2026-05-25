@@ -61,7 +61,7 @@ class VaultReader:
         """读取 markdown，返回 (metadata, body)。不存在返回 None。"""
         if not path.exists():
             return None
-        post = frontmatter.load(str(path))
+        post = frontmatter.loads(path.read_text("utf-8"))
         return dict(post.metadata), post.content
 
     def _list_md(self, directory: Path, pattern: str = "*.md") -> list[Path]:

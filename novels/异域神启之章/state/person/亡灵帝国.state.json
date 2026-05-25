@@ -1,0 +1,28 @@
+{
+  "entity": "亡灵帝国",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: 6. **[[死寂沙漠]]**：日间高温可达70℃，夜间降至零下。沙漠底下埋藏着远古[[亡灵帝国]]的遗迹，有大量[[魔导装甲]]与[[诅咒金币]]。进入沙漠必须携带[[耐热药剂]]和[[灵魂灯笼]]，否则会被[[沙暴邪灵]]吞噬。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

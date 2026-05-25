@@ -34,6 +34,11 @@ python main.py distill -c 15
 
 # Show project status (chapters, entities, arcs)
 python main.py status
+
+# Audit and revise generated content (worldview, plot, entities, outlines)
+python main.py audit                          # show project summary
+python main.py audit -r "主角性格太弱，加强"    # revise with LLM
+python main.py audit -t world -r "添加一个魔法公会"  # revise specific target
 ```
 
 ## Architecture
@@ -47,7 +52,15 @@ The pipeline (`pipeline/`) is a linear 6-stage process, each module handling one
 5. **distiller.py** (`ChapterDistiller`) — Extracts structured info from generated chapters: entity presence/frequency, status changes, new entities, new/revealed plot threads, summary, and key residue for the next chapter.
 6. **writer.py** (`VaultWriter`) — Writes generated content back to the Obsidian vault: chapter markdown, summary markdown, entity card updates, new entity creation, inverted index updates, and plot thread additions.
 
-**Prompt templates** live in `pipeline/prompts/` — each has a `_SYSTEM` and `_USER` string that get `.format()`-ed with context.
+Supporting modules:
+- **state_schema.py** — Typed entity state model (`EntityState`, `EntityFact`) with `save_entity_state`/`load_entity_state`. Each entity has a `state.json` that accumulates structured facts across chapters.
+- **md_renderer.py** (`MarkdownRenderer`) — Renders entity state + novel schema into Obsidian markdown cards with YAML frontmatter.
+- **entity_index.py** — Alias-based entity name resolution and inverted chapter index.
+- **commit_store.py** — Immutable delta commits for entity state changes, enabling rollback.
+- **schema_gen.py** — Generates `novel_schema.json` defining the structured fields per entity type.
+- **tools.py** — Agent tool definitions for LLM tool-calling during distillation/generation.
+
+**State architecture:** Entities exist in two layers — structured `state.json` (machine-readable, accumulates facts chapter by chapter) and rendered markdown cards (human-readable in Obsidian). The markdown is derived from state.json at render time, not edited directly by the pipeline.
 
 ## Vault data model
 
@@ -62,8 +75,14 @@ The Obsidian vault uses **frontmatter YAML** on every markdown file for structur
 - **plot/arcs/** — Arc outlines with chapter range, key entities, and per-chapter one-liner tables
 - **plot/伏笔池.md** — Plot thread pool with ID-based tracking (埋下/进行中/已回收)
 - **index/entity_chapter_index.json** — Inverted index mapping entity names → chapters they appear in
+- **index/entity_list.json** — Master entity list extracted from wikilink parsing during init (name, type, importance, source file, source context)
+- **state/** — Per-entity `state.json` files with structured, machine-readable fact tables (`[{predicate, object, since_chapter, source}]`)
 
 Entity relationships are modeled via Obsidian `[[wikilinks]]` in card bodies and frontmatter fields.
+
+### Init flow (wikilink-driven entity extraction)
+
+During `init`, entities are extracted by parsing `[[wikilinks]]` from the generated worldview and main plot (not LLM enumeration). This ensures entity names are consistent with the narrative text. Each wikilink's source file and surrounding context are recorded. LLM is only used for classification (type + importance) when there are ≤30 entities; larger sets get default classifications. Protagonist entities get LLM-generated structured state; all others start as stubs with source references, waiting for `enrich` to populate them during chapter generation.
 
 ## Key constraints
 
@@ -71,3 +90,5 @@ Entity relationships are modeled via Obsidian `[[wikilinks]]` in card bodies and
 - Chapter filenames are zero-padded: `ch_005.md`, `ch_015.md`. The `chapter_count()` method counts files, so gaps in numbering will cause incorrect counts.
 - Entity names must match exactly between `[[wikilinks]]`, frontmatter references, and the file system — the retriever does exact-name lookups, not fuzzy matching.
 - `httpx` is used directly instead of provider SDKs — all LLM calls go through raw HTTP to OpenAI-compatible or Anthropic endpoints with a 300s timeout.
+- `init` is idempotent: it skips existing files unless `--force` is passed. This allows re-running init to fill in gaps without regenerating everything.
+- World and plot generation prompts require `[[wikilink]]` wrapping for all entities — this is critical for accurate entity extraction during init.

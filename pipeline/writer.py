@@ -84,7 +84,7 @@ class VaultWriter:
         path = self.entity_dir / subdir / f"{name}.md"
 
         if path.exists():
-            post = frontmatter.load(str(path))
+            post = frontmatter.loads(path.read_text("utf-8"))
             meta = dict(post.metadata)
             body = post.content
         else:
@@ -157,7 +157,7 @@ class VaultWriter:
         if not path.exists():
             return
 
-        post = frontmatter.load(str(path))
+        post = frontmatter.loads(path.read_text("utf-8"))
         body = post.content
 
         # 在时间线表格后添加行

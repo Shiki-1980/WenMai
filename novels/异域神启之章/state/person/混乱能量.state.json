@@ -1,0 +1,28 @@
+{
+  "entity": "混乱能量",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - **核心力量**：[[阴影刺客团]]（100人）、[[恶魔召唤师]]（30人）、[[咒术师联盟]]（50人），另有[[堕天使]]翼人叛徒与[[黑暗精灵]]佣兵团。 - **行动方针**：瓦解光明圣庭的统治，释放被封印的远古怪物，收集[[混乱能量]]打破[[世界意志]]的枷锁，最终让邪神重临。 - **对冒险者态度**：招揽道德灰色或走投无路的冒险者，提供快速提升力量的方法（如[[禁忌仪式]]、",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

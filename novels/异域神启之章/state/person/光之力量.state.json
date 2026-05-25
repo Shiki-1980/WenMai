@@ -1,0 +1,28 @@
+{
+  "entity": "光之力量",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - **对冒险者态度**：发布通缉令悬赏对立势力成员，但也会批准正规冒险者小队执行“神谕任务”。 - **内部矛盾**：教皇过度依赖[[光之力量]]导致本人被[[圣光同化]]，失去部分自我意识；[[审判所]][[所长洛伦佐]]暗中与[[暗影议会]]勾结，意图推翻教皇。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

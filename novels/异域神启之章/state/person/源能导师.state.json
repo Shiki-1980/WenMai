@@ -1,0 +1,28 @@
+{
+  "entity": "源能导师",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: | [[源能行者]] | 漫游者 | 可由自身生成源能屏障，掌握两种基础元素能力，可进行短途极限位移。 | | [[源能导师]] | 指引者 | 可构建小型领域（[[私人结界]]），能同时指挥数十人协同作战，拥有职业专精。 | | [[源能大师]] | 掌控者 | 领域范围扩展至方圆百米，能重塑地形短暂改变局部法则，拥有领域压制特性。 |",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

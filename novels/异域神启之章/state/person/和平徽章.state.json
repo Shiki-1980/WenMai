@@ -1,0 +1,28 @@
+{
+  "entity": "和平徽章",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: 2. **[[翡翠森林]]**：精灵与德鲁伊的乐土，树木高达百米，树冠间有[[生命泉水]]。核心地带藏有[[世界树]]的幼苗据点。凡是进入森林的非精灵种族，必须佩戴[[和平徽章]]，否则会被[[森林守护者]]攻击。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}
