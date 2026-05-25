@@ -3,11 +3,31 @@
 import json
 import os
 import re
+import time
 from typing import Optional
 
 import certifi
 import httpx
 import yaml
+
+
+def _retry_api_call(fn, max_retries: int = 3, base_delay: float = 2.0):
+    """带指数退避的 API 调用重试，处理 429/5xx 等临时故障。"""
+    last_exc = None
+    for attempt in range(max_retries + 1):
+        try:
+            return fn()
+        except httpx.HTTPStatusError as e:
+            last_exc = e
+            status = e.response.status_code
+            if status in (429, 500, 502, 503, 504) and attempt < max_retries:
+                delay = base_delay * (2 ** attempt)
+                import sys
+                print(f"  [RETRY] HTTP {status}，{delay:.0f}s 后重试 ({attempt + 1}/{max_retries})...", file=sys.stderr)
+                time.sleep(delay)
+                continue
+            raise
+    raise last_exc
 
 
 class LLMGenerator:
@@ -36,33 +56,52 @@ class LLMGenerator:
         messages: list[dict],
         json_mode: bool = False,
         tools: list[dict] | None = None,
-        tool_choice: str = "auto",
+        tool_choice: str | None = "auto",
     ) -> dict:
         """单次 LLM 调用，返回完整 response object。"""
         body = {
             "model": self.model,
             "messages": messages,
-            "temperature": self.temperature,
             "max_tokens": self.max_tokens,
         }
+        # DeepSeek thinking 模型需要显式关闭推理模式，否则要求回传 reasoning_content
+        if self.provider == "deepseek":
+            body["thinking"] = {"type": "disabled"}
+        # DeepSeek 在 tool calling 模式下不支持 temperature 参数
+        if not tools:
+            body["temperature"] = self.temperature
         if json_mode:
             body["response_format"] = {"type": "json_object"}
         if tools:
             body["tools"] = tools
-            body["tool_choice"] = tool_choice
+            # DeepSeek 需要显式传入 tool_choice，但不能是 None
+            if tool_choice:
+                body["tool_choice"] = tool_choice
 
-        resp = httpx.post(
-            f"{self.api_base}/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
-            json=body,
-            timeout=300,
-            verify=certifi.where(),
-        )
-        resp.raise_for_status()
-        return resp.json()
+        def _call():
+            resp = httpx.post(
+                f"{self.api_base}/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=body,
+                timeout=300,
+                verify=certifi.where(),
+            )
+            if resp.status_code >= 400:
+                import sys
+                print(f"\n[LLM ERROR] HTTP {resp.status_code}", file=sys.stderr)
+                print(f"  Request body keys: {list(body.keys())}", file=sys.stderr)
+                try:
+                    err_body = resp.text[:1000]
+                    print(f"  Response: {err_body}", file=sys.stderr)
+                except Exception:
+                    pass
+            resp.raise_for_status()
+            return resp.json()
+
+        return _retry_api_call(_call)
 
     # ── Agent 循环：写作 + 按需工具调用 ─────────────────────────
 
@@ -109,12 +148,15 @@ class LLMGenerator:
 
             # 如果 LLM 调用了工具
             if message.get("tool_calls"):
-                # 将 assistant 消息加入历史
-                messages.append({
+                # 将 assistant 消息加入历史（保留 reasoning_content 以兼容 DeepSeek thinking 模型）
+                assistant_msg = {
                     "role": "assistant",
                     "content": message.get("content"),
                     "tool_calls": message["tool_calls"],
-                })
+                }
+                if message.get("reasoning_content"):
+                    assistant_msg["reasoning_content"] = message["reasoning_content"]
+                messages.append(assistant_msg)
 
                 # 执行每个工具调用
                 for tc in message["tool_calls"]:
@@ -164,41 +206,47 @@ class LLMGenerator:
         if json_mode:
             body["response_format"] = {"type": "json_object"}
 
-        resp = httpx.post(
-            f"{self.api_base}/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
-            json=body,
-            timeout=300,
-            verify=certifi.where(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
-        return data["choices"][0]["message"]["content"]
+        def _call():
+            resp = httpx.post(
+                f"{self.api_base}/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=body,
+                timeout=300,
+                verify=certifi.where(),
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return data["choices"][0]["message"]["content"]
+
+        return _retry_api_call(_call)
 
     def _call_anthropic(self, system: str, user: str) -> str:
         """Anthropic Messages API。"""
-        resp = httpx.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={
-                "x-api-key": self.api_key,
-                "anthropic-version": "2023-06-01",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": self.model,
-                "max_tokens": self.max_tokens,
-                "system": system,
-                "messages": [{"role": "user", "content": user}],
-            },
-            timeout=300,
-            verify=certifi.where(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
-        return data["content"][0]["text"]
+        def _call():
+            resp = httpx.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": self.api_key,
+                    "anthropic-version": "2023-06-01",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": self.model,
+                    "max_tokens": self.max_tokens,
+                    "system": system,
+                    "messages": [{"role": "user", "content": user}],
+                },
+                timeout=300,
+                verify=certifi.where(),
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return data["content"][0]["text"]
+
+        return _retry_api_call(_call)
 
     def generate(self, system: str, user: str, json_mode: bool = False,
                  temperature: float | None = None) -> str:
@@ -272,10 +320,11 @@ class LLMGenerator:
         raw = self.generate(DISTILL_SYSTEM, prompt, json_mode=True)
         return self._parse_json(raw)
 
-    def generate_outline(self, context: str) -> str:
-        """生成篇章大纲。"""
+    def generate_outline(self, context: str, **kwargs) -> str:
+        """生成篇章大纲。kwargs 用于格式化 OUTLINE_SYSTEM 中的占位符。"""
         from prompts.generate_outline import OUTLINE_SYSTEM
-        return self.generate(OUTLINE_SYSTEM, context)
+        system = OUTLINE_SYSTEM.format(**kwargs) if kwargs else OUTLINE_SYSTEM
+        return self.generate(system, context)
 
     @staticmethod
     def _parse_json(raw: str) -> dict:

@@ -2,7 +2,12 @@
 
 import sys
 import os
-import io
+
+# Force unbuffered I/O — critical for SSE streaming to work.
+# print() output must reach the OutputCapture immediately, not sit
+# in Python's buffer waiting for a flush that never comes.
+os.environ["PYTHONUNBUFFERED"] = "1"
+
 import json
 import queue
 import threading
@@ -39,36 +44,63 @@ def save_config(cfg):
 
 # ── Output Capture ───────────────────────────────────────────────────
 
-class OutputCapture(io.StringIO):
-    """Thread-safe stdout capture that feeds an async queue."""
+class OutputCapture:
+    """Line-buffered stdout capture that feeds an async queue.
+
+    print() typically calls write(text) then write('\\n') in two calls.
+    We accumulate writes and emit complete lines to the SSE queue.
+    flush() emits any remaining partial line immediately.
+    """
 
     def __init__(self, loop, on_input=None):
-        super().__init__()
         self.loop = loop
         self.queue = asyncio.Queue()
         self.on_input = on_input
         self._original_stdout = None
+        self._buffer = ""
         self._lock = threading.Lock()
 
     def write(self, text):
+        if not text:
+            return
         with self._lock:
-            super().write(text)
-        if text and text.strip():
-            # Schedule the line to be pushed to async queue
-            self.loop.call_soon_threadsafe(
-                self.queue.put_nowait, {"type": "output", "text": text}
-            )
+            self._buffer += text
+            # Emit every complete line (ends with \n)
+            while "\n" in self._buffer:
+                line, self._buffer = self._buffer.split("\n", 1)
+                if line.strip():
+                    self.loop.call_soon_threadsafe(
+                        self.queue.put_nowait,
+                        {"type": "output", "text": line + "\n"},
+                    )
 
     def flush(self):
-        pass
+        with self._lock:
+            if self._buffer.strip():
+                self.loop.call_soon_threadsafe(
+                    self.queue.put_nowait,
+                    {"type": "output", "text": self._buffer},
+                )
+                self._buffer = ""
 
     def __enter__(self):
+        import builtins as _b
+
         self._original_stdout = sys.stdout
         sys.stdout = self
+        # Patch print to always flush — this is the key fix for
+        # Python buffering output when stdout is not a tty.
+        self._original_print = _b.print
+        _b.print = lambda *a, **kw: self._original_print(
+            *a, **{**kw, "flush": True}
+        )
         return self
 
     def __exit__(self, *args):
+        import builtins as _b
+
         sys.stdout = self._original_stdout
+        _b.print = self._original_print
 
 
 # ── Input Patching ───────────────────────────────────────────────────
@@ -853,7 +885,24 @@ def read_world(novel: str = ""):
     if not world:
         return {"exists": False, "content": ""}
     meta, body = world
-    return {"exists": True, "title": meta.get("title", "世界观"), "content": body}
+    return {"exists": True, "title": meta.get("title", "世界观"), "content": body, "meta": meta}
+
+
+class WorldUpdate(BaseModel):
+    novel: str = ""
+    content: str
+
+
+@app.put("/api/world")
+def update_world(body: WorldUpdate):
+    cfg = load_config()
+    novel_rel = body.novel or cfg["vault"].get("novel", "")
+    content_root = VAULT_PATH / novel_rel
+    world_path = content_root / "plot" / "世界观.md"
+    if not world_path.exists():
+        raise HTTPException(404, "World bible not found")
+    world_path.write_text(body.content, "utf-8")
+    return {"ok": True}
 
 
 @app.get("/api/main-plot")
@@ -868,7 +917,19 @@ def read_main_plot(novel: str = ""):
     if not main:
         return {"exists": False, "content": ""}
     meta, body = main
-    return {"exists": True, "title": meta.get("title", "主线"), "content": body}
+    return {"exists": True, "title": meta.get("title", "主线"), "content": body, "meta": meta}
+
+
+@app.put("/api/main-plot")
+def update_main_plot(body: WorldUpdate):
+    cfg = load_config()
+    novel_rel = body.novel or cfg["vault"].get("novel", "")
+    content_root = VAULT_PATH / novel_rel
+    plot_path = content_root / "plot" / "主线.md"
+    if not plot_path.exists():
+        raise HTTPException(404, "Main plot not found")
+    plot_path.write_text(body.content, "utf-8")
+    return {"ok": True}
 
 
 @app.get("/api/plot-pool")

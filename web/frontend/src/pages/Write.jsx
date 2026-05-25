@@ -6,6 +6,7 @@ import Terminal from "../components/Terminal";
 export default function Write() {
   const [arcs, setArcs] = useState([]);
   const [status, setStatus] = useState(null);
+  const [loadError, setLoadError] = useState("");
   const [terminalLines, setTerminalLines] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const [taskId, setTaskId] = useState("");
@@ -25,14 +26,26 @@ export default function Write() {
   const [force, setForce] = useState(false);
   const [volumeNum, setVolumeNum] = useState(0);
 
-  useEffect(() => {
-    Promise.all([listArcs(), getStatus()])
-      .then(([arcsData, statusData]) => {
-        setArcs(arcsData.arcs || []);
-        setStatus(statusData);
-      })
-      .catch(() => {});
+  const loadData = useCallback(async () => {
+    setLoadError("");
+    try {
+      const [arcsData, statusData] = await Promise.all([listArcs(), getStatus()]);
+      setArcs(arcsData.arcs || []);
+      setStatus(statusData);
+    } catch (err) {
+      setLoadError(err.message || "无法连接到服务器");
+    }
   }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Select an arc from the list — switches to "write" tab and fills the field
+  const selectArc = (name) => {
+    setCmd("write");
+    setArcName(name);
+  };
 
   const addLine = useCallback((text, type = "output") => {
     setTerminalLines((prev) => [...prev, { text, type }]);
@@ -67,7 +80,6 @@ export default function Write() {
           if (!line.trim() || line.startsWith(":")) continue;
 
           if (line.startsWith("event: input")) {
-            // The next data line will have the prompt
             continue;
           }
 
@@ -80,16 +92,6 @@ export default function Write() {
             try {
               const data = JSON.parse(line.slice(6));
               if (data.text) {
-                // Check if previous line was "event: input"
-                if (
-                  lines.indexOf(line) > 0 &&
-                  lines[lines.indexOf(line) - 1] === "event: input" &&
-                  line.includes('"prompt"')
-                ) {
-                  setInputPrompt(data.prompt || data.text);
-                  setShowInput(true);
-                  continue;
-                }
                 addLine(data.text);
               }
               if (data.prompt) {
@@ -107,6 +109,8 @@ export default function Write() {
     } finally {
       setIsRunning(false);
       setShowInput(false);
+      // Refresh data after command completes
+      setTimeout(loadData, 500);
     }
   };
 
@@ -140,6 +144,10 @@ export default function Write() {
         });
         break;
       case "write":
+        if (!arcName) {
+          addLine("错误：请先选择一个篇章\n", "error");
+          return;
+        }
         addLine(`$ write --arc "${arcName}" --words ${wordCount} --yes\n`, "info");
         runCommand("/write", {
           arc: arcName,
@@ -184,7 +192,77 @@ export default function Write() {
         </p>
       </motion.div>
 
-      {/* Command Form */}
+      {/* ── Arc List (clickable, above the form) ── */}
+      {loadError ? (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-ink-error/10 border border-ink-error/30 rounded-xl p-5 mb-6"
+        >
+          <p className="text-ink-error text-sm font-sans mb-2">
+            加载失败: {loadError}
+          </p>
+          <button
+            onClick={loadData}
+            className="px-4 py-1.5 bg-ink-surface border border-ink-border rounded-lg text-xs text-ink-text-secondary hover:text-ink-text transition-colors font-sans"
+          >
+            重试
+          </button>
+        </motion.div>
+      ) : arcs.length > 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-ink-card border border-ink-border rounded-xl p-5 mb-6"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-serif text-base text-ink-text">篇章列表</h3>
+            <span className="text-xs text-ink-text-muted font-sans">
+              点击选择 → 自动填入批量写作
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {arcs.map((arc) => (
+              <button
+                key={arc.name}
+                type="button"
+                onClick={() => selectArc(arc.name)}
+                className={`text-left bg-ink-surface rounded-lg px-4 py-3 text-sm font-sans flex justify-between items-center transition-all border hover:border-ink-accent/40 ${
+                  arcName === arc.name && cmd === "write"
+                    ? "border-ink-accent/60 bg-ink-accent/5"
+                    : "border-transparent"
+                }`}
+              >
+                <span
+                  className={
+                    arcName === arc.name && cmd === "write"
+                      ? "text-ink-accent font-medium"
+                      : "text-ink-text"
+                  }
+                >
+                  {arc.title || arc.name}
+                </span>
+                <span className="text-xs text-ink-text-muted font-mono">
+                  {arc.chapter_range}
+                </span>
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-ink-card border border-ink-border rounded-xl p-5 mb-6 text-center"
+        >
+          <p className="text-ink-text-muted font-sans text-sm">
+            还没有篇章大纲 — 使用「规划大纲」来创建
+          </p>
+        </motion.div>
+      )}
+
+      {/* ── Command Form ── */}
       <motion.form
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -269,7 +347,7 @@ export default function Write() {
                 <select
                   value={arcName}
                   onChange={(e) => setArcName(e.target.value)}
-                  className="w-full bg-ink-surface border border-ink-border rounded-lg px-3 py-2 text-sm text-ink-text font-sans focus:outline-none focus:border-ink-accent transition-colors"
+                  className="w-full bg-ink-surface border border-ink-border rounded-lg px-3 py-2 text-sm text-ink-text font-sans focus:outline-none focus:border-ink-accent transition-colors cursor-pointer"
                   required
                 >
                   <option value="">选择篇章...</option>
@@ -279,6 +357,11 @@ export default function Write() {
                     </option>
                   ))}
                 </select>
+                {arcs.length === 0 && !loadError && (
+                  <p className="text-xs text-ink-text-muted mt-1.5 font-sans">
+                    还没有篇章 — 请先使用「规划大纲」创建
+                  </p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -382,33 +465,6 @@ export default function Write() {
           {isRunning ? "执行中..." : "运行命令"}
         </button>
       </motion.form>
-
-      {/* Arc Reference */}
-      {arcs.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="bg-ink-card border border-ink-border rounded-xl p-5 mb-6"
-        >
-          <h3 className="font-serif text-base text-ink-text mb-3">
-            篇章列表
-          </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {arcs.map((arc) => (
-              <div
-                key={arc.name}
-                className="bg-ink-surface rounded-lg px-3 py-2 text-sm font-sans flex justify-between items-center"
-              >
-                <span className="text-ink-text">{arc.title || arc.name}</span>
-                <span className="text-xs text-ink-text-muted">
-                  {arc.chapter_range}
-                </span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
 
       {/* Input Prompt Bar */}
       {showInput && (

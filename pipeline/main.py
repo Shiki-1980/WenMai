@@ -98,7 +98,7 @@ def _word_count_guidance(num_chapters: int) -> str:
 
 def cmd_plan(args):
     """生成篇章大纲（卷规划）。"""
-    content_root, template_dir, vault_path = _get_paths()
+    content_root, template_dir, vault_path = _get_paths(getattr(args, 'novel', None))
     gen = LLMGenerator(str(CONFIG))
     reader = VaultReader(str(content_root))
     writer = VaultWriter(str(content_root), str(template_dir))
@@ -154,7 +154,13 @@ def cmd_plan(args):
     if num_chapters == 0:
         print("  (LLM 自行判断本卷章节数)")
     print()
-    outline = gen.generate_outline(prompt)
+    outline = gen.generate_outline(
+        prompt,
+        volume_number=volume,
+        words_per_chapter_guidance=words_guidance,
+        start_chapter=start_ch,
+        end_chapter=end_ch,
+    )
 
     # 从 LLM 输出解析实际章节范围
     actual_start, actual_end = _parse_chapter_range_from_outline(outline, start_ch, num_chapters)
@@ -914,25 +920,33 @@ def cmd_init(args):
     # ── Step 5: 生成第一卷大纲 ──
     print(f"\n[5/6] 生成第一卷大纲 ({args.chapters}章)...")
     arc_start, arc_end = 1, args.chapters
-    arc_name = f"arc_{arc_start:03d}_{arc_end:03d}"
+    arc_name = f"v01_{arc_start:03d}_{arc_end:03d}"
     arc_path = novel_path / "plot" / "arcs" / f"{arc_name}.md"
     if arc_path.exists() and not args.force:
         print(f"  -> {arc_name} 已存在，跳过")
     else:
         from prompts.generate_outline import OUTLINE_USER
-        outline_raw = gen.generate_outline(OUTLINE_USER.format(
-            main_plot=main_body[:2000], world_setting=world_body[:3000],
-            current_chapter=0, recent_summaries="（新小说，无历史章节）",
-            entity_states=reader.entity_state_summary(), active_plots="",
-            user_direction=args.desc, num_chapters=args.chapters,
-            start_chapter=arc_start, end_chapter=arc_end, words_per_chapter=4000,
-        ))
+        words_guidance = _word_count_guidance(args.chapters)
+        outline_raw = gen.generate_outline(
+            OUTLINE_USER.format(
+                main_plot=main_body[:2000], world_setting=world_body[:3000],
+                current_chapter=0, recent_summaries="（新小说，无历史章节）",
+                entity_states=reader.entity_state_summary(), active_plots="",
+                user_direction=args.desc, num_chapters_arg=args.chapters,
+                start_chapter=arc_start, volume_number=1,
+                words_per_chapter_guidance=words_guidance,
+            ),
+            volume_number=1,
+            words_per_chapter_guidance=words_guidance,
+            start_chapter=arc_start,
+            end_chapter=arc_end,
+        )
         if outline_raw:
             outline_raw = outline_raw.strip()
             if not outline_raw.startswith("---"):
                 all_names = sorted(name for _, name in reader.all_entity_names())
                 key_ents = "\n".join(f"  - \"[[{n}]]\"" for n in all_names)
-                outline_raw = f"---\ntype: arc\nstatus: planned\nchapter_range: \"{arc_start}-{arc_end}\"\ntitle: \"\"\nkey_entities:\n{key_ents}\nconstraints: \"\"\n---\n\n{outline_raw}"
+                outline_raw = f"---\ntype: arc\nstatus: planned\nvolume: 1\nchapter_range: \"{arc_start}-{arc_end}\"\ntitle: \"\"\nkey_entities:\n{key_ents}\nconstraints: \"\"\n---\n\n{outline_raw}"
             arc_path.parent.mkdir(parents=True, exist_ok=True)
             arc_path.write_text(outline_raw, "utf-8")
             print(f"  -> {arc_name} 已保存")
@@ -1346,6 +1360,7 @@ def _write_one_chapter(
     chapter_number: int,
     chapter_outline: str,
     word_count: int,
+    content_root: str = "",
 ):
     """写一章的完整流程（Agent 循环 + 工具检索）。"""
     print(f"\n{'='*40}")
@@ -1481,7 +1496,7 @@ def _write_one_chapter(
 
 def cmd_worldbuild(args):
     """基于主线 + 已有实体卡，让 LLM 生成「世界观.md」。"""
-    content_root, template_dir, vault_path = _get_paths()
+    content_root, template_dir, vault_path = _get_paths(getattr(args, 'novel', None))
     gen = LLMGenerator(str(CONFIG))
     reader = VaultReader(str(content_root))
     retriever = EntityRetriever(reader)
@@ -1644,6 +1659,7 @@ def cmd_write(args):
             reader, retriever, builder, gen, distiller, writer,
             arc_meta, arc_body, ch_num, outline,
             word_count=args.words,
+            content_root=str(content_root),
         )
 
         # ── 自动 enrich：每写 10 章后自动刷新实体卡 ──
@@ -1691,6 +1707,7 @@ def cmd_write_one(args):
         reader, retriever, builder, gen, distiller, writer,
         arc_meta, arc_body, ch_num, outline,
         word_count=args.words,
+        content_root=str(content_root),
     )
 
 
@@ -1762,7 +1779,7 @@ def cmd_distill(args):
 
 def cmd_status(args):
     """显示当前写作状态。"""
-    content_root, _, _ = _get_paths()
+    content_root, _, _ = _get_paths(getattr(args, 'novel', None))
     reader = VaultReader(str(content_root))
 
     # Schema 状态

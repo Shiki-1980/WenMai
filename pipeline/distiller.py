@@ -50,8 +50,10 @@ class ChapterDistiller:
             return DistillResult({}, degraded=False)
 
         # 阶段 2: Settler —— 输出 JSON delta（首次尝试）
+        # 传入 schema 的 override 约束，让 Settler 知道哪些字段必须用 append_description
+        override_hint = self._build_override_hint()
         delta = self.generator.settle(
-            observations, known_names, current_states
+            observations, known_names, current_states + override_hint
         )
         if not delta:
             return DistillResult({}, degraded=False)
@@ -77,7 +79,7 @@ class ChapterDistiller:
         print(f"    问题: {'; '.join(i.get('description', '')[:60] for i in issues)}")
 
         delta_retry = self.generator.settle(
-            observations, known_names, current_states,
+            observations, known_names, current_states + override_hint,
             retry_hint=_format_issues(issues),
         )
 
@@ -116,6 +118,37 @@ class ChapterDistiller:
             else:
                 lines.append(f"[{etype}] {name}: 无状态记录")
         return "\n".join(lines)
+
+    def _build_override_hint(self) -> str:
+        """从 novel_schema.json 读取 APPEND_ONLY / LOCKED 字段，告知 Settler。"""
+        from state_schema import NovelSchema
+        import json
+        schema_path = self.reader.root / "novel_schema.json"
+        if not schema_path.exists():
+            return ""
+        try:
+            schema = NovelSchema.load(self.reader.root)
+            if not schema:
+                return ""
+            locked = []
+            append_only = []
+            for etype in ["person", "item", "location", "concept"]:
+                for pred_name, pdef in schema.get_predicates(etype).items():
+                    ov = pdef.override.value if hasattr(pdef.override, 'value') else str(pdef.override)
+                    if ov == "locked":
+                        locked.append(f"{etype}.{pred_name}")
+                    elif ov == "append_only":
+                        append_only.append(f"{etype}.{pred_name}")
+            hint = ""
+            if append_only:
+                hint += f"\n\n## Schema 强制约束\n以下字段为 APPEND_ONLY，必须使用 action='append_description'，禁止使用 'change'：\n"
+                hint += "\n".join(f"- {f}" for f in append_only)
+            if locked:
+                hint += f"\n以下字段为 LOCKED，不可修改：\n"
+                hint += "\n".join(f"- {f}" for f in locked)
+            return hint
+        except Exception:
+            return ""
 
     def _get_old_state_snapshot(self) -> str:
         """获取旧状态快照（供 Validator 比较）。"""

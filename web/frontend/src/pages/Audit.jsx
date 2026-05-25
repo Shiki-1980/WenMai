@@ -1,7 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
-import { getAuditSummary } from "../lib/api";
+import { motion, AnimatePresence } from "framer-motion";
+import { getAuditSummary, getWorld, getMainPlot } from "../lib/api";
 import Terminal from "../components/Terminal";
+
+async function saveContent(endpoint, content) {
+  const res = await fetch(`/api${endpoint}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content }),
+  });
+  return res.json();
+}
 
 export default function Audit() {
   const [summary, setSummary] = useState(null);
@@ -10,6 +19,13 @@ export default function Audit() {
   const [target, setTarget] = useState("all");
   const [terminalLines, setTerminalLines] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
+
+  // Full content viewer
+  const [viewer, setViewer] = useState(null); // "world" | "main" | null
+  const [viewerContent, setViewerContent] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const loadSummary = async () => {
     try {
@@ -25,6 +41,42 @@ export default function Audit() {
   useEffect(() => {
     loadSummary();
   }, []);
+
+  const openViewer = async (type) => {
+    setViewer(type);
+    setIsEditing(false);
+    try {
+      const data = type === "world" ? await getWorld() : await getMainPlot();
+      setViewerContent(data.content || "");
+      setEditContent(data.content || "");
+    } catch {
+      setViewerContent("");
+      setEditContent("");
+    }
+  };
+
+  const closeViewer = () => {
+    setViewer(null);
+    setViewerContent("");
+    setEditContent("");
+    setIsEditing(false);
+  };
+
+  const handleSave = async () => {
+    if (!viewer) return;
+    setSaving(true);
+    try {
+      const endpoint = viewer === "world" ? "/world" : "/main-plot";
+      await saveContent(endpoint, editContent);
+      setViewerContent(editContent);
+      setIsEditing(false);
+      loadSummary();
+    } catch {
+      // silent
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const addLine = useCallback((text, type = "output") => {
     setTerminalLines((prev) => [...prev, { text, type }]);
@@ -74,7 +126,6 @@ export default function Audit() {
       addLine(`\n[ERROR] ${err.message}\n`, "error");
     } finally {
       setIsRunning(false);
-      // Reload summary after audit
       setTimeout(loadSummary, 1000);
     }
   };
@@ -104,35 +155,47 @@ export default function Audit() {
 
       {summary && (
         <>
-          {/* Summary Cards */}
+          {/* World & Main Plot cards — now clickable */}
           <div className="grid grid-cols-2 gap-4 mb-6">
-            <motion.div
+            <motion.button
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-ink-card border border-ink-border rounded-xl p-5"
+              onClick={() => openViewer("world")}
+              className="text-left bg-ink-card border border-ink-border rounded-xl p-5 hover:border-ink-accent/30 transition-colors cursor-pointer group"
             >
-              <h3 className="font-serif text-base text-ink-text mb-2">
-                世界观 {summary.world?.exists ? "✓" : "（缺失）"}
-              </h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-serif text-base text-ink-text">
+                  世界观 {summary.world?.exists ? "✓" : "（缺失）"}
+                </h3>
+                <span className="text-xs text-ink-text-muted opacity-0 group-hover:opacity-100 transition-opacity font-sans">
+                  点击查看全文 →
+                </span>
+              </div>
               <p className="text-xs text-ink-text-secondary font-sans leading-relaxed line-clamp-4">
                 {summary.world?.preview || "未生成"}
               </p>
-            </motion.div>
+            </motion.button>
 
-            <motion.div
+            <motion.button
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="bg-ink-card border border-ink-border rounded-xl p-5"
+              onClick={() => openViewer("main")}
+              className="text-left bg-ink-card border border-ink-border rounded-xl p-5 hover:border-ink-accent/30 transition-colors cursor-pointer group"
             >
-              <h3 className="font-serif text-base text-ink-text mb-2">
-                主线 {summary.main_plot?.exists ? "✓" : "（缺失）"}
-              </h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-serif text-base text-ink-text">
+                  主线 {summary.main_plot?.exists ? "✓" : "（缺失）"}
+                </h3>
+                <span className="text-xs text-ink-text-muted opacity-0 group-hover:opacity-100 transition-opacity font-sans">
+                  点击查看全文 →
+                </span>
+              </div>
               <p className="text-xs text-ink-text-secondary font-sans leading-relaxed line-clamp-4">
                 {summary.main_plot?.preview || "未生成"}
               </p>
-            </motion.div>
+            </motion.button>
           </div>
 
           {/* Entity Summary */}
@@ -192,9 +255,7 @@ export default function Audit() {
         transition={{ delay: 0.3 }}
         className="bg-ink-card border border-ink-border rounded-xl p-5 mb-6"
       >
-        <h3 className="font-serif text-base text-ink-text mb-4">
-          修订内容
-        </h3>
+        <h3 className="font-serif text-base text-ink-text mb-4">修订内容</h3>
         <div className="flex gap-2 mb-3">
           {[
             ["all", "全部"],
@@ -243,9 +304,7 @@ export default function Audit() {
         transition={{ delay: 0.35 }}
         className="bg-ink-card border border-ink-border rounded-xl p-5 mb-6"
       >
-        <h3 className="font-serif text-base text-ink-text mb-4">
-          维护命令
-        </h3>
+        <h3 className="font-serif text-base text-ink-text mb-4">维护命令</h3>
         <div className="flex gap-3">
           {[
             ["enrich", "补全实体卡"],
@@ -266,7 +325,9 @@ export default function Audit() {
                     headers: { "Content-Type": "application/json" },
                     body: "{}",
                   });
-                  if (res.headers.get("content-type")?.includes("text/event-stream")) {
+                  if (
+                    res.headers.get("content-type")?.includes("text/event-stream")
+                  ) {
                     const reader = res.body.getReader();
                     const decoder = new TextDecoder();
                     let buffer = "";
@@ -328,6 +389,101 @@ export default function Audit() {
           onClear={() => setTerminalLines([])}
         />
       </motion.div>
+
+      {/* Full Content Viewer Modal */}
+      <AnimatePresence>
+        {viewer && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeViewer}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-6 pointer-events-none"
+            >
+              <div className="pointer-events-auto bg-ink-card border border-ink-border rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl shadow-black/60 flex flex-col">
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-ink-border shrink-0">
+                  <h3 className="font-serif text-xl text-ink-text font-semibold">
+                    {viewer === "world" ? "世界观" : "主线"}
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    {!isEditing ? (
+                      <button
+                        onClick={() => {
+                          setEditContent(viewerContent);
+                          setIsEditing(true);
+                        }}
+                        className="px-3 py-1.5 text-xs font-sans rounded-lg bg-ink-surface border border-ink-border text-ink-text-secondary hover:text-ink-text transition-colors"
+                      >
+                        编辑
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={handleSave}
+                          disabled={saving}
+                          className="px-3 py-1.5 text-xs font-sans rounded-lg bg-ink-accent text-ink-bg hover:bg-ink-accent-hover transition-colors disabled:opacity-50"
+                        >
+                          {saving ? "保存中..." : "保存"}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditContent(viewerContent);
+                            setIsEditing(false);
+                          }}
+                          className="px-3 py-1.5 text-xs font-sans rounded-lg bg-ink-surface border border-ink-border text-ink-text-secondary hover:text-ink-text transition-colors"
+                        >
+                          取消
+                        </button>
+                      </>
+                    )}
+                    <button
+                      onClick={closeViewer}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg text-ink-text-muted hover:text-ink-text hover:bg-ink-surface transition-colors text-lg ml-1"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div className="overflow-y-auto px-6 py-5 flex-1">
+                  {isEditing ? (
+                    <textarea
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      className="w-full h-full min-h-[60vh] bg-ink-surface border border-ink-border rounded-lg px-4 py-3 text-sm text-ink-text font-sans leading-relaxed focus:outline-none focus:border-ink-accent transition-colors resize-none"
+                    />
+                  ) : (
+                    <div className="text-ink-text-secondary font-sans leading-relaxed whitespace-pre-wrap text-sm">
+                      {viewerContent || "（无内容）"}
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="px-6 py-3 border-t border-ink-border shrink-0 flex justify-between text-xs text-ink-text-muted font-sans">
+                  <span>
+                    {viewer === "world" ? "plot/世界观.md" : "plot/主线.md"}
+                  </span>
+                  <span>
+                    {viewerContent.length} 字
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -20,9 +20,14 @@ from state_schema import (
 LINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 
+# 非实体命名空间前缀（伏笔等不应被当作实体提取）
+_NON_ENTITY_PREFIXES = ("plot:",)
+
+
 def parse_links(text: str) -> list[str]:
-    """从文本中提取所有 [[双链]] 指向的实体名。"""
-    return [m.strip() for m in LINK_RE.findall(text)]
+    """从文本中提取所有 [[双链]] 指向的实体名，过滤掉 plot: 等非实体命名空间。"""
+    names = [m.strip() for m in LINK_RE.findall(text)]
+    return [n for n in names if not any(n.startswith(p) for p in _NON_ENTITY_PREFIXES)]
 
 
 def _combine_links(body: str, metadata: dict) -> list[str]:
