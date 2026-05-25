@@ -8,6 +8,17 @@ WenMai (文脉) is an automated Chinese web novel writing system combining Obsid
 
 ## Commands
 
+### Web UI (推荐)
+
+```bash
+# Start the web interface for visual novel management
+cd web/backend && pip install -r requirements.txt && python server.py &
+cd web/frontend && npm install && npm run dev
+# Open http://localhost:5173
+```
+
+### CLI
+
 ```bash
 cd pipeline
 

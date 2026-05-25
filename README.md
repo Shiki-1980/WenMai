@@ -81,64 +81,53 @@ generation:
 
 ## 完整使用流程
 
-### Step 1：创世 —— 手写初始设定
+网文分卷推进，每卷一个独立剧情单元。写完一卷后主角状态变了，基于最新状态规划下一卷。
 
-在 Obsidian 中打开 vault，创建三样东西（这是唯一需要手写的）：
+### Step 1：创世三要素（唯一需要手写的）
+
+在 Obsidian 中创建：
 
 ```
-novels/万古劫烬/plot/主线.md      ← 故事梗概 + 核心冲突 + 结局方向
+novels/万古劫烬/plot/世界观.md    ← 力量体系 + 世界铁律（模板：_templates/世界观.md）
 novels/万古劫烬/entity/person/    ← 主角卡（模板：_templates/person.md）
-novels/万古劫烬/entity/concept/   ← 至少一个世界观概念卡（修炼体系等）
+novels/万古劫烬/plot/主线.md      ← 一句话核心冲突 + 第一卷大致方向
 ```
 
-### Step 2：生成世界观
+### Step 2：规划第一卷
 
 ```bash
-python main.py worldbuild
+# 章节数让 LLM 自行判断（-n 0），或手动指定（-n 25）
+python main.py plan -v 1 -d "废柴逆袭，在青云宗站稳脚跟，参加外门大比" -n 0
+
+# 字数是弹性的：高潮章 4000-6000，过渡章 2500-3500，铺垫章 1500-2500
 ```
 
-基于主线 + 已有实体卡，LLM 自动生成 `plot/世界观.md`（8 个维度：力量体系、势力格局、世界地理、资源经济、历史传说、世界铁律、社会日常、神秘未知）。
+生成 `plot/arcs/v01_001_025.md`（卷号在前）+ 所有相关实体卡。
 
-以后每次世界观有变化，再跑一次即增量更新。
-
-### Step 3：生成篇章大纲
+### Step 3：审核大纲 → 写第一卷
 
 ```bash
-python main.py plan -d "陆沉离开青石镇前往北境，途中遭遇镇武司追杀，意外发现苍山血案的线索" -n 30
+python main.py write -a v01_001_025 -y
 ```
 
-这一步会：
-1. 生成 `plot/arcs/arc_001_030.md`（篇章大纲，含每章概要）
-2. 从大纲中提取所有实体 → LLM 批量分类 → 按重要程度生成实体卡
-   - **major**（主角/核心反派/关键地点）→ 完整模板卡片
-   - **supporting**（有戏份的配角）→ 简化卡
-   - **minor**（一章路人/背景板）→ stub 占位
-3. 扫描实体卡间的 `[[wikilink]]` 引用 → 缺失的建 stub
-4. 回写完整实体列表到 arc 的 `key_entities`
+每章自动蒸馏：保存正文、更新实体状态、管理伏笔。
 
-### Step 4：审核大纲
-
-去 Obsidian 打开 `plot/arcs/arc_001_030.md`，检查章节概要是否合理，不满意的手动调整。
-
-### Step 5：逐章写作
+### Step 4：第一卷完结 → 规划第二卷
 
 ```bash
-# 写完整个篇章
-python main.py write -a arc_001_030
-
-# 每章之间暂停确认 [Y/n/q]，加 -y 自动连续写
-python main.py write -a arc_001_030 -y
-
-# 强制重写已存在的章节
-python main.py write -a arc_001_030 -f -y
+# 此时主角修为、持有物品、人际关系已不同
+# LLM 基于最新实体状态生成更合理的大纲
+python main.py plan -v 2 -d "离开宗门，前往中州参加武道大会" -n 0
+python main.py write -a v02_030_060 -y
 ```
 
-断点续写：写了几章停了，再跑同一命令会自动跳过已有章节，从断点继续。
+### Step 5：定期维护
 
-每章完成后自动：
-- 保存正文 → `chapter/`
-- 蒸馏生成摘要 → `summary/`
-- 更新实体卡状态字段（修为变化、位置移动等）
+```bash
+python main.py enrich              # 增量刷新实体卡正文
+python main.py status              # 查看分卷进度
+python main.py audit               # LLM 审查一致性
+```
 - 更新倒排索引 → `index/`
 - 添加/回收伏笔 → `plot/伏笔池.md`
 

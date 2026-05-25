@@ -60,12 +60,53 @@ def _get_paths(novel_override: str | None = None):
     return content_root, template_dir, vault_path
 
 
+def _auto_detect_volume(reader) -> int:
+    """从已有 arc 自动检测下一卷号。"""
+    max_vol = 0
+    for arc_name in reader.list_arcs():
+        arc = reader.read_arc(arc_name)
+        if arc:
+            vol = arc[0].get("volume", 0)
+            if isinstance(vol, int) and vol > max_vol:
+                max_vol = vol
+    return max_vol + 1 if max_vol > 0 else 1
+
+
+def _parse_chapter_range_from_outline(outline: str, fallback_start: int, num_chapters: int) -> tuple[int, int]:
+    """从 LLM 输出中解析实际章节范围。LLM 自主决定章节数时使用。"""
+    import re
+    # 尝试从 frontmatter 或标题解析
+    m = re.search(r"chapter_range:\s*\"?(\d+)\s*[-–—]\s*(\d+)", outline)
+    if m:
+        return int(m.group(1)), int(m.group(2))
+    # 回退
+    if num_chapters <= 0:
+        num_chapters = 30
+    return fallback_start, fallback_start + num_chapters - 1
+
+
+def _word_count_guidance(num_chapters: int) -> str:
+    """生成弹性的每章字数指引。LLM 自行判断每章字数，高潮多写过渡少写。"""
+    return (
+        "字数根据剧情需要弹性调整，不要死板固定：\n"
+        "  - 高潮/转折章节：4000-6000 字\n"
+        "  - 推进/过渡章节：2500-3500 字\n"
+        "  - 铺垫/日常章节：1500-2500 字\n"
+        "LLM 自行判断每章的字数，不必每章统一。"
+    )
+
+
 def cmd_plan(args):
-    """生成篇章大纲。"""
+    """生成篇章大纲（卷规划）。"""
     content_root, template_dir, vault_path = _get_paths()
     gen = LLMGenerator(str(CONFIG))
     reader = VaultReader(str(content_root))
     writer = VaultWriter(str(content_root), str(template_dir))
+
+    # 自动检测卷号
+    volume = args.volume
+    if volume == 0:
+        volume = _auto_detect_volume(reader)
 
     # 收集上下文
     main_plot = reader.read_main_plot()
@@ -87,8 +128,13 @@ def cmd_plan(args):
 
     from prompts.generate_outline import OUTLINE_USER
 
+    # 章节数：用户指定 或 让 LLM 判断
+    num_chapters = args.num_chapters if args.num_chapters > 0 else 0  # 0 = LLM 决定
+
     start_ch = current_ch + 1
-    end_ch = start_ch + args.num_chapters - 1
+    end_ch = start_ch + (num_chapters - 1) if num_chapters > 0 else start_ch + 29  # placeholder
+
+    words_guidance = _word_count_guidance(num_chapters)
 
     prompt = OUTLINE_USER.format(
         main_plot=plot_body[:2000],
@@ -98,17 +144,27 @@ def cmd_plan(args):
         entity_states=entity_states,
         active_plots=active_plots[:1000],
         user_direction=args.direction,
-        num_chapters=args.num_chapters,
+        num_chapters_arg=num_chapters,
         start_chapter=start_ch,
-        end_chapter=end_ch,
-        words_per_chapter=3000,
+        words_per_chapter_guidance=words_guidance,
+        volume_number=volume,
     )
 
-    print("正在生成篇章大纲...\n")
+    print(f"正在生成第 {volume} 卷大纲...")
+    if num_chapters == 0:
+        print("  (LLM 自行判断本卷章节数)")
+    print()
     outline = gen.generate_outline(prompt)
 
+    # 从 LLM 输出解析实际章节范围
+    actual_start, actual_end = _parse_chapter_range_from_outline(outline, start_ch, num_chapters)
+    if num_chapters == 0:
+        num_chapters = actual_end - actual_start + 1
+
     # 写入文件
-    arc_name = args.name or f"arc_{start_ch:03d}_{end_ch:03d}"
+    ch_start = actual_start
+    ch_end = actual_end
+    arc_name = args.name or f"v{volume:02d}_{ch_start:03d}_{ch_end:03d}"
     path = writer.root / "plot" / "arcs" / f"{arc_name}.md"
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -119,8 +175,9 @@ def cmd_plan(args):
             "---\n"
             f"type: arc\n"
             f"status: planned\n"
-            f"chapter_range: \"{start_ch}-{end_ch}\"\n"
-            f"title: \"\"\n"
+            f"volume: {volume}\n"
+            f"title: \"第{volume}卷\"\n"
+            f"chapter_range: \"{ch_start}-{ch_end}\"\n"
             f"key_entities: []\n"
             f"constraints: \"\"\n"
             "---\n\n"
@@ -134,7 +191,7 @@ def cmd_plan(args):
 
     # 为 key_entities 中尚不存在的实体生成实体卡
     if args.entities:
-        _generate_entity_cards(gen, reader, writer, outline, start_ch, end_ch, template_dir)
+        _generate_entity_cards(gen, reader, writer, outline, ch_start, ch_end, template_dir)
         # 扫描卡片间的 [[wikilink]] 引用，缺失的建占位 stub
         _create_stubs_for_missing_links(reader, writer, template_dir)
         # 把完整实体列表回写到 arc frontmatter 的 key_entities
@@ -1753,29 +1810,46 @@ def cmd_status(args):
     if stub_count:
         print(f"\n  → 运行 `python main.py enrich` 补全 {stub_count} 个 stub 实体")
 
-    print(f"\n篇章大纲: {len(reader.list_arcs())} 个")
+    print(f"\n分卷进度:")
+    arcs = []
     for arc_name in reader.list_arcs():
         arc = reader.read_arc(arc_name)
         if arc:
-            meta, _ = arc
+            arcs.append((arc_name, arc[0], arc[1]))
+
+    # 按卷号分组
+    from itertools import groupby
+    arcs.sort(key=lambda x: x[1].get("volume", 0))
+    for vol, group in groupby(arcs, key=lambda x: x[1].get("volume", 0)):
+        group_list = list(group)
+        vol_done = 0
+        vol_total = 0
+        lines = []
+        for arc_name, meta, _ in group_list:
             cr = meta.get("chapter_range", "")
             title = meta.get("title", arc_name)
-            # 统计该 arc 已完成章节
             done = 0
-            total_chapters = 0
+            total = 0
             if cr:
                 parts = cr.split("-")
                 if len(parts) == 2:
                     try:
                         arc_start, arc_end = int(parts[0]), int(parts[1])
-                        total_chapters = arc_end - arc_start + 1
+                        total = arc_end - arc_start + 1
                         for ch in range(arc_start, arc_end + 1):
                             if reader.read_chapter(ch):
                                 done += 1
                     except ValueError:
                         pass
-            bar = _progress_bar(done, total_chapters) if total_chapters else ""
-            print(f"  {title}: {cr} | {done}/{total_chapters} {bar} [{meta.get('status', '?')}]")
+            vol_done += done
+            vol_total += total
+            bar = _progress_bar(done, total) if total else ""
+            lines.append(f"    {title}: {cr} | {done}/{total} {bar}")
+        vol_bar = _progress_bar(vol_done, vol_total, 24) if vol_total else ""
+        print(f"  第{vol}卷 | {vol_done}/{vol_total} {vol_bar}")
+        for line in lines:
+            print(line)
+        print()
 
     if total_ch > 0 and reader.list_arcs():
         print(f"\n  → 续写: `python main.py write -a <arc名>`")
@@ -1826,11 +1900,14 @@ def main():
     def _add_novel_arg(p):
         p.add_argument("--novel", "-N", help="小说名称（默认: config.yaml 中的活跃小说）")
 
-    p_plan = sub.add_parser("plan", help="生成篇章大纲")
+    p_plan = sub.add_parser("plan", help="生成篇章大纲（卷规划）")
     _add_novel_arg(p_plan)
-    p_plan.add_argument("--direction", "-d", required=True, help="接下来想写的大方向")
-    p_plan.add_argument("--num-chapters", "-n", type=int, default=30)
+    p_plan.add_argument("--direction", "-d", required=True, help="这一卷的大方向")
+    p_plan.add_argument("--num-chapters", "-n", type=int, default=0,
+                        help="章节数（0=让 LLM 自行判断合适的长度）")
     p_plan.add_argument("--name", help="篇章名称（可选）")
+    p_plan.add_argument("--volume", "-v", type=int, default=0,
+                        help="卷号（0=自动检测下一卷）")
     p_plan.add_argument("--entities", "-e", action="store_true", default=True,
                         help="同时生成实体卡（默认开启）")
 
