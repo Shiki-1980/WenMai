@@ -249,6 +249,7 @@ class AuditRequest(BaseModel):
     novel: str = ""
     revise: str = ""
     target: str = "all"
+    arc_name: str = ""
 
 
 class InputResponse(BaseModel):
@@ -257,6 +258,12 @@ class InputResponse(BaseModel):
 
 class ConfigUpdate(BaseModel):
     novel: str = ""
+    provider: str = ""
+    model: str = ""
+    api_base: str = ""
+    api_key: str = ""
+    max_tokens: int = 0
+    temperature: float = 0.0
 
 
 # ── Helper ───────────────────────────────────────────────────────────
@@ -311,6 +318,10 @@ def get_config():
         "active_novel": cfg["vault"].get("novel", ""),
         "provider": cfg["llm"]["provider"],
         "model": cfg["llm"]["model"],
+        "api_base": cfg["llm"].get("api_base", ""),
+        "api_key": cfg["llm"].get("api_key", ""),
+        "max_tokens": cfg["llm"].get("max_tokens", 16384),
+        "temperature": cfg["llm"].get("temperature", 0.8),
         "chapter_words": cfg["generation"]["chapter_words"],
     }
 
@@ -324,7 +335,19 @@ def update_config(body: ConfigUpdate):
         if not novel_path.exists():
             raise HTTPException(404, f"Novel not found: {body.novel}")
         cfg["vault"]["novel"] = body.novel
-        save_config(cfg)
+    if body.provider:
+        cfg["llm"]["provider"] = body.provider
+    if body.model:
+        cfg["llm"]["model"] = body.model
+    if body.api_base:
+        cfg["llm"]["api_base"] = body.api_base
+    if body.api_key:
+        cfg["llm"]["api_key"] = body.api_key
+    if body.max_tokens > 0:
+        cfg["llm"]["max_tokens"] = body.max_tokens
+    if body.temperature != 0.0:
+        cfg["llm"]["temperature"] = body.temperature
+    save_config(cfg)
     return {"ok": True}
 
 
@@ -515,7 +538,6 @@ def get_status(novel: str = ""):
 
     # World and plot status
     world = reader.read_world_bible()
-    main_plot = reader.read_main_plot()
     plot_pool = reader.read_plot_pool()
 
     return {
@@ -527,7 +549,7 @@ def get_status(novel: str = ""):
         "commit_count": store.commit_count(),
         "schema_version": schema.schema_version if schema else 0,
         "has_world": bool(world),
-        "has_main_plot": bool(main_plot),
+        "has_main_plot": False,  # main_plot removed, world-building now includes story setup
         "has_plot_pool": bool(plot_pool),
         "chapters": chapters,
         "arcs": arcs,
@@ -612,7 +634,6 @@ def get_audit_summary(novel: str = ""):
     reader = VaultReader(str(content_root))
 
     world = reader.read_world_bible()
-    main = reader.read_main_plot()
 
     entities = []
     for etype, name in reader.all_entity_names():
@@ -635,7 +656,7 @@ def get_audit_summary(novel: str = ""):
 
     return {
         "world": {"exists": bool(world), "preview": world[1][:500] if world else ""},
-        "main_plot": {"exists": bool(main), "preview": main[1][:500] if main else ""},
+        "main_plot": {"exists": False, "preview": ""},
         "entities": entities,
         "arcs": arcs,
     }
@@ -649,6 +670,7 @@ async def run_audit(body: AuditRequest, request: Request):
         novel=body.novel or None,
         revise=body.revise or None,
         target=body.target,
+        arc_name=body.arc_name,
     )
     task_id = f"audit_{int(time.time() * 1000)}"
     loop = asyncio.get_event_loop()
@@ -907,29 +929,14 @@ def update_world(body: WorldUpdate):
 
 @app.get("/api/main-plot")
 def read_main_plot(novel: str = ""):
-    cfg = load_config()
-    novel_rel = novel or cfg["vault"].get("novel", "")
-    content_root = VAULT_PATH / novel_rel
-    from reader import VaultReader
-    reader = VaultReader(str(content_root))
-
-    main = reader.read_main_plot()
-    if not main:
-        return {"exists": False, "content": ""}
-    meta, body = main
-    return {"exists": True, "title": meta.get("title", "主线"), "content": body, "meta": meta}
+    # 主线已移除，世界观现在包含故事开篇设定
+    return {"exists": False, "content": "", "deprecated": True}
 
 
 @app.put("/api/main-plot")
 def update_main_plot(body: WorldUpdate):
-    cfg = load_config()
-    novel_rel = body.novel or cfg["vault"].get("novel", "")
-    content_root = VAULT_PATH / novel_rel
-    plot_path = content_root / "plot" / "主线.md"
-    if not plot_path.exists():
-        raise HTTPException(404, "Main plot not found")
-    plot_path.write_text(body.content, "utf-8")
-    return {"ok": True}
+    # 主线已移除，请使用 /api/world-writing 更新世界观
+    return {"ok": True, "deprecated": True, "message": "主线已移除，请通过世界设定编辑故事开篇"}
 
 
 @app.get("/api/plot-pool")

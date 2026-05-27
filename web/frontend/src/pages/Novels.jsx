@@ -182,16 +182,26 @@ export default function Novels() {
                   <label className="block text-xs text-ink-text-secondary mb-1.5 font-sans">
                     题材
                   </label>
-                  <select
+                  <input
+                    type="text"
                     value={initGenre}
                     onChange={(e) => setInitGenre(e.target.value)}
+                    list="genre-suggestions"
                     className="w-full bg-ink-surface border border-ink-border rounded-lg px-3 py-2 text-sm text-ink-text font-sans focus:outline-none focus:border-ink-accent transition-colors"
-                  >
-                    <option value="xuanhuan">玄幻 (Xuan Huan)</option>
-                    <option value="xianxia">仙侠 (Xian Xia)</option>
-                    <option value="urban">都市 (Urban)</option>
-                    <option value="scifi">科幻 (Sci-Fi)</option>
-                  </select>
+                    placeholder="如：玄幻、仙侠、都市、科幻、悬疑..."
+                  />
+                  <datalist id="genre-suggestions">
+                    <option value="xuanhuan">玄幻 / Xuan Huan</option>
+                    <option value="xianxia">仙侠 / Xian Xia</option>
+                    <option value="urban">都市 / Urban</option>
+                    <option value="scifi">科幻 / Sci-Fi</option>
+                    <option value="suspense">悬疑 / Suspense</option>
+                    <option value="post-apocalyptic">末世 / Post-Apocalyptic</option>
+                    <option value="western-fantasy">西幻 / Western Fantasy</option>
+                    <option value="historical">历史 / Historical</option>
+                    <option value="infinite-stream">无限流 / Infinite Stream</option>
+                    <option value="light-novel">轻小说 / Light Novel</option>
+                  </datalist>
                 </div>
               </div>
               <div>

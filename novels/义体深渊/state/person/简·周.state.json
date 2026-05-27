@@ -1,0 +1,28 @@
+{
+  "entity": "简·周",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: - **[[苏医生]]**：[[神经丛林]]的非法义体医生。她在帮[[陆沉]]维修神经接口时，发现他的[[神经残留直觉]]并非疾病，而是一种可被训练的“[[后人类知觉]]”。她成为[[陆沉]]唯一的盟友，并在他几乎被[[幽灵协议]]摧毁时救活他。 - **[[简·周]]**：[[宙斯集团]]的[[金融派]]助理，实际上是[[晴空坠落]]的直接执行人。她出现在[[锈蚀深渊]]伪装成中介，试图说服[[",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

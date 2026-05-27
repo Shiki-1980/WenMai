@@ -1,0 +1,1312 @@
+[
+  {
+    "name": "第三次工业奇点",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "公元2199年，人类文明在[[第三次工业奇点]]后彻底重构。义体技术、神经接口、脑机交互达到巅峰，但一切技术都被资本垄断于少数[[巨企]]手中。由[[宙斯集团]]主导的[[铁幕都市]]是全球秩序的缩影：表面是璀璨的[[水晶穹顶]]，脚下是腐烂的[[锈蚀深渊]]。科技并未带来解放，反而将人性碾碎为可量化的数据流。一个名为[[记忆交割仪式]]的黑色产业让无数个体沦为资本的记忆燃料——故事正始于一名遭"
+  },
+  {
+    "name": "巨企",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 故事核心 一位原[[宙斯集团]]中层员工在经历“[[晴空坠落]]”——一场由内部权力清洗引发的[[神经链路污染]]——后，从[[钢骨走廊]]跌落至[[锈蚀深渊]]。在求生与复仇的螺旋中，他逐渐发现自己沦落并非意外，而是[[记忆交割仪式]]的终极牺牲品——被彻底抹除的人性正是[[巨企]]攀升[[第五阶层]]所需的最后燃料。他要夺回的不仅是阶层，更是被资本吞噬的“自我”。"
+  },
+  {
+    "name": "宙斯集团",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 故事核心 一位原[[宙斯集团]]中层员工在经历“[[晴空坠落]]”——一场由内部权力清洗引发的[[神经链路污染]]——后，从[[钢骨走廊]]跌落至[[锈蚀深渊]]。在求生与复仇的螺旋中，他逐渐发现自己沦落并非意外，而是[[记忆交割仪式]]的终极牺牲品——被彻底抹除的人性正是[[巨企]]攀升[[第五阶层]]所需的最后燃料。他要夺回的不仅是阶层，更是被资本吞噬的“自我”。"
+  },
+  {
+    "name": "铁幕都市",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 初始身份与处境 [[宙斯集团]]技术规划部副总监，[[三阶赛博格]]，改造率61%。拥有[[钢骨走廊]]C-7区的公寓与稳定[[信用评分]]，正准备完成第五次升阶评估。他以为自己是[[铁幕都市]]的精英，实则是[[记忆交割仪式]]的标准化零件。 ### 性格关键词"
+  },
+  {
+    "name": "水晶穹顶",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **[[简·周]]**：[[宙斯集团]]的[[金融派]]助理，实际上是[[晴空坠落]]的直接执行人。她出现在[[锈蚀深渊]]伪装成中介，试图说服[[陆沉]]签署一份“自愿抹除协议”，以换取“平静的死亡”。她代表着系统内部的无限妥协与罪恶。 3.  **关键转折点**：[[陆沉]]成功从[[数据坟场]]的“[[剥离协议V3.0]]”原始服务器中，分离出自己的[[记忆碎片]]——全息影像显示，他的"
+  },
+  {
+    "name": "锈蚀深渊",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 故事核心 一位原[[宙斯集团]]中层员工在经历“[[晴空坠落]]”——一场由内部权力清洗引发的[[神经链路污染]]——后，从[[钢骨走廊]]跌落至[[锈蚀深渊]]。在求生与复仇的螺旋中，他逐渐发现自己沦落并非意外，而是[[记忆交割仪式]]的终极牺牲品——被彻底抹除的人性正是[[巨企]]攀升[[第五阶层]]所需的最后燃料。他要夺回的不仅是阶层，更是被资本吞噬的“自我”。"
+  },
+  {
+    "name": "记忆交割仪式",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 故事核心 一位原[[宙斯集团]]中层员工在经历“[[晴空坠落]]”——一场由内部权力清洗引发的[[神经链路污染]]——后，从[[钢骨走廊]]跌落至[[锈蚀深渊]]。在求生与复仇的螺旋中，他逐渐发现自己沦落并非意外，而是[[记忆交割仪式]]的终极牺牲品——被彻底抹除的人性正是[[巨企]]攀升[[第五阶层]]所需的最后燃料。他要夺回的不仅是阶层，更是被资本吞噬的“自我”。"
+  },
+  {
+    "name": "神经链路污染",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 故事核心 一位原[[宙斯集团]]中层员工在经历“[[晴空坠落]]”——一场由内部权力清洗引发的[[神经链路污染]]——后，从[[钢骨走廊]]跌落至[[锈蚀深渊]]。在求生与复仇的螺旋中，他逐渐发现自己沦落并非意外，而是[[记忆交割仪式]]的终极牺牲品——被彻底抹除的人性正是[[巨企]]攀升[[第五阶层]]所需的最后燃料。他要夺回的不仅是阶层，更是被资本吞噬的“自我”。"
+  },
+  {
+    "name": "义体进化序列",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 世界观关键元素 - [[力量体系]]：[[义体进化序列]]、[[阶位]]的社会压迫差异、[[排异抑制剂]]的垄断性依赖。 - [[地理]]：[[铁幕都市]]的四层社会带（[[水晶穹顶]] - [[钢骨走廊]] - [[锈蚀深渊]] - [[数据坟场]]）及其物质、精神象征意义。"
+  },
+  {
+    "name": "神经-机械共生",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "力量的本质是对[[神经-机械共生]]的深度掌控。经过改造后，个体通过[[神经接口核心]]与[[数据云]]连接，获得超人的物理/信息能力。全序列共 **6 阶**，由[[宙斯集团]]旗下的[[义体评级局]]颁布标准。"
+  },
+  {
+    "name": "神经接口核心",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "力量的本质是对[[神经-机械共生]]的深度掌控。经过改造后，个体通过[[神经接口核心]]与[[数据云]]连接，获得超人的物理/信息能力。全序列共 **6 阶**，由[[宙斯集团]]旗下的[[义体评级局]]颁布标准。"
+  },
+  {
+    "name": "数据云",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "力量的本质是对[[神经-机械共生]]的深度掌控。经过改造后，个体通过[[神经接口核心]]与[[数据云]]连接，获得超人的物理/信息能力。全序列共 **6 阶**，由[[宙斯集团]]旗下的[[义体评级局]]颁布标准。"
+  },
+  {
+    "name": "义体评级局",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "力量的本质是对[[神经-机械共生]]的深度掌控。经过改造后，个体通过[[神经接口核心]]与[[数据云]]连接，获得超人的物理/信息能力。全序列共 **6 阶**，由[[宙斯集团]]旗下的[[义体评级局]]颁布标准。"
+  },
+  {
+    "name": "零阶人",
+    "type": "person",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 性格关键词 理性、克制、习惯性服从系统规则。表面温和，拥有严重的自我异化倾向——他早已将“成功”等同于最大化数据贡献。内心深处存在被压抑的父辈记忆碎片（一个曾参与[[数据坟场]]抗议的[[零阶人]]父亲），而这段记忆在[[神经链路污染]]后被异常激活。 ### 核心动机"
+  },
+  {
+    "name": "神经污染",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "|------|------|----------| | [[零阶人]] | 天然体 | 无任何义体植入，仅依靠生物肉体。最大优势：对[[神经污染]]免疫，但力量与寿命极度受限。常被视为“原始牲口”。 | | [[一阶义体者]] | 单挂件 | 植入 1-2 件低端义体（如[[机械义眼]]、[[皮下通讯芯片]]）。改造率 ≤15%。可进行基础数据交互，但无法接入[[深层数据流]]。 |"
+  },
+  {
+    "name": "一阶义体者",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[零阶人]] | 天然体 | 无任何义体植入，仅依靠生物肉体。最大优势：对[[神经污染]]免疫，但力量与寿命极度受限。常被视为“原始牲口”。 | | [[一阶义体者]] | 单挂件 | 植入 1-2 件低端义体（如[[机械义眼]]、[[皮下通讯芯片]]）。改造率 ≤15%。可进行基础数据交互，但无法接入[[深层数据流]]。 | | [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体"
+  },
+  {
+    "name": "机械义眼",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[零阶人]] | 天然体 | 无任何义体植入，仅依靠生物肉体。最大优势：对[[神经污染]]免疫，但力量与寿命极度受限。常被视为“原始牲口”。 | | [[一阶义体者]] | 单挂件 | 植入 1-2 件低端义体（如[[机械义眼]]、[[皮下通讯芯片]]）。改造率 ≤15%。可进行基础数据交互，但无法接入[[深层数据流]]。 | | [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体"
+  },
+  {
+    "name": "皮下通讯芯片",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[零阶人]] | 天然体 | 无任何义体植入，仅依靠生物肉体。最大优势：对[[神经污染]]免疫，但力量与寿命极度受限。常被视为“原始牲口”。 | | [[一阶义体者]] | 单挂件 | 植入 1-2 件低端义体（如[[机械义眼]]、[[皮下通讯芯片]]）。改造率 ≤15%。可进行基础数据交互，但无法接入[[深层数据流]]。 | | [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体"
+  },
+  {
+    "name": "深层数据流",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[零阶人]] | 天然体 | 无任何义体植入，仅依靠生物肉体。最大优势：对[[神经污染]]免疫，但力量与寿命极度受限。常被视为“原始牲口”。 | | [[一阶义体者]] | 单挂件 | 植入 1-2 件低端义体（如[[机械义眼]]、[[皮下通讯芯片]]）。改造率 ≤15%。可进行基础数据交互，但无法接入[[深层数据流]]。 | | [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体"
+  },
+  {
+    "name": "二阶改造人",
+    "type": "person",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[一阶义体者]] | 单挂件 | 植入 1-2 件低端义体（如[[机械义眼]]、[[皮下通讯芯片]]）。改造率 ≤15%。可进行基础数据交互，但无法接入[[深层数据流]]。 | | [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体，改造率 15%-35%。可启用[[]低阶神经加速]]，反应速度提升 2 倍，并能运行[[初级战斗协议]]。 | | [[三阶赛博格]] | 合金骨骼"
+  },
+  {
+    "name": "初级战斗协议",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[一阶义体者]] | 单挂件 | 植入 1-2 件低端义体（如[[机械义眼]]、[[皮下通讯芯片]]）。改造率 ≤15%。可进行基础数据交互，但无法接入[[深层数据流]]。 | | [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体，改造率 15%-35%。可启用[[]低阶神经加速]]，反应速度提升 2 倍，并能运行[[初级战斗协议]]。 | | [[三阶赛博格]] | 合金骨骼"
+  },
+  {
+    "name": "三阶赛博格",
+    "type": "person",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 初始身份与处境 [[宙斯集团]]技术规划部副总监，[[三阶赛博格]]，改造率61%。拥有[[钢骨走廊]]C-7区的公寓与稳定[[信用评分]]，正准备完成第五次升阶评估。他以为自己是[[铁幕都市]]的精英，实则是[[记忆交割仪式]]的标准化零件。 ### 性格关键词"
+  },
+  {
+    "name": "纳米合金",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体，改造率 15%-35%。可启用[[]低阶神经加速]]，反应速度提升 2 倍，并能运行[[初级战斗协议]]。 | | [[三阶赛博格]] | 合金骨骼 | 改造率 35%-65%，核心骨骼与主要器官均替换为[[纳米合金]]。拥有[[局部数据超频]]能力，可短时间免疫[[数据震慑]]。 | | [[四阶神经链接者]] | 云端之脑 |"
+  },
+  {
+    "name": "局部数据超频",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体，改造率 15%-35%。可启用[[]低阶神经加速]]，反应速度提升 2 倍，并能运行[[初级战斗协议]]。 | | [[三阶赛博格]] | 合金骨骼 | 改造率 35%-65%，核心骨骼与主要器官均替换为[[纳米合金]]。拥有[[局部数据超频]]能力，可短时间免疫[[数据震慑]]。 | | [[四阶神经链接者]] | 云端之脑 |"
+  },
+  {
+    "name": "数据震慑",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体，改造率 15%-35%。可启用[[]低阶神经加速]]，反应速度提升 2 倍，并能运行[[初级战斗协议]]。 | | [[三阶赛博格]] | 合金骨骼 | 改造率 35%-65%，核心骨骼与主要器官均替换为[[纳米合金]]。拥有[[局部数据超频]]能力，可短时间免疫[[数据震慑]]。 | | [[四阶神经链接者]] | 云端之脑 |"
+  },
+  {
+    "name": "四阶神经链接者",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "2.  **盟友与敌人**： - **[[灰鼠]]**：[[底层回收者]]领袖，曾是一位[[四阶神经链接者]]，因拒绝参与[[记忆交割仪式]]被[ [宙斯集团]]切断了[[排异抑制剂]]供应而退化。他提供资源与情报，但他的动机并非纯粹的正义——他想利用[[陆沉]]的记忆证据勒索集团，换取离开[[锈蚀深渊]]的“[[天梯票]]”。 - **[[苏医生]]**：[[神经丛林]]的非法义体医生。她在帮["
+  },
+  {
+    "name": "量子神经桥",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 独特能力/天赋 - [[神经残留直觉]] 在[[晴空坠落]]事件中，一股异常数据流熔毁了他的部分[[量子神经桥]]，却意外激活了一种生物-机械混合的直觉：他能“嗅”到一段电子信号背后的“人类情绪残留”——比如能从广告代码中感到绝望，从[[底层回收者]]的旧义体中读取残留的、未经信用的“渴望”。这能力被官方诊断为“[[神经精神病]]”，但正是他看穿巨企谎言的本钱。"
+  },
+  {
+    "name": "宙斯主脑",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **初始状态**：[[陆沉]]正在协助[[宙斯集团]]研发“[[剥离协议V3.0]]”——一种更高效的[[记忆交割仪式]]，能将人类记忆转化为可量化的“[[情感数据包]]”。他对此引以为傲，并相信这是人类社会“进化”的必经之路。 - **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久"
+  },
+  {
+    "name": "数据池",
+    "type": "location",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[三阶赛博格]] | 合金骨骼 | 改造率 35%-65%，核心骨骼与主要器官均替换为[[纳米合金]]。拥有[[局部数据超频]]能力，可短时间免疫[[数据震慑]]。 | | [[四阶神经链接者]] | 云端之脑 | 改造率 65%-90%，脑部植入[[量子神经桥]]，能够直接与[[宙斯主脑]]或本地[[数据池]]进行[[无延迟同步]]。可同时操作数百个[[虚拟化身]]。 | | [[五阶意识"
+  },
+  {
+    "name": "无延迟同步",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[三阶赛博格]] | 合金骨骼 | 改造率 35%-65%，核心骨骼与主要器官均替换为[[纳米合金]]。拥有[[局部数据超频]]能力，可短时间免疫[[数据震慑]]。 | | [[四阶神经链接者]] | 云端之脑 | 改造率 65%-90%，脑部植入[[量子神经桥]]，能够直接与[[宙斯主脑]]或本地[[数据池]]进行[[无延迟同步]]。可同时操作数百个[[虚拟化身]]。 | | [[五阶意识"
+  },
+  {
+    "name": "虚拟化身",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[三阶赛博格]] | 合金骨骼 | 改造率 35%-65%，核心骨骼与主要器官均替换为[[纳米合金]]。拥有[[局部数据超频]]能力，可短时间免疫[[数据震慑]]。 | | [[四阶神经链接者]] | 云端之脑 | 改造率 65%-90%，脑部植入[[量子神经桥]]，能够直接与[[宙斯主脑]]或本地[[数据池]]进行[[无延迟同步]]。可同时操作数百个[[虚拟化身]]。 | | [[五阶意识"
+  },
+  {
+    "name": "五阶意识体",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- 阶级vs阶级：[[锈蚀深渊]]的底层回收者们（[[灰鼠]]）与[[钢骨走廊]]的受管理者之间的压迫与反叛。 - 新神vs旧人：[[五阶意识体]]（试图主宰现实）与[[零阶人]]（代表生物本能与情感）的对立。"
+  },
+  {
+    "name": "意识上载",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[四阶神经链接者]] | 云端之脑 | 改造率 65%-90%，脑部植入[[量子神经桥]]，能够直接与[[宙斯主脑]]或本地[[数据池]]进行[[无延迟同步]]。可同时操作数百个[[虚拟化身]]。 | | [[五阶意识体]] | 数字幽灵 | 改造率 >90%，仅保留少量原生脑组织，通过[[意识上载]]脱离肉体，以[[量子态]]存在于[[核心服务器]]中。理论上永生，但需消耗巨额[[信用点数"
+  },
+  {
+    "name": "量子态",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[四阶神经链接者]] | 云端之脑 | 改造率 65%-90%，脑部植入[[量子神经桥]]，能够直接与[[宙斯主脑]]或本地[[数据池]]进行[[无延迟同步]]。可同时操作数百个[[虚拟化身]]。 | | [[五阶意识体]] | 数字幽灵 | 改造率 >90%，仅保留少量原生脑组织，通过[[意识上载]]脱离肉体，以[[量子态]]存在于[[核心服务器]]中。理论上永生，但需消耗巨额[[信用点数"
+  },
+  {
+    "name": "核心服务器",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[四阶神经链接者]] | 云端之脑 | 改造率 65%-90%，脑部植入[[量子神经桥]]，能够直接与[[宙斯主脑]]或本地[[数据池]]进行[[无延迟同步]]。可同时操作数百个[[虚拟化身]]。 | | [[五阶意识体]] | 数字幽灵 | 改造率 >90%，仅保留少量原生脑组织，通过[[意识上载]]脱离肉体，以[[量子态]]存在于[[核心服务器]]中。理论上永生，但需消耗巨额[[信用点数"
+  },
+  {
+    "name": "信用点数",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **初始状态**：[[陆沉]]正在协助[[宙斯集团]]研发“[[剥离协议V3.0]]”——一种更高效的[[记忆交割仪式]]，能将人类记忆转化为可量化的“[[情感数据包]]”。他对此引以为傲，并相信这是人类社会“进化”的必经之路。 - **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久"
+  },
+  {
+    "name": "排异抑制剂",
+    "type": "item",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "2.  **盟友与敌人**： - **[[灰鼠]]**：[[底层回收者]]领袖，曾是一位[[四阶神经链接者]]，因拒绝参与[[记忆交割仪式]]被[ [宙斯集团]]切断了[[排异抑制剂]]供应而退化。他提供资源与情报，但他的动机并非纯粹的正义——他想利用[[陆沉]]的记忆证据勒索集团，换取离开[[锈蚀深渊]]的“[[天梯票]]”。 - **[[苏医生]]**：[[神经丛林]]的非法义体医生。她在帮["
+  },
+  {
+    "name": "义体排异定律",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "**注：** 改造率超过 35% 后，必须定期注射[[排异抑制剂]]（由巨企垄断生产），否则会触发[[义体排异定律]]——神经熔毁，最终化为[[信息腐肉]]。"
+  },
+  {
+    "name": "信息腐肉",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **初始状态**：[[陆沉]]正在协助[[宙斯集团]]研发“[[剥离协议V3.0]]”——一种更高效的[[记忆交割仪式]]，能将人类记忆转化为可量化的“[[情感数据包]]”。他对此引以为傲，并相信这是人类社会“进化”的必经之路。 - **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久"
+  },
+  {
+    "name": "穹顶结构",
+    "type": "location",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "城市是一个直径 800 公里的巨型[[穹顶结构]]，分为四层社会带："
+  },
+  {
+    "name": "顶级投资人",
+    "type": "person",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 悬浮于 500 米高空的透明反重力环带。 - 居民：巨企高管、[[五阶意识体]]、[[顶级投资人]]。 - 特征：空气净化率 99.9%，温度恒定 22°C；居民可通过[[意识直连]]享受虚拟天堂；食品由[[纳米合成厨房]]定制；天空是投影的“永恒蓝天”。"
+  },
+  {
+    "name": "意识直连",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 居民：巨企高管、[[五阶意识体]]、[[顶级投资人]]。 - 特征：空气净化率 99.9%，温度恒定 22°C；居民可通过[[意识直连]]享受虚拟天堂；食品由[[纳米合成厨房]]定制；天空是投影的“永恒蓝天”。 - 地标：[[宙斯之眼]]（集团全球数据控制中心）、[[天梯站]]（唯一的物理连接通道）。"
+  },
+  {
+    "name": "纳米合成厨房",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 居民：巨企高管、[[五阶意识体]]、[[顶级投资人]]。 - 特征：空气净化率 99.9%，温度恒定 22°C；居民可通过[[意识直连]]享受虚拟天堂；食品由[[纳米合成厨房]]定制；天空是投影的“永恒蓝天”。 - 地标：[[宙斯之眼]]（集团全球数据控制中心）、[[天梯站]]（唯一的物理连接通道）。"
+  },
+  {
+    "name": "宙斯之眼",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **最终对决**：[[宙斯集团]]为了消抹一切证据，决定将所有承载“[[剥离协议V3.0]]”记忆的服务器物理销毁——包括[[陆沉]]本人。他们派遣[[隐身巡警]]部队与一台“[[收割者]]”级自动机械（5阶机械体）突袭[[神经丛林]]。[[苏医生]]在掩护中战死，[[灰鼠]]在最后关头因愧疚而反水，用自己的旧义体引爆“[[收割者]]”的核心。 - **核心谜底揭晓**：[[陆沉]]在最后一刻"
+  },
+  {
+    "name": "天梯站",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- [[地理]]：[[铁幕都市]]的四层社会带（[[水晶穹顶]] - [[钢骨走廊]] - [[锈蚀深渊]] - [[数据坟场]]）及其物质、精神象征意义。 - [[势力格局]]：[[宙斯集团]]的内部派系（[[技术派]]、[[金融派]]、[[安保派]]）之间的暗战，[[底层回收者]]的生存法则，[[天梯站]]的唯一向上通道。 - [[核心概念]]："
+  },
+  {
+    "name": "钢骨走廊",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 故事核心 一位原[[宙斯集团]]中层员工在经历“[[晴空坠落]]”——一场由内部权力清洗引发的[[神经链路污染]]——后，从[[钢骨走廊]]跌落至[[锈蚀深渊]]。在求生与复仇的螺旋中，他逐渐发现自己沦落并非意外，而是[[记忆交割仪式]]的终极牺牲品——被彻底抹除的人性正是[[巨企]]攀升[[第五阶层]]所需的最后燃料。他要夺回的不仅是阶层，更是被资本吞噬的“自我”。"
+  },
+  {
+    "name": "立体交通网络",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 居民：企业中层、技术核心、[[二阶改造人]]及[[三阶赛博格]]。 - 特征：密集的[[立体交通网络]]，24 小时不熄的霓虹广告屏；每个社区都有[[信用监测站]]；居住条件按[[资本信用评分]]分配。 - 地标：[[义体保障局]]（改造审批与评级机构）、[[数据交易所]]（非法的记忆交易黑市）。"
+  },
+  {
+    "name": "信用监测站",
+    "type": "location",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 居民：企业中层、技术核心、[[二阶改造人]]及[[三阶赛博格]]。 - 特征：密集的[[立体交通网络]]，24 小时不熄的霓虹广告屏；每个社区都有[[信用监测站]]；居住条件按[[资本信用评分]]分配。 - 地标：[[义体保障局]]（改造审批与评级机构）、[[数据交易所]]（非法的记忆交易黑市）。"
+  },
+  {
+    "name": "资本信用评分",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 居民：企业中层、技术核心、[[二阶改造人]]及[[三阶赛博格]]。 - 特征：密集的[[立体交通网络]]，24 小时不熄的霓虹广告屏；每个社区都有[[信用监测站]]；居住条件按[[资本信用评分]]分配。 - 地标：[[义体保障局]]（改造审批与评级机构）、[[数据交易所]]（非法的记忆交易黑市）。"
+  },
+  {
+    "name": "义体保障局",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 特征：密集的[[立体交通网络]]，24 小时不熄的霓虹广告屏；每个社区都有[[信用监测站]]；居住条件按[[资本信用评分]]分配。 - 地标：[[义体保障局]]（改造审批与评级机构）、[[数据交易所]]（非法的记忆交易黑市）。"
+  },
+  {
+    "name": "数据交易所",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 特征：密集的[[立体交通网络]]，24 小时不熄的霓虹广告屏；每个社区都有[[信用监测站]]；居住条件按[[资本信用评分]]分配。 - 地标：[[义体保障局]]（改造审批与评级机构）、[[数据交易所]]（非法的记忆交易黑市）。"
+  },
+  {
+    "name": "纳米粉尘",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 居民：破产者、[[零阶人]]、[[一阶义体者]]、逃犯、黑客、回收者。 - 特征：空气中弥漫[[纳米粉尘]]与[[义体废油]]气味；电力供应极不稳定；污水横流，犯罪率 100%；[[宙斯集团]]在此设置[[垃圾投放口]]，将巨企淘汰的义体零件倾倒而下，形成[[数据坟场]]。 - 地标：[[神经丛林]]（非法黑客聚集地，由废弃服务器与临时搭建的通信塔构成）、[[食腐者酒吧]]（底层信息交换中心）"
+  },
+  {
+    "name": "义体废油",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 居民：破产者、[[零阶人]]、[[一阶义体者]]、逃犯、黑客、回收者。 - 特征：空气中弥漫[[纳米粉尘]]与[[义体废油]]气味；电力供应极不稳定；污水横流，犯罪率 100%；[[宙斯集团]]在此设置[[垃圾投放口]]，将巨企淘汰的义体零件倾倒而下，形成[[数据坟场]]。 - 地标：[[神经丛林]]（非法黑客聚集地，由废弃服务器与临时搭建的通信塔构成）、[[食腐者酒吧]]（底层信息交换中心）"
+  },
+  {
+    "name": "垃圾投放口",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **初始状态**：[[陆沉]]正在协助[[宙斯集团]]研发“[[剥离协议V3.0]]”——一种更高效的[[记忆交割仪式]]，能将人类记忆转化为可量化的“[[情感数据包]]”。他对此引以为傲，并相信这是人类社会“进化”的必经之路。 - **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久"
+  },
+  {
+    "name": "数据坟场",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 性格关键词 理性、克制、习惯性服从系统规则。表面温和，拥有严重的自我异化倾向——他早已将“成功”等同于最大化数据贡献。内心深处存在被压抑的父辈记忆碎片（一个曾参与[[数据坟场]]抗议的[[零阶人]]父亲），而这段记忆在[[神经链路污染]]后被异常激活。 ### 核心动机"
+  },
+  {
+    "name": "神经丛林",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **[[灰鼠]]**：[[底层回收者]]领袖，曾是一位[[四阶神经链接者]]，因拒绝参与[[记忆交割仪式]]被[ [宙斯集团]]切断了[[排异抑制剂]]供应而退化。他提供资源与情报，但他的动机并非纯粹的正义——他想利用[[陆沉]]的记忆证据勒索集团，换取离开[[锈蚀深渊]]的“[[天梯票]]”。 - **[[苏医生]]**：[[神经丛林]]的非法义体医生。她在帮[[陆沉]]维修神经接口时，发现"
+  },
+  {
+    "name": "食腐者酒吧",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久算力]]），发动了信息清洗。他们伪装成意外的[[神经链路污染]]，将污点导向[[技术派]]的棋子，[[陆沉]]被精准标记。他的神经接口被强行注入一个“黑洞文件”，瞬间切断了所有[[信用点数]]、身份权限与房屋授权。他被安保程序当作“["
+  },
+  {
+    "name": "意识残次品",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 4. [[数据坟场]]（隔离区） - 地下 200 米以下，是义体废弃物、受损[[量子神经桥]]以及[[意识残次品]]的最终归宿。 - 被[[宙斯集团]]严格封锁，只有[[回收者工会]]的正式成员才能进入。"
+  },
+  {
+    "name": "回收者工会",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 地下 200 米以下，是义体废弃物、受损[[量子神经桥]]以及[[意识残次品]]的最终归宿。 - 被[[宙斯集团]]严格封锁，只有[[回收者工会]]的正式成员才能进入。 - 传说存在[[神话级]# [赛博纪元：铁幕都市] # 世界观设定文档"
+  },
+  {
+    "name": "低阶神经加速",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "| [[一阶义体者]] | 单挂件 | 植入 1-2 件低端义体（如[[机械义眼]]、[[皮下通讯芯片]]）。改造率 ≤15%。只能接入基础数据流。 | | [[二阶改造人]] | 半金属 | 3-5 件主流义体，改造率 15%-35%。可启用[[低阶神经加速]]，反应速度翻倍。可运行[[初级战斗协议]]。 | | [[三阶赛博格]] | 合金骨骼 | 改造率 35%-65%，核心骨骼与器官替换为"
+  },
+  {
+    "name": "坟场之魂",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 被[[宙斯集团]]武力封锁，只有[[回收者工会]]可进入。 - 传说存在不依赖[[排异抑制剂]]而存活的神秘生物，被称为[[坟场之魂]]。"
+  },
+  {
+    "name": "技术派",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **初始状态**：[[陆沉]]正在协助[[宙斯集团]]研发“[[剥离协议V3.0]]”——一种更高效的[[记忆交割仪式]]，能将人类记忆转化为可量化的“[[情感数据包]]”。他对此引以为傲，并相信这是人类社会“进化”的必经之路。 - **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久"
+  },
+  {
+    "name": "金融派",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **初始状态**：[[陆沉]]正在协助[[宙斯集团]]研发“[[剥离协议V3.0]]”——一种更高效的[[记忆交割仪式]]，能将人类记忆转化为可量化的“[[情感数据包]]”。他对此引以为傲，并相信这是人类社会“进化”的必经之路。 - **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久"
+  },
+  {
+    "name": "安保派",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **主要冲突升级**： 1.  **追寻真相**：[[陆沉]]与[[灰鼠]]的团队合作，潜入[[数据坟场]]的禁入区，寻找被[[宙斯集团]]丢弃的“[[剥离协议V3.0]]”原始服务器。他们遭遇[[宙斯集团]]的[[安保派]]精锐——[[隐形巡警]]（装备[[光学迷彩]]与[[神经飞镖]]）的追杀。 2.  **盟友与敌人**："
+  },
+  {
+    "name": "终身契约",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 内部派系：[[技术派]]（追求极限改造）、[[金融派]]（专注信用剥削）、[[安保派]]（维护社会秩序）。 - 对内部员工实行[[终身契约]]制——通过[[记忆交割仪式]]将员工的所有记忆进行“商业备份”，成为集团数据资产。"
+  },
+  {
+    "name": "底层回收者",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 独特能力/天赋 - [[神经残留直觉]] 在[[晴空坠落]]事件中，一股异常数据流熔毁了他的部分[[量子神经桥]]，却意外激活了一种生物-机械混合的直觉：他能“嗅”到一段电子信号背后的“人类情绪残留”——比如能从广告代码中感到绝望，从[[底层回收者]]的旧义体中读取残留的、未经信用的“渴望”。这能力被官方诊断为“[[神经精神病]]”，但正是他看穿巨企谎言的本钱。"
+  },
+  {
+    "name": "灰鼠",
+    "type": "person",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久算力]]），发动了信息清洗。他们伪装成意外的[[神经链路污染]]，将污点导向[[技术派]]的棋子，[[陆沉]]被精准标记。他的神经接口被强行注入一个“黑洞文件”，瞬间切断了所有[[信用点数]]、身份权限与房屋授权。他被安保程序当作“["
+  },
+  {
+    "name": "记忆晶片",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 由[[锈蚀深渊]]的拾荒者组成，领袖是[[灰鼠]]（原名不详）。 - 主要业务：从[[数据坟场]]偷取义体零件、走私[[排异抑制剂]]代用品、盗窃[[记忆晶片]]。 - 与[[自由黑客联盟]]有隐蔽合作。"
+  },
+  {
+    "name": "自由黑客联盟",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 主要业务：从[[数据坟场]]偷取义体零件、走私[[排异抑制剂]]代用品、盗窃[[记忆晶片]]。 - 与[[自由黑客联盟]]有隐蔽合作。"
+  },
+  {
+    "name": "解码者·零",
+    "type": "person",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 分散在[[神经丛林]]，核心成员为前[[宙斯集团]]技术人员。 - 精神领袖：[[解码者·零]]，自称是[[五阶意识体]]的叛逃者。 - 目标：破解[[宙斯主脑]]的[[读写锁]]，解放被资本控制的[[数据云]]。"
+  },
+  {
+    "name": "读写锁",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 精神领袖：[[解码者·零]]，自称是[[五阶意识体]]的叛逃者。 - 目标：破解[[宙斯主脑]]的[[读写锁]]，解放被资本控制的[[数据云]]。"
+  },
+  {
+    "name": "义体教团",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 4. [[义体教团]]（狂热崇拜） - 认为义体改造是通往“神格”的必经之路。"
+  },
+  {
+    "name": "先知·铁骨",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 认为义体改造是通往“神格”的必经之路。 - 领袖[[先知·铁骨]]，宣扬[[机械飞升教义]]，鼓励改造率 100%。 - 与[[宙斯集团]]存在微妙共生关系（集团默许其招募，但暗中监测）。"
+  },
+  {
+    "name": "机械飞升教义",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 认为义体改造是通往“神格”的必经之路。 - 领袖[[先知·铁骨]]，宣扬[[机械飞升教义]]，鼓励改造率 100%。 - 与[[宙斯集团]]存在微妙共生关系（集团默许其招募，但暗中监测）。"
+  },
+  {
+    "name": "净化者",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 5. [[净化者]]（反抗极端） - 主张彻底摧毁所有义体技术，回归“原人”状态。"
+  },
+  {
+    "name": "傀儡政府",
+    "type": "location",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 6. [[傀儡政府]]（行政工具） - 名义上的[[铁幕都市行政院]]，所有决策需经[[宙斯集团]]审核。"
+  },
+  {
+    "name": "铁幕都市行政院",
+    "type": "location",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 6. [[傀儡政府]]（行政工具） - 名义上的[[铁幕都市行政院]]，所有决策需经[[宙斯集团]]审核。 - 首脑[[林远之]]每三年由[[资本信用评分]]最高的前 0.01% 公民选举产生（实际上由集团指定）。"
+  },
+  {
+    "name": "林远之",
+    "type": "person",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 名义上的[[铁幕都市行政院]]，所有决策需经[[宙斯集团]]审核。 - 首脑[[林远之]]每三年由[[资本信用评分]]最高的前 0.01% 公民选举产生（实际上由集团指定）。"
+  },
+  {
+    "name": "神经警察",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 7. [[神经警察]]（暴力机器） - [[宙斯集团]]的武装执法部门，全员为[[四阶神经链接者]]以上。"
+  },
+  {
+    "name": "神经压制网",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- [[宙斯集团]]的武装执法部门，全员为[[四阶神经链接者]]以上。 - 装备[[神经压制网]]，可直接通过[[数据云]]远程关闭公民的义体。 - 总监[[凯瑟琳·范]]，以冷酷著称。"
+  },
+  {
+    "name": "凯瑟琳·范",
+    "type": "person",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 装备[[神经压制网]]，可直接通过[[数据云]]远程关闭公民的义体。 - 总监[[凯瑟琳·范]]，以冷酷著称。"
+  },
+  {
+    "name": "记忆交割",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 衡量公民社会价值的唯一体系，起评点 1000 分。 - 收入、消费、税务遵从、[[记忆交割]]贡献度等皆为加分项；失业、犯罪、[[神经链路污染]]为重大扣分项。 - 分数 <300 者自动降级至[[锈蚀深渊]]，不得乘坐[[天梯]]；分数 <100 者将被强制征用为[[记忆燃料容器]]（用于[[记忆交割仪式]]的活体容器）。"
+  },
+  {
+    "name": "天梯",
+    "type": "location",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 收入、消费、税务遵从、[[记忆交割]]贡献度等皆为加分项；失业、犯罪、[[神经链路污染]]为重大扣分项。 - 分数 <300 者自动降级至[[锈蚀深渊]]，不得乘坐[[天梯]]；分数 <100 者将被强制征用为[[记忆燃料容器]]（用于[[记忆交割仪式]]的活体容器）。"
+  },
+  {
+    "name": "记忆燃料容器",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 收入、消费、税务遵从、[[记忆交割]]贡献度等皆为加分项；失业、犯罪、[[神经链路污染]]为重大扣分项。 - 分数 <300 者自动降级至[[锈蚀深渊]]，不得乘坐[[天梯]]；分数 <100 者将被强制征用为[[记忆燃料容器]]（用于[[记忆交割仪式]]的活体容器）。"
+  },
+  {
+    "name": "神经容错阈值",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 2. [[义体排异定律]] - 公式：当改造率 × 时间系数 > 个体[[神经容错阈值]] 时，引发[[神经熔毁]]。 - 唯一缓解方式：定期注射[[排异抑制剂]]（每 7 天一次，单价 2000 信用点）。"
+  },
+  {
+    "name": "神经熔毁",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 2. [[义体排异定律]] - 公式：当改造率 × 时间系数 > 个体[[神经容错阈值]] 时，引发[[神经熔毁]]。 - 唯一缓解方式：定期注射[[排异抑制剂]]（每 7 天一次，单价 2000 信用点）。"
+  },
+  {
+    "name": "记忆产权法",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 3. [[记忆产权法]] - 任何公民的“原生记忆”在法律上归[[宙斯集团]]拥有（除非购买[[记忆豁免证]]，价格 500 万信用点）。"
+  },
+  {
+    "name": "记忆豁免证",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 3. [[记忆产权法]] - 任何公民的“原生记忆”在法律上归[[宙斯集团]]拥有（除非购买[[记忆豁免证]]，价格 500 万信用点）。 - 集团有权在[[记忆交割仪式]]中提取、复制、修改公民记忆，并作为商品交易。"
+  },
+  {
+    "name": "精神残缺",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 集团有权在[[记忆交割仪式]]中提取、复制、修改公民记忆，并作为商品交易。 - 被提取过的记忆片段会留下[[精神残缺]]，导致人格崩解或[[身份认同障碍]]。"
+  },
+  {
+    "name": "身份认同障碍",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 集团有权在[[记忆交割仪式]]中提取、复制、修改公民记忆，并作为商品交易。 - 被提取过的记忆片段会留下[[精神残缺]]，导致人格崩解或[[身份认同障碍]]。"
+  },
+  {
+    "name": "信息流税",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 4. [[信息流税]] - 每次数据上传/下载、每次神经链路连接、每次使用[[数据云]]，均需缴纳 0.1% 的流量税给[[宙斯集团]]。"
+  },
+  {
+    "name": "意识备份禁令",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 5. [[意识备份禁令]] - 只有[[五阶意识体]]及[[宙斯集团]]董事会成员可合法进行[[意识上载]]。"
+  },
+  {
+    "name": "记忆燃料",
+    "type": "item",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "- 只有[[五阶意识体]]及[[宙斯集团]]董事会成员可合法进行[[意识上载]]。 - 其他公民私自备份意识，一经发现，备份文件将被销毁，本体强制沦为[[记忆燃料]]。"
+  },
+  {
+    "name": "数据污染规则",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "### 6. [[数据污染规则]] - 在[[数据云]]中，任何未授权的代码（包括黑客工具、病毒）都被定义为“数据污染”。"
+  },
+  {
+    "name": "记忆坍缩事件",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "## 六、核心冲突起点：[[记忆坍缩事件]]"
+  },
+  {
+    "name": "陈铭",
+    "type": "person",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "主角 **[[陈铭]]** 原为[[宙斯集团]]中层技术员，[[三阶赛博格]]，[[信用评分]] 4800，过着[[钢骨走廊]]的体面生活。他负责维护[[记忆交割仪式]]中的[[记忆压缩协议]]。"
+  },
+  {
+    "name": "信用评分",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 初始身份与处境 [[宙斯集团]]技术规划部副总监，[[三阶赛博格]]，改造率61%。拥有[[钢骨走廊]]C-7区的公寓与稳定[[信用评分]]，正准备完成第五次升阶评估。他以为自己是[[铁幕都市]]的精英，实则是[[记忆交割仪式]]的标准化零件。 ### 性格关键词"
+  },
+  {
+    "name": "记忆压缩协议",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "主角 **[[陈铭]]** 原为[[宙斯集团]]中层技术员，[[三阶赛博格]]，[[信用评分]] 4800，过着[[钢骨走廊]]的体面生活。他负责维护[[记忆交割仪式]]中的[[记忆压缩协议]]。"
+  },
+  {
+    "name": "",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "在某次例行仪式中，一名被提取记忆的容器（代号 **[[ #7号容器]]**）发生罕见的[[反向神经冲击]]，将一段未被解析的禁忌记忆（内容涉及[[宙斯集团]]早期秘密实验“[[灵魂熔炉计划]]”）强行注入[[陈铭]]的[[量子神经桥]]。"
+  },
+  {
+    "name": "反向神经冲击",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "在某次例行仪式中，一名被提取记忆的容器（代号 **[[ #7号容器]]**）发生罕见的[[反向神经冲击]]，将一段未被解析的禁忌记忆（内容涉及[[宙斯集团]]早期秘密实验“[[灵魂熔炉计划]]”）强行注入[[陈铭]]的[[量子神经桥]]。"
+  },
+  {
+    "name": "灵魂熔炉计划",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "在某次例行仪式中，一名被提取记忆的容器（代号 **[[ #7号容器]]**）发生罕见的[[反向神经冲击]]，将一段未被解析的禁忌记忆（内容涉及[[宙斯集团]]早期秘密实验“[[灵魂熔炉计划]]”）强行注入[[陈铭]]的[[量子神经桥]]。"
+  },
+  {
+    "name": "禁忌记忆",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "被抛入[[锈蚀深渊]]后，[[陈铭]]保留了那一段[[禁忌记忆]]，却因污染导致部分人格残缺、记忆断片。他在[[食腐者酒吧]]被[[底层回收者]]首领[[灰鼠]]救起，对方发现他的[[量子神经桥]]残留着极罕见的[[底层管理员权限]]——那是[[宙斯集团]]早期系统的后门。"
+  },
+  {
+    "name": "底层管理员权限",
+    "type": "concept",
+    "importance": "supporting",
+    "entity_grade": "reference",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/世界观.md",
+    "source_context": "被抛入[[锈蚀深渊]]后，[[陈铭]]保留了那一段[[禁忌记忆]]，却因污染导致部分人格残缺、记忆断片。他在[[食腐者酒吧]]被[[底层回收者]]首领[[灰鼠]]救起，对方发现他的[[量子神经桥]]残留着极罕见的[[底层管理员权限]]——那是[[宙斯集团]]早期系统的后门。"
+  },
+  {
+    "name": "晴空坠落",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 故事核心 一位原[[宙斯集团]]中层员工在经历“[[晴空坠落]]”——一场由内部权力清洗引发的[[神经链路污染]]——后，从[[钢骨走廊]]跌落至[[锈蚀深渊]]。在求生与复仇的螺旋中，他逐渐发现自己沦落并非意外，而是[[记忆交割仪式]]的终极牺牲品——被彻底抹除的人性正是[[巨企]]攀升[[第五阶层]]所需的最后燃料。他要夺回的不仅是阶层，更是被资本吞噬的“自我”。"
+  },
+  {
+    "name": "第五阶层",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 故事核心 一位原[[宙斯集团]]中层员工在经历“[[晴空坠落]]”——一场由内部权力清洗引发的[[神经链路污染]]——后，从[[钢骨走廊]]跌落至[[锈蚀深渊]]。在求生与复仇的螺旋中，他逐渐发现自己沦落并非意外，而是[[记忆交割仪式]]的终极牺牲品——被彻底抹除的人性正是[[巨企]]攀升[[第五阶层]]所需的最后燃料。他要夺回的不仅是阶层，更是被资本吞噬的“自我”。"
+  },
+  {
+    "name": "陆沉",
+    "type": "person",
+    "importance": "protagonist",
+    "entity_grade": "active",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 主角设定 ### 姓名 - [[陆沉]] ### 初始身份与处境"
+  },
+  {
+    "name": "神经残留直觉",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "**深层**：找回被[[记忆交割仪式]]强制剥离的“幼年记忆”——那份使他区别于AI的数据“冗余”。最终目标是证明人性不是被优化的错误，而是自由意志的根源。 ### 独特能力/天赋 - [[神经残留直觉]] 在[[晴空坠落]]事件中，一股异常数据流熔毁了他的部分[[量子神经桥]]，却意外激活了一种生物-机械混合的直觉：他能“嗅”到一段电子信号背后的“人类情绪残留”——比如能从广告代码中感到绝望，从"
+  },
+  {
+    "name": "神经精神病",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 独特能力/天赋 - [[神经残留直觉]] 在[[晴空坠落]]事件中，一股异常数据流熔毁了他的部分[[量子神经桥]]，却意外激活了一种生物-机械混合的直觉：他能“嗅”到一段电子信号背后的“人类情绪残留”——比如能从广告代码中感到绝望，从[[底层回收者]]的旧义体中读取残留的、未经信用的“渴望”。这能力被官方诊断为“[[神经精神病]]”，但正是他看穿巨企谎言的本钱。"
+  },
+  {
+    "name": "剥离协议V3.0",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 第一幕：开端（晴空坠落） - **初始状态**：[[陆沉]]正在协助[[宙斯集团]]研发“[[剥离协议V3.0]]”——一种更高效的[[记忆交割仪式]]，能将人类记忆转化为可量化的“[[情感数据包]]”。他对此引以为傲，并相信这是人类社会“进化”的必经之路。 - **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直"
+  },
+  {
+    "name": "情感数据包",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 第一幕：开端（晴空坠落） - **初始状态**：[[陆沉]]正在协助[[宙斯集团]]研发“[[剥离协议V3.0]]”——一种更高效的[[记忆交割仪式]]，能将人类记忆转化为可量化的“[[情感数据包]]”。他对此引以为傲，并相信这是人类社会“进化”的必经之路。 - **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直"
+  },
+  {
+    "name": "永久算力",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **初始状态**：[[陆沉]]正在协助[[宙斯集团]]研发“[[剥离协议V3.0]]”——一种更高效的[[记忆交割仪式]]，能将人类记忆转化为可量化的“[[情感数据包]]”。他对此引以为傲，并相信这是人类社会“进化”的必经之路。 - **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久"
+  },
+  {
+    "name": "剥离协议",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久算力]]），发动了信息清洗。他们伪装成意外的[[神经链路污染]]，将污点导向[[技术派]]的棋子，[[陆沉]]被精准标记。他的神经接口被强行注入一个“黑洞文件”，瞬间切断了所有[[信用点数]]、身份权限与房屋授权。他被安保程序当作“["
+  },
+  {
+    "name": "隐形巡警",
+    "type": "person",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **主要冲突升级**： 1.  **追寻真相**：[[陆沉]]与[[灰鼠]]的团队合作，潜入[[数据坟场]]的禁入区，寻找被[[宙斯集团]]丢弃的“[[剥离协议V3.0]]”原始服务器。他们遭遇[[宙斯集团]]的[[安保派]]精锐——[[隐形巡警]]（装备[[光学迷彩]]与[[神经飞镖]]）的追杀。 2.  **盟友与敌人**："
+  },
+  {
+    "name": "光学迷彩",
+    "type": "item",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **主要冲突升级**： 1.  **追寻真相**：[[陆沉]]与[[灰鼠]]的团队合作，潜入[[数据坟场]]的禁入区，寻找被[[宙斯集团]]丢弃的“[[剥离协议V3.0]]”原始服务器。他们遭遇[[宙斯集团]]的[[安保派]]精锐——[[隐形巡警]]（装备[[光学迷彩]]与[[神经飞镖]]）的追杀。 2.  **盟友与敌人**："
+  },
+  {
+    "name": "神经飞镖",
+    "type": "item",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **主要冲突升级**： 1.  **追寻真相**：[[陆沉]]与[[灰鼠]]的团队合作，潜入[[数据坟场]]的禁入区，寻找被[[宙斯集团]]丢弃的“[[剥离协议V3.0]]”原始服务器。他们遭遇[[宙斯集团]]的[[安保派]]精锐——[[隐形巡警]]（装备[[光学迷彩]]与[[神经飞镖]]）的追杀。 2.  **盟友与敌人**："
+  },
+  {
+    "name": "天梯票",
+    "type": "item",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "2.  **盟友与敌人**： - **[[灰鼠]]**：[[底层回收者]]领袖，曾是一位[[四阶神经链接者]]，因拒绝参与[[记忆交割仪式]]被[ [宙斯集团]]切断了[[排异抑制剂]]供应而退化。他提供资源与情报，但他的动机并非纯粹的正义——他想利用[[陆沉]]的记忆证据勒索集团，换取离开[[锈蚀深渊]]的“[[天梯票]]”。 - **[[苏医生]]**：[[神经丛林]]的非法义体医生。她在帮["
+  },
+  {
+    "name": "苏医生",
+    "type": "person",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **[[灰鼠]]**：[[底层回收者]]领袖，曾是一位[[四阶神经链接者]]，因拒绝参与[[记忆交割仪式]]被[ [宙斯集团]]切断了[[排异抑制剂]]供应而退化。他提供资源与情报，但他的动机并非纯粹的正义——他想利用[[陆沉]]的记忆证据勒索集团，换取离开[[锈蚀深渊]]的“[[天梯票]]”。 - **[[苏医生]]**：[[神经丛林]]的非法义体医生。她在帮[[陆沉]]维修神经接口时，发现"
+  },
+  {
+    "name": "后人类知觉",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **[[灰鼠]]**：[[底层回收者]]领袖，曾是一位[[四阶神经链接者]]，因拒绝参与[[记忆交割仪式]]被[ [宙斯集团]]切断了[[排异抑制剂]]供应而退化。他提供资源与情报，但他的动机并非纯粹的正义——他想利用[[陆沉]]的记忆证据勒索集团，换取离开[[锈蚀深渊]]的“[[天梯票]]”。 - **[[苏医生]]**：[[神经丛林]]的非法义体医生。她在帮[[陆沉]]维修神经接口时，发现"
+  },
+  {
+    "name": "幽灵协议",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **[[灰鼠]]**：[[底层回收者]]领袖，曾是一位[[四阶神经链接者]]，因拒绝参与[[记忆交割仪式]]被[ [宙斯集团]]切断了[[排异抑制剂]]供应而退化。他提供资源与情报，但他的动机并非纯粹的正义——他想利用[[陆沉]]的记忆证据勒索集团，换取离开[[锈蚀深渊]]的“[[天梯票]]”。 - **[[苏医生]]**：[[神经丛林]]的非法义体医生。她在帮[[陆沉]]维修神经接口时，发现"
+  },
+  {
+    "name": "简·周",
+    "type": "person",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **[[苏医生]]**：[[神经丛林]]的非法义体医生。她在帮[[陆沉]]维修神经接口时，发现他的[[神经残留直觉]]并非疾病，而是一种可被训练的“[[后人类知觉]]”。她成为[[陆沉]]唯一的盟友，并在他几乎被[[幽灵协议]]摧毁时救活他。 - **[[简·周]]**：[[宙斯集团]]的[[金融派]]助理，实际上是[[晴空坠落]]的直接执行人。她出现在[[锈蚀深渊]]伪装成中介，试图说服[["
+  },
+  {
+    "name": "记忆碎片",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **[[简·周]]**：[[宙斯集团]]的[[金融派]]助理，实际上是[[晴空坠落]]的直接执行人。她出现在[[锈蚀深渊]]伪装成中介，试图说服[[陆沉]]签署一份“自愿抹除协议”，以换取“平静的死亡”。她代表着系统内部的无限妥协与罪恶。 3.  **关键转折点**：[[陆沉]]成功从[[数据坟场]]的“[[剥离协议V3.0]]”原始服务器中，分离出自己的[[记忆碎片]]——全息影像显示，他的"
+  },
+  {
+    "name": "隐身巡警",
+    "type": "person",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 第三幕：高潮与结局（记忆觉醒） - **最终对决**：[[宙斯集团]]为了消抹一切证据，决定将所有承载“[[剥离协议V3.0]]”记忆的服务器物理销毁——包括[[陆沉]]本人。他们派遣[[隐身巡警]]部队与一台“[[收割者]]”级自动机械（5阶机械体）突袭[[神经丛林]]。[[苏医生]]在掩护中战死，[[灰鼠]]在最后关头因愧疚而反水，用自己的旧义体引爆“[[收割者]]”的核心。 - **"
+  },
+  {
+    "name": "收割者",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "### 第三幕：高潮与结局（记忆觉醒） - **最终对决**：[[宙斯集团]]为了消抹一切证据，决定将所有承载“[[剥离协议V3.0]]”记忆的服务器物理销毁——包括[[陆沉]]本人。他们派遣[[隐身巡警]]部队与一台“[[收割者]]”级自动机械（5阶机械体）突袭[[神经丛林]]。[[苏医生]]在掩护中战死，[[灰鼠]]在最后关头因愧疚而反水，用自己的旧义体引爆“[[收割者]]”的核心。 - **"
+  },
+  {
+    "name": "巴别塔",
+    "type": "location",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **最终对决**：[[宙斯集团]]为了消抹一切证据，决定将所有承载“[[剥离协议V3.0]]”记忆的服务器物理销毁——包括[[陆沉]]本人。他们派遣[[隐身巡警]]部队与一台“[[收割者]]”级自动机械（5阶机械体）突袭[[神经丛林]]。[[苏医生]]在掩护中战死，[[灰鼠]]在最后关头因愧疚而反水，用自己的旧义体引爆“[[收割者]]”的核心。 - **核心谜底揭晓**：[[陆沉]]在最后一刻"
+  },
+  {
+    "name": "宙斯主脑2.0",
+    "type": "person",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- **最终对决**：[[宙斯集团]]为了消抹一切证据，决定将所有承载“[[剥离协议V3.0]]”记忆的服务器物理销毁——包括[[陆沉]]本人。他们派遣[[隐身巡警]]部队与一台“[[收割者]]”级自动机械（5阶机械体）突袭[[神经丛林]]。[[苏医生]]在掩护中战死，[[灰鼠]]在最后关头因愧疚而反水，用自己的旧义体引爆“[[收割者]]”的核心。 - **核心谜底揭晓**：[[陆沉]]在最后一刻"
+  },
+  {
+    "name": "力量体系",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 世界观关键元素 - [[力量体系]]：[[义体进化序列]]、[[阶位]]的社会压迫差异、[[排异抑制剂]]的垄断性依赖。 - [[地理]]：[[铁幕都市]]的四层社会带（[[水晶穹顶]] - [[钢骨走廊]] - [[锈蚀深渊]] - [[数据坟场]]）及其物质、精神象征意义。"
+  },
+  {
+    "name": "阶位",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "## 世界观关键元素 - [[力量体系]]：[[义体进化序列]]、[[阶位]]的社会压迫差异、[[排异抑制剂]]的垄断性依赖。 - [[地理]]：[[铁幕都市]]的四层社会带（[[水晶穹顶]] - [[钢骨走廊]] - [[锈蚀深渊]] - [[数据坟场]]）及其物质、精神象征意义。"
+  },
+  {
+    "name": "地理",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- [[力量体系]]：[[义体进化序列]]、[[阶位]]的社会压迫差异、[[排异抑制剂]]的垄断性依赖。 - [[地理]]：[[铁幕都市]]的四层社会带（[[水晶穹顶]] - [[钢骨走廊]] - [[锈蚀深渊]] - [[数据坟场]]）及其物质、精神象征意义。 - [[势力格局]]：[[宙斯集团]]的内部派系（[[技术派]]、[[金融派]]、[[安保派]]）之间的暗战，[[底层回收者]]的生存法"
+  },
+  {
+    "name": "势力格局",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- [[地理]]：[[铁幕都市]]的四层社会带（[[水晶穹顶]] - [[钢骨走廊]] - [[锈蚀深渊]] - [[数据坟场]]）及其物质、精神象征意义。 - [[势力格局]]：[[宙斯集团]]的内部派系（[[技术派]]、[[金融派]]、[[安保派]]）之间的暗战，[[底层回收者]]的生存法则，[[天梯站]]的唯一向上通道。 - [[核心概念]]："
+  },
+  {
+    "name": "核心概念",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- [[势力格局]]：[[宙斯集团]]的内部派系（[[技术派]]、[[金融派]]、[[安保派]]）之间的暗战，[[底层回收者]]的生存法则，[[天梯站]]的唯一向上通道。 - [[核心概念]]： - [[记忆交割仪式]]：资本新形式，将人类体验商品化。"
+  },
+  {
+    "name": "食腐者酒吧的预言",
+    "type": "concept",
+    "importance": "major",
+    "entity_grade": "stub",
+    "aliases": [],
+    "brief": "",
+    "source_file": "plot/主线.md",
+    "source_context": "- 伏笔1：[[陆沉]]童年被抹除的记忆碎片里，暗藏着[[数据坟场]]的精准坐标，以及[[宙斯集团]]未公开的“[[巴别塔]]”计划原型。这个坐标在第二幕中由[[苏医生]]破译，成为[[陆沉]]潜入的关键。 - 伏笔2：[[灰鼠]]曾透露过一个不能被提及的“[[食腐者酒吧的预言]]”：当一位从[[钢骨走廊]]坠落的“[[三阶赛博格]]”带着“[[神经残留直觉]]”重新踏入[[宙斯之眼]]时，铁幕的"
+  }
+]

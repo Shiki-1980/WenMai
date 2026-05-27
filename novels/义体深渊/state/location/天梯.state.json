@@ -1,0 +1,28 @@
+{
+  "entity": "天梯",
+  "entity_type": "location",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 收入、消费、税务遵从、[[记忆交割]]贡献度等皆为加分项；失业、犯罪、[[神经链路污染]]为重大扣分项。 - 分数 <300 者自动降级至[[锈蚀深渊]]，不得乘坐[[天梯]]；分数 <100 者将被强制征用为[[记忆燃料容器]]（用于[[记忆交割仪式]]的活体容器）。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "entity": "神经接口核心",
+  "entity_type": "item",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: 力量的本质是对[[神经-机械共生]]的深度掌控。经过改造后，个体通过[[神经接口核心]]与[[数据云]]连接，获得超人的物理/信息能力。全序列共 **6 阶**，由[[宙斯集团]]旗下的[[义体评级局]]颁布标准。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

@@ -50,9 +50,6 @@ SCHEMA_GEN_USER = """请为以下小说生成 novel_schema.json。
 ## 世界观设定
 {world_setting}
 
-## 主线剧情
-{main_plot}
-
 ## 已有 Concept 卡（世界观相关设定）
 {concept_cards}
 
@@ -143,9 +140,6 @@ def generate_schema(generator, reader, novel_name: str) -> NovelSchema | None:
     world = reader.read_world_bible()
     world_text = world[1][:5000] if world else "（暂无世界观设定）"
 
-    main = reader.read_main_plot()
-    main_text = main[1][:3000] if main else "（暂无主线）"
-
     # Concept 卡
     concept_parts = []
     for p in sorted(reader.concept_dir.glob("*.md")):
@@ -166,7 +160,6 @@ def generate_schema(generator, reader, novel_name: str) -> NovelSchema | None:
 
     prompt = SCHEMA_GEN_USER.format(
         world_setting=world_text,
-        main_plot=main_text,
         concept_cards=concept_text,
         entity_summary=entity_text,
     )

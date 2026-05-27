@@ -1,0 +1,28 @@
+{
+  "entity": "终身契约",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 内部派系：[[技术派]]（追求极限改造）、[[金融派]]（专注信用剥削）、[[安保派]]（维护社会秩序）。 - 对内部员工实行[[终身契约]]制——通过[[记忆交割仪式]]将员工的所有记忆进行“商业备份”，成为集团数据资产。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

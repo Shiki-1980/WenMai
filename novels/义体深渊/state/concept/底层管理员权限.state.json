@@ -1,0 +1,28 @@
+{
+  "entity": "底层管理员权限",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: 被抛入[[锈蚀深渊]]后，[[陈铭]]保留了那一段[[禁忌记忆]]，却因污染导致部分人格残缺、记忆断片。他在[[食腐者酒吧]]被[[底层回收者]]首领[[灰鼠]]救起，对方发现他的[[量子神经桥]]残留着极罕见的[[底层管理员权限]]——那是[[宙斯集团]]早期系统的后门。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

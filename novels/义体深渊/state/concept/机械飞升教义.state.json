@@ -1,0 +1,28 @@
+{
+  "entity": "机械飞升教义",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 认为义体改造是通往“神格”的必经之路。 - 领袖[[先知·铁骨]]，宣扬[[机械飞升教义]]，鼓励改造率 100%。 - 与[[宙斯集团]]存在微妙共生关系（集团默许其招募，但暗中监测）。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "entity": "灵魂熔炉计划",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: 在某次例行仪式中，一名被提取记忆的容器（代号 **[[ #7号容器]]**）发生罕见的[[反向神经冲击]]，将一段未被解析的禁忌记忆（内容涉及[[宙斯集团]]早期秘密实验“[[灵魂熔炉计划]]”）强行注入[[陈铭]]的[[量子神经桥]]。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

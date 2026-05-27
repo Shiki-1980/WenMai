@@ -1,0 +1,28 @@
+{
+  "entity": "神经熔毁",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: ### 2. [[义体排异定律]] - 公式：当改造率 × 时间系数 > 个体[[神经容错阈值]] 时，引发[[神经熔毁]]。 - 唯一缓解方式：定期注射[[排异抑制剂]]（每 7 天一次，单价 2000 信用点）。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

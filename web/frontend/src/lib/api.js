@@ -14,8 +14,8 @@ async function request(url, options = {}) {
 
 // Config
 export const getConfig = () => request("/config");
-export const updateConfig = (novel) =>
-  request("/config", { method: "PUT", body: JSON.stringify({ novel }) });
+export const updateConfig = (cfg) =>
+  request("/config", { method: "PUT", body: JSON.stringify(cfg) });
 
 // Novels
 export const listNovels = () => request("/novels");

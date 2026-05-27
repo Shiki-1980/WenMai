@@ -1,0 +1,28 @@
+{
+  "entity": "意识残次品",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: ### 4. [[数据坟场]]（隔离区） - 地下 200 米以下，是义体废弃物、受损[[量子神经桥]]以及[[意识残次品]]的最终归宿。 - 被[[宙斯集团]]严格封锁，只有[[回收者工会]]的正式成员才能进入。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

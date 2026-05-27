@@ -1,0 +1,374 @@
+{
+  "novel": "铁幕都市",
+  "schema_version": 2,
+  "generated_at": "2026-05-27",
+  "generated_by": "LLM: deepseek-v4-flash",
+  "retrieval": {
+    "min_recall": 3,
+    "max_hop": 1,
+    "max_entity_cards": 30
+  },
+  "entity_schemas": {
+    "person": {
+      "label": "人物",
+      "predicates": {
+        "修为": {
+          "type": "enum",
+          "category": "实力",
+          "priority": 1,
+          "override": "override_allowed",
+          "values": [
+            "零阶人",
+            "一阶义体者",
+            "二阶改造人",
+            "三阶赛博格",
+            "四阶神经链接者",
+            "五阶意识体"
+          ],
+          "description": "义体进化序列阶位，代表改造程度与能力等级"
+        },
+        "身份": {
+          "type": "string",
+          "category": "基础",
+          "priority": 2,
+          "override": "override_allowed",
+          "values": [],
+          "description": "社会角色或职业，如企业中层、底层回收者、黑客等"
+        },
+        "所在": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 3,
+          "override": "override_allowed",
+          "values": [
+            "水晶穹顶",
+            "钢骨走廊",
+            "锈蚀深渊",
+            "数据坟场",
+            "天梯站",
+            "食腐者酒吧",
+            "神经丛林",
+            "宙斯之眼",
+            "义体保障局",
+            "数据交易所",
+            "垃圾投放口"
+          ],
+          "description": "当前所处地点或区域"
+        },
+        "持有": {
+          "type": "list",
+          "category": "物品",
+          "priority": 5,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前携带或拥有的物品列表"
+        },
+        "功法技能": {
+          "type": "list",
+          "category": "能力",
+          "priority": 8,
+          "override": "append_only",
+          "values": [],
+          "description": "掌握的义体技能、战斗协议或黑客能力，如初级战斗协议、低阶神经加速、局部数据超频等"
+        },
+        "天赋": {
+          "type": "string",
+          "category": "天赋",
+          "priority": 6,
+          "override": "locked",
+          "values": [],
+          "description": "先天或后天获得的特殊能力，如神经容错阈值高、数据亲和、意识上载天赋等"
+        },
+        "血脉": {
+          "type": "string",
+          "category": "天赋",
+          "priority": 7,
+          "override": "locked",
+          "values": [],
+          "description": "种族或血统，如天然体、改造体、数字幽灵等"
+        },
+        "关系": {
+          "type": "list",
+          "category": "关系",
+          "priority": 10,
+          "override": "append_only",
+          "values": [],
+          "description": "与其他实体的关联，如隶属组织、盟友、敌人等"
+        },
+        "目标": {
+          "type": "string",
+          "category": "状态",
+          "priority": 4,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前主要动机或任务目标"
+        },
+        "身体状态": {
+          "type": "enum",
+          "category": "状态",
+          "priority": 9,
+          "override": "override_allowed",
+          "values": [
+            "健康",
+            "轻微排异",
+            "重度排异",
+            "神经污染",
+            "神经熔毁初期",
+            "精神残缺",
+            "记忆腐蚀",
+            "昏迷",
+            "死亡"
+          ],
+          "description": "生理与神经系统的健康状况"
+        },
+        "详细描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "外貌、性格、背景故事等详细文字描述，可逐章追加"
+        }
+      },
+      "tags": [
+        "#character"
+      ],
+      "markdown_template": "---\ntype: person\nstatus: {{身份}}\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 身份：{{身份}}\n- 所在：{{所在}}\n- 修为：{{修为}}\n- 目标：{{目标}}\n\n## 当前状态\n- 身体状态：{{身体状态}}\n- 持有：{{#each 持有}}{{this}} {{/each}}\n\n## 能力\n- 功法/技能：{{#each 功法技能}}{{this}} {{/each}}\n- 天赋：{{天赋}}\n- 血脉：{{血脉}}\n\n## 关系\n{{#each 关系}}\n- {{this}}\n{{/each}}\n\n## 详细描述\n{{详细描述}}"
+    },
+    "item": {
+      "label": "物品",
+      "predicates": {
+        "类型": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 1,
+          "override": "locked",
+          "values": [
+            "义体部件",
+            "芯片",
+            "数据",
+            "武器",
+            "工具",
+            "药物",
+            "材料",
+            "信物",
+            "文档",
+            "其他"
+          ],
+          "description": "物品的大类"
+        },
+        "等级": {
+          "type": "enum",
+          "category": "属性",
+          "priority": 3,
+          "override": "override_allowed",
+          "values": [
+            "普通",
+            "精良",
+            "稀有",
+            "史诗",
+            "传说",
+            "神话"
+          ],
+          "description": "物品的品质或级别"
+        },
+        "所有者": {
+          "type": "string",
+          "category": "关联",
+          "priority": 4,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前持有或拥有该物品的人物名"
+        },
+        "所在": {
+          "type": "string",
+          "category": "关联",
+          "priority": 5,
+          "override": "override_allowed",
+          "values": [],
+          "description": "物品存放的地点或人物处"
+        },
+        "状态": {
+          "type": "enum",
+          "category": "状态",
+          "priority": 6,
+          "override": "override_allowed",
+          "values": [
+            "完好",
+            "损坏",
+            "被污染",
+            "待修复",
+            "消耗",
+            "锁定"
+          ],
+          "description": "物品的当前状况"
+        },
+        "功效": {
+          "type": "string",
+          "category": "属性",
+          "priority": 2,
+          "override": "override_allowed",
+          "values": [],
+          "description": "物品的功能或用途描述"
+        },
+        "详细描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "物品的外观、来历、细节等文字描述"
+        }
+      },
+      "tags": [
+        "#item"
+      ],
+      "markdown_template": "---\ntype: item\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 类型：{{类型}}\n- 等级：{{等级}}\n- 所有者：{{所有者}}\n- 所在：{{所在}}\n- 状态：{{状态}}\n\n## 功效\n{{功效}}\n\n## 详细描述\n{{详细描述}}"
+    },
+    "location": {
+      "label": "地点",
+      "predicates": {
+        "社会带": {
+          "type": "enum",
+          "category": "分类",
+          "priority": 1,
+          "override": "locked",
+          "values": [
+            "水晶穹顶",
+            "钢骨走廊",
+            "锈蚀深渊",
+            "数据坟场"
+          ],
+          "description": "地点所属的垂直社会层级"
+        },
+        "类型": {
+          "type": "enum",
+          "category": "分类",
+          "priority": 2,
+          "override": "locked",
+          "values": [
+            "城市环带",
+            "垂直走廊",
+            "废墟下层",
+            "隔离区",
+            "地标建筑",
+            "设施",
+            "公共区域",
+            "黑市",
+            "据点"
+          ],
+          "description": "地点的具体类别"
+        },
+        "安全等级": {
+          "type": "enum",
+          "category": "属性",
+          "priority": 3,
+          "override": "override_allowed",
+          "values": [
+            "高",
+            "中",
+            "低",
+            "极度危险"
+          ],
+          "description": "该区域的治安和生存风险"
+        },
+        "主要势力": {
+          "type": "string",
+          "category": "关联",
+          "priority": 4,
+          "override": "override_allowed",
+          "values": [],
+          "description": "控制或影响该地点的主要组织或个人"
+        },
+        "居民": {
+          "type": "string",
+          "category": "属性",
+          "priority": 5,
+          "override": "override_allowed",
+          "values": [],
+          "description": "该地点常驻居民的概况"
+        },
+        "描述": {
+          "type": "string",
+          "category": "概要",
+          "priority": 6,
+          "override": "override_allowed",
+          "values": [],
+          "description": "地点环境、氛围的简短描述"
+        },
+        "详细描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "地点的详尽文字描述，可不断补充"
+        }
+      },
+      "tags": [
+        "#location"
+      ],
+      "markdown_template": "---\ntype: location\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 社会带：{{社会带}}\n- 类型：{{类型}}\n- 安全等级：{{安全等级}}\n- 主要势力：{{主要势力}}\n- 居民：{{居民}}\n\n## 描述\n{{描述}}\n\n## 详细描述\n{{详细描述}}"
+    },
+    "concept": {
+      "label": "概念",
+      "predicates": {
+        "类别": {
+          "type": "enum",
+          "category": "分类",
+          "priority": 1,
+          "override": "locked",
+          "values": [
+            "力量体系",
+            "规则",
+            "技术",
+            "组织",
+            "事件",
+            "现象",
+            "传说",
+            "势力",
+            "制度",
+            "协议"
+          ],
+          "description": "概念所属的大类"
+        },
+        "定义": {
+          "type": "string",
+          "category": "核心",
+          "priority": 2,
+          "override": "override_allowed",
+          "values": [],
+          "description": "概念的简要定义"
+        },
+        "影响": {
+          "type": "string",
+          "category": "核心",
+          "priority": 3,
+          "override": "override_allowed",
+          "values": [],
+          "description": "概念对世界观的影响或作用"
+        },
+        "相关实体": {
+          "type": "list",
+          "category": "关联",
+          "priority": 5,
+          "override": "append_only",
+          "values": [],
+          "description": "与该概念相关的其他实体名称列表"
+        },
+        "详细描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "概念的详尽文字阐述"
+        }
+      },
+      "tags": [
+        "#concept"
+      ],
+      "markdown_template": "---\ntype: concept\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 类别：{{类别}}\n\n## 定义\n{{定义}}\n\n## 影响\n{{影响}}\n\n## 相关实体\n{{#each 相关实体}}\n- {{this}}\n{{/each}}\n\n## 详细描述\n{{详细描述}}"
+    }
+  }
+}

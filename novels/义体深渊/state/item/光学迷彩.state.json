@@ -1,0 +1,28 @@
+{
+  "entity": "光学迷彩",
+  "entity_type": "item",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: - **主要冲突升级**： 1.  **追寻真相**：[[陆沉]]与[[灰鼠]]的团队合作，潜入[[数据坟场]]的禁入区，寻找被[[宙斯集团]]丢弃的“[[剥离协议V3.0]]”原始服务器。他们遭遇[[宙斯集团]]的[[安保派]]精锐——[[隐形巡警]]（装备[[光学迷彩]]与[[神经飞镖]]）的追杀。 2.  **盟友与敌人**：",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

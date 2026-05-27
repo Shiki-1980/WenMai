@@ -7,6 +7,13 @@ reads MUST go through state.json.
 The schema is now per-novel: each novel has its own novel_schema.json that defines
 entity types, predicates, allowed values, override policies, and markdown templates.
 No more hardcoded cultivation realms or predicate lists.
+
+Schema 3.0: OOC-aware constraints with five-dimension validation
+  - personality: 人物性格 OOC
+  - technique:   功法 OOC
+  - power:       能力/力量等级 OOC
+  - asset:       资产 OOC
+  - plot:        剧情 OOC
 """
 
 from __future__ import annotations
@@ -23,6 +30,16 @@ from typing import Optional
 ENTITY_TYPES = ("person", "item", "location", "concept")
 SCHEMA_FILENAME = "novel_schema.json"
 
+# OOC 维度常量
+OOC_DIMENSIONS = ("personality", "technique", "power", "asset", "plot")
+OOC_DIMENSION_LABELS = {
+    "personality": "人物性格OOC",
+    "technique": "功法OOC",
+    "power": "能力/力量OOC",
+    "asset": "资产OOC",
+    "plot": "剧情OOC",
+}
+
 
 # ── Override Policy ────────────────────────────────────────────
 
@@ -33,21 +50,38 @@ class OverridePolicy(Enum):
     OVERRIDE_ALLOWED = "override_allowed"  # 章节级可覆盖（默认）
 
 
-# ── Schema 数据类 ──────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════
+# Schema 数据类
+# ═══════════════════════════════════════════════════════════════
 
 @dataclass
 class PredicateDef:
-    """一个谓词的定义（来自 novel_schema.json）。"""
+    """一个谓词的定义（来自 novel_schema.json）。
+
+    Schema 3.0 新增：OOC 维度映射、性格标签、数值边界、前置条件、进化追踪。
+    """
     name: str                        # 谓词名 e.g. "修为"
-    type: str                        # "enum" | "string" | "list"
+    type: str                        # "enum" | "string" | "list" | "number"
     category: str = ""               # 分组 e.g. "实力", "基础", "能力"
     priority: int = 99               # 显示排序，越小越靠前
     override: OverridePolicy = OverridePolicy.OVERRIDE_ALLOWED
     values: list[str] = field(default_factory=list)   # enum 类型的允许值
     description: str = ""            # 给 LLM 看的说明
 
+    # ── Schema 3.0 新增字段 ──
+    ooc_dimension: str = ""          # OOC 维度: personality|technique|power|asset|plot
+    personality_tags: list[str] = field(default_factory=list)  # 性格标签 e.g. ["谨慎", "重情义"]
+    taboos: list[str] = field(default_factory=list)            # 禁忌 e.g. ["绝不能背叛师门"]
+    min_value: float | None = None   # 数值下限
+    max_value: float | None = None   # 数值上限
+    prerequisites: list[str] = field(default_factory=list)     # 前置条件 e.g. ["金丹期"] -> "元婴期"
+    progression_curve: str = ""      # 成长曲线: "linear"|"exponential"|"stepwise"
+    is_generated: bool = True        # 是否由 LLM 生成（False=用户手动锁定）
+    confidence: float = 1.0          # schema 生成器对此谓词的确信度
+    last_verified_chapter: int = 0   # 上次验证此谓词的章节
+
     def to_dict(self) -> dict:
-        return {
+        d = {
             "type": self.type,
             "category": self.category,
             "priority": self.priority,
@@ -55,6 +89,28 @@ class PredicateDef:
             "values": self.values,
             "description": self.description,
         }
+        # Schema 3.0 字段：只序列化非默认值
+        if self.ooc_dimension:
+            d["ooc_dimension"] = self.ooc_dimension
+        if self.personality_tags:
+            d["personality_tags"] = self.personality_tags
+        if self.taboos:
+            d["taboos"] = self.taboos
+        if self.min_value is not None:
+            d["min_value"] = self.min_value
+        if self.max_value is not None:
+            d["max_value"] = self.max_value
+        if self.prerequisites:
+            d["prerequisites"] = self.prerequisites
+        if self.progression_curve:
+            d["progression_curve"] = self.progression_curve
+        if not self.is_generated:
+            d["is_generated"] = False
+        if self.confidence != 1.0:
+            d["confidence"] = self.confidence
+        if self.last_verified_chapter:
+            d["last_verified_chapter"] = self.last_verified_chapter
+        return d
 
     @classmethod
     def from_dict(cls, name: str, data: dict) -> "PredicateDef":
@@ -71,7 +127,219 @@ class PredicateDef:
             override=override,
             values=data.get("values", []),
             description=data.get("description", ""),
+            # Schema 3.0
+            ooc_dimension=data.get("ooc_dimension", ""),
+            personality_tags=data.get("personality_tags", []),
+            taboos=data.get("taboos", []),
+            min_value=data.get("min_value"),
+            max_value=data.get("max_value"),
+            prerequisites=data.get("prerequisites", []),
+            progression_curve=data.get("progression_curve", ""),
+            is_generated=data.get("is_generated", True),
+            confidence=data.get("confidence", 1.0),
+            last_verified_chapter=data.get("last_verified_chapter", 0),
         )
+
+
+@dataclass
+class OOCRule:
+    """一条机器可读的 OOC 规则。"""
+    dimension: str                    # personality|technique|power|asset|plot
+    rule_type: str                    # "prohibition"|"requirement"|"threshold"|"chain"
+    predicate: str                    # 关联的谓词
+    condition: str                    # 条件表达式（机器可读）
+    description: str                  # 人类可读描述
+    severity: str = "warning"         # critical|warning|info
+    auto_fix: str = ""                # 可选的自动修复策略
+
+    def to_dict(self) -> dict:
+        return {
+            "dimension": self.dimension,
+            "rule_type": self.rule_type,
+            "predicate": self.predicate,
+            "condition": self.condition,
+            "description": self.description,
+            "severity": self.severity,
+            "auto_fix": self.auto_fix,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "OOCRule":
+        return cls(
+            dimension=data.get("dimension", ""),
+            rule_type=data.get("rule_type", ""),
+            predicate=data.get("predicate", ""),
+            condition=data.get("condition", ""),
+            description=data.get("description", ""),
+            severity=data.get("severity", "warning"),
+            auto_fix=data.get("auto_fix", ""),
+        )
+
+
+@dataclass
+class PowerLevel:
+    """力量体系中的一个等级。"""
+    name: str                         # e.g. "金丹期"
+    rank: int                         # 数值排名（越大越强）
+    power_ceiling: str = ""           # 物理上限描述 e.g. "碎山"
+    requires: list[str] = field(default_factory=list)  # 前置条件
+
+    def to_dict(self) -> dict:
+        d = {"name": self.name, "rank": self.rank}
+        if self.power_ceiling:
+            d["power_ceiling"] = self.power_ceiling
+        if self.requires:
+            d["requires"] = self.requires
+        return d
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "PowerLevel":
+        return cls(
+            name=data.get("name", ""),
+            rank=data.get("rank", 0),
+            power_ceiling=data.get("power_ceiling", ""),
+            requires=data.get("requires", []),
+        )
+
+
+@dataclass
+class PowerSystemDef:
+    """力量体系定义 —— 用于力量等级 OOC 检查。"""
+    name: str = ""
+    levels: list[PowerLevel] = field(default_factory=list)
+    advancement_rules: list[str] = field(default_factory=list)
+    max_advance_per_chapter: int = 1
+    min_chapters_between_advance: int = 2
+
+    def get_level(self, name: str) -> PowerLevel | None:
+        for lv in self.levels:
+            if lv.name == name:
+                return lv
+        return None
+
+    def to_dict(self) -> dict:
+        return {
+            "name": self.name,
+            "levels": [lv.to_dict() for lv in self.levels],
+            "advancement_rules": self.advancement_rules,
+            "max_advance_per_chapter": self.max_advance_per_chapter,
+            "min_chapters_between_advance": self.min_chapters_between_advance,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "PowerSystemDef":
+        return cls(
+            name=data.get("name", ""),
+            levels=[PowerLevel.from_dict(lv) for lv in data.get("levels", [])],
+            advancement_rules=data.get("advancement_rules", []),
+            max_advance_per_chapter=data.get("max_advance_per_chapter", 1),
+            min_chapters_between_advance=data.get("min_chapters_between_advance", 2),
+        )
+
+
+@dataclass
+class SchemaEvolution:
+    """一次 schema 进化记录。"""
+    chapter: int
+    evolution_type: str              # predicate_added|value_extended|constraint_softened|constraint_hardened
+    entity_type: str = ""
+    predicate: str = ""
+    old_value: str = ""
+    new_value: str = ""
+    reason: str = ""
+
+    def to_dict(self) -> dict:
+        return {
+            "chapter": self.chapter,
+            "evolution_type": self.evolution_type,
+            "entity_type": self.entity_type,
+            "predicate": self.predicate,
+            "old_value": self.old_value,
+            "new_value": self.new_value,
+            "reason": self.reason,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "SchemaEvolution":
+        return cls(
+            chapter=data.get("chapter", 0),
+            evolution_type=data.get("evolution_type", ""),
+            entity_type=data.get("entity_type", ""),
+            predicate=data.get("predicate", ""),
+            old_value=data.get("old_value", ""),
+            new_value=data.get("new_value", ""),
+            reason=data.get("reason", ""),
+        )
+
+
+@dataclass
+class Violation:
+    """一条验证违规记录。"""
+    dimension: str                    # OOC 维度
+    rule: str                         # 违规规则名
+    severity: str                     # critical|warning|info
+    entity: str = ""
+    predicate: str = ""
+    old_value: str = ""
+    new_value: str = ""
+    description: str = ""
+    evidence: str = ""                # 从章节正文引用的证据
+    auto_fix: str = ""
+
+    def is_blocking(self) -> bool:
+        return self.severity == "critical"
+
+    def to_dict(self) -> dict:
+        return {
+            "dimension": self.dimension,
+            "rule": self.rule,
+            "severity": self.severity,
+            "entity": self.entity,
+            "predicate": self.predicate,
+            "old_value": self.old_value,
+            "new_value": self.new_value,
+            "description": self.description,
+            "evidence": self.evidence,
+            "auto_fix": self.auto_fix,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Violation":
+        return cls(
+            dimension=data.get("dimension", ""),
+            rule=data.get("rule", ""),
+            severity=data.get("severity", "warning"),
+            entity=data.get("entity", ""),
+            predicate=data.get("predicate", ""),
+            old_value=data.get("old_value", ""),
+            new_value=data.get("new_value", ""),
+            description=data.get("description", ""),
+            evidence=data.get("evidence", ""),
+            auto_fix=data.get("auto_fix", ""),
+        )
+
+
+@dataclass
+class ValidationResult:
+    """一次验证的完整结果。"""
+    passed: bool
+    violations: list[Violation] = field(default_factory=list)
+    summary: str = ""
+
+    @property
+    def critical_count(self) -> int:
+        return sum(1 for v in self.violations if v.severity == "critical")
+
+    @property
+    def warning_count(self) -> int:
+        return sum(1 for v in self.violations if v.severity == "warning")
+
+    def to_dict(self) -> dict:
+        return {
+            "passed": self.passed,
+            "violations": [v.to_dict() for v in self.violations],
+            "summary": self.summary,
+        }
 
 
 @dataclass
@@ -82,6 +350,8 @@ class EntitySchema:
     predicates: dict[str, PredicateDef] = field(default_factory=dict)
     tags: list[str] = field(default_factory=list)
     markdown_template: str = ""      # JSON → Markdown 渲染模板
+    ooc_rules: list[OOCRule] = field(default_factory=list)  # Schema 3.0
+    power_system: PowerSystemDef | None = None                # Schema 3.0
 
     def get_predicate(self, name: str) -> PredicateDef | None:
         return self.predicates.get(name)
@@ -100,50 +370,80 @@ class EntitySchema:
             groups[cat].append(p)
         return groups
 
+    def locked_predicates(self) -> list[str]:
+        """返回所有 LOCKED 策略的谓词名。"""
+        return [name for name, p in self.predicates.items() if p.override == OverridePolicy.LOCKED]
+
+    def append_only_predicates(self) -> list[str]:
+        """返回所有 APPEND_ONLY 策略的谓词名。"""
+        return [name for name, p in self.predicates.items() if p.override == OverridePolicy.APPEND_ONLY]
+
+    def enum_predicates(self) -> dict[str, list[str]]:
+        """返回所有 enum 类型谓词及其允许值。"""
+        return {name: p.values for name, p in self.predicates.items() if p.type == "enum" and p.values}
+
     def to_dict(self) -> dict:
-        return {
+        d = {
             "label": self.label,
             "predicates": {name: p.to_dict() for name, p in self.predicates.items()},
             "tags": self.tags,
             "markdown_template": self.markdown_template,
         }
+        if self.ooc_rules:
+            d["ooc_rules"] = [r.to_dict() for r in self.ooc_rules]
+        if self.power_system:
+            d["power_system"] = self.power_system.to_dict()
+        return d
 
     @classmethod
     def from_dict(cls, entity_type: str, data: dict) -> "EntitySchema":
         predicates = {}
         for name, pdata in data.get("predicates", {}).items():
             predicates[name] = PredicateDef.from_dict(name, pdata)
+        ooc_rules = [OOCRule.from_dict(r) for r in data.get("ooc_rules", [])]
+        ps_data = data.get("power_system")
+        power_system = PowerSystemDef.from_dict(ps_data) if ps_data else None
         return cls(
             entity_type=entity_type,
             label=data.get("label", ""),
             predicates=predicates,
             tags=data.get("tags", []),
             markdown_template=data.get("markdown_template", ""),
+            ooc_rules=ooc_rules,
+            power_system=power_system,
         )
 
 
 class NovelSchema:
     """从 novel_schema.json 加载的整本小说 schema。
 
+    Schema 3.0: 移除全局 locked_fields/append_only_fields（死代码），
+    替代为 per-predicate override policy + OOC 维度支持。
+
     使用方式:
         schema = NovelSchema.load(Path("novels/万古劫烬"))
         person_preds = schema.get_predicates("person")
-        schema.validate_fact(fact, "person")
+        result = schema.validate_fact(fact, entity_type)
     """
 
     def __init__(self):
         self.novel: str = ""
-        self.schema_version: int = 1
+        self.schema_version: int = 3
         self.generated_at: str = ""
         self.generated_by: str = ""
         self.entity_schemas: dict[str, EntitySchema] = {}
-        # 全局 override policy
-        self.locked_fields: list[str] = field(default_factory=list)
-        self.append_only_fields: list[str] = field(default_factory=list)
+
         # 检索配置
         self.min_recall: int = 3
         self.max_hop: int = 1
         self.max_entity_cards: int = 30
+
+        # ── Schema 3.0 新增 ──
+        self.evolution_history: list[SchemaEvolution] = []
+        self.last_evolved_chapter: int = 0
+        self.protagonist_personality: dict[str, str] = {}     # {"核心动机": "...", "行为逻辑": "..."}
+        self.validator_threshold: str = "warning"              # critical|warning|info
+        self.max_review_iterations: int = 3
 
     # ── 查询接口 ──
 
@@ -171,10 +471,82 @@ class NovelSchema:
     def get_all_entity_types(self) -> list[str]:
         return list(self.entity_schemas.keys())
 
+    def get_entity_schema_summary(self, entity_type: str) -> str:
+        """生成实体 schema 的人类可读摘要（用于注入 prompt）。"""
+        es = self.get_entity_schema(entity_type)
+        if not es:
+            return ""
+
+        lines = [f"## {es.label or entity_type} 谓词定义"]
+        for p in es.predicates_sorted():
+            extras = []
+            if p.override == OverridePolicy.LOCKED:
+                extras.append("🔒锁定")
+            elif p.override == OverridePolicy.APPEND_ONLY:
+                extras.append("➕仅追加")
+            if p.type == "enum" and p.values:
+                extras.append(f"允许值: {', '.join(p.values[:8])}")
+            if p.ooc_dimension:
+                extras.append(f"OOC维度: {OOC_DIMENSION_LABELS.get(p.ooc_dimension, p.ooc_dimension)}")
+            extra_str = f" ({'; '.join(extras)})" if extras else ""
+            lines.append(f"- {p.name}({p.type}){extra_str}: {p.description or '(无描述)'}")
+        return "\n".join(lines)
+
+    def get_ooc_constraints_for_entity(self, entity_type: str, entity_name: str) -> str:
+        """获取某个实体的 OOC 约束文本（用于注入写作提示）。"""
+        es = self.get_entity_schema(entity_type)
+        if not es:
+            return ""
+
+        parts = []
+        # 锁定字段
+        locked = es.locked_predicates()
+        if locked:
+            parts.append(f"**锁定字段（不可修改）**: {', '.join(locked)}")
+
+        # 仅追加字段
+        append_only = es.append_only_predicates()
+        if append_only:
+            parts.append(f"**仅追加字段**: {', '.join(append_only)}")
+
+        # 枚举字段及允许值
+        enums = es.enum_predicates()
+        if enums:
+            for pname, pvals in enums.items():
+                parts.append(f"**{pname}** 允许值: {', '.join(pvals[:10])}")
+
+        # 性格标签
+        for p in es.predicates.values():
+            if p.personality_tags:
+                parts.append(f"**{p.name}性格标签**: {', '.join(p.personality_tags)}")
+            if p.taboos:
+                parts.append(f"**{p.name}禁忌**: {', '.join(p.taboos)}")
+
+        return "\n".join(parts) if parts else ""
+
+    def get_locked_predicates(self, entity_type: str) -> list[str]:
+        """返回某实体类型的所有 LOCKED 谓词名。"""
+        es = self.get_entity_schema(entity_type)
+        return es.locked_predicates() if es else []
+
+    def get_append_only_predicates(self, entity_type: str) -> list[str]:
+        """返回某实体类型的所有 APPEND_ONLY 谓词名。"""
+        es = self.get_entity_schema(entity_type)
+        return es.append_only_predicates() if es else []
+
+    def get_enum_predicates(self, entity_type: str) -> dict[str, list[str]]:
+        """返回某实体类型的所有 enum 谓词及其允许值。"""
+        es = self.get_entity_schema(entity_type)
+        return es.enum_predicates() if es else {}
+
     # ── 校验 ──
 
     def validate_fact(self, fact: "EntityFact", entity_type: str) -> list[str]:
-        """校验单条事实，返回错误列表（空 = 通过）。"""
+        """校验单条事实，返回错误列表（空 = 通过）。
+
+        Schema 3.0: 未定义的谓词不再静默通过，而是记录为 info 级别（不阻断）。
+        enum 检查变为 soft warning，不阻断——因为 schema 枚举天然不完整。
+        """
         errors = []
 
         if not fact.predicate or not fact.predicate.strip():
@@ -188,18 +560,16 @@ class NovelSchema:
             if not isinstance(fact.until_chapter, int) or fact.until_chapter <= fact.since_chapter:
                 errors.append(f"until_chapter ({fact.until_chapter}) 必须 > since_chapter ({fact.since_chapter})")
 
-        # 检查谓词是否在 schema 中定义
+        # enum 类型检查：现在是 soft warning，不阻断
+        # 因为 LLM 生成的枚举列表天然不完整，硬阻断会拒绝合理的值
         pdef = self.get_predicate_def(entity_type, fact.predicate)
-        if pdef is None:
-            # 未定义的谓词：不硬阻断，但记录（LLM 可能产出 schema 之外的新属性）
-            pass
-        else:
-            # enum 类型检查值是否在允许列表中
-            if pdef.type == "enum" and pdef.values:
-                if fact.object not in pdef.values:
-                    errors.append(
-                        f"'{fact.predicate}' 的值 '{fact.object}' 不在允许列表中: {pdef.values}"
-                    )
+        if pdef is not None and pdef.type == "enum" and pdef.values:
+            if fact.object not in pdef.values:
+                # 标记为 info 级别，提示可能需要扩展 schema
+                errors.append(
+                    f"[info] '{fact.predicate}' 的值 '{fact.object}' 不在 schema 枚举中 "
+                    f"({', '.join(pdef.values[:5])}...)，可能需要扩展 schema"
+                )
 
         return errors
 
@@ -215,26 +585,30 @@ class NovelSchema:
         return errors
 
     def check_override_violation(
-        self, fact: "EntityFact", existing_state: "EntityState | None"
+        self, entity_type: str, predicate: str,
+        new_value: str, existing_state: "EntityState | None",
     ) -> str | None:
         """检查一条新事实是否违反 override policy。
+
         返回错误描述，或 None（无违反）。
+
+        Schema 3.0: 第一个参数改为 entity_type（之前从 fact 推断）。
         """
-        policy = self.get_override_policy(fact.entity_type if hasattr(fact, 'entity_type') else "person", fact.predicate)
+        policy = self.get_override_policy(entity_type, predicate)
 
         if policy == OverridePolicy.LOCKED and existing_state:
-            old = existing_state.get_fact(fact.predicate)
-            if old and old.object != fact.object:
+            old = existing_state.get_fact(predicate)
+            if old and old.object != new_value:
                 return (
-                    f"LOCKED 字段 '{fact.predicate}' 尝试从 '{old.object}' 改为 "
-                    f"'{fact.object}' — 拒绝写入"
+                    f"LOCKED 字段 '{predicate}' 尝试从 '{old.object}' 改为 "
+                    f"'{new_value}' — 拒绝写入"
                 )
 
         if policy == OverridePolicy.APPEND_ONLY and existing_state:
-            old = existing_state.get_fact(fact.predicate)
-            if old and old.object != fact.object:
+            old = existing_state.get_fact(predicate)
+            if old and old.object != new_value:
                 return (
-                    f"APPEND_ONLY 字段 '{fact.predicate}' 不允许修改已有值 '{old.object}'"
+                    f"APPEND_ONLY 字段 '{predicate}' 不允许修改已有值 '{old.object}'"
                 )
 
         return None
@@ -242,15 +616,11 @@ class NovelSchema:
     # ── I/O ──
 
     def to_dict(self) -> dict:
-        return {
+        d = {
             "novel": self.novel,
             "schema_version": self.schema_version,
             "generated_at": self.generated_at,
             "generated_by": self.generated_by,
-            "override_policy": {
-                "locked": self.locked_fields,
-                "append_only": self.append_only_fields,
-            },
             "retrieval": {
                 "min_recall": self.min_recall,
                 "max_hop": self.max_hop,
@@ -260,6 +630,18 @@ class NovelSchema:
                 etype: es.to_dict() for etype, es in self.entity_schemas.items()
             },
         }
+        # Schema 3.0 字段
+        if self.evolution_history:
+            d["evolution_history"] = [e.to_dict() for e in self.evolution_history]
+        if self.last_evolved_chapter:
+            d["last_evolved_chapter"] = self.last_evolved_chapter
+        if self.protagonist_personality:
+            d["protagonist_personality"] = self.protagonist_personality
+        if self.validator_threshold != "warning":
+            d["validator_threshold"] = self.validator_threshold
+        if self.max_review_iterations != 3:
+            d["max_review_iterations"] = self.max_review_iterations
+        return d
 
     @classmethod
     def from_dict(cls, data: dict) -> "NovelSchema":
@@ -268,15 +650,20 @@ class NovelSchema:
         s.schema_version = data.get("schema_version", 1)
         s.generated_at = data.get("generated_at", "")
         s.generated_by = data.get("generated_by", "")
-        op = data.get("override_policy", {})
-        s.locked_fields = op.get("locked", [])
-        s.append_only_fields = op.get("append_only", [])
         ret = data.get("retrieval", {})
         s.min_recall = ret.get("min_recall", 3)
         s.max_hop = ret.get("max_hop", 1)
         s.max_entity_cards = ret.get("max_entity_cards", 30)
         for etype, edata in data.get("entity_schemas", {}).items():
             s.entity_schemas[etype] = EntitySchema.from_dict(etype, edata)
+        # Schema 3.0
+        s.evolution_history = [
+            SchemaEvolution.from_dict(e) for e in data.get("evolution_history", [])
+        ]
+        s.last_evolved_chapter = data.get("last_evolved_chapter", 0)
+        s.protagonist_personality = data.get("protagonist_personality", {})
+        s.validator_threshold = data.get("validator_threshold", "warning")
+        s.max_review_iterations = data.get("max_review_iterations", 3)
         return s
 
     @classmethod
@@ -337,15 +724,34 @@ class EntityState:
     entity: str
     entity_type: str           # person | item | location | concept
     last_updated_chapter: int = 0
+    entity_grade: str = "stub" # reference | stub | active
+    first_seen_chapter: int = 0
     facts: list[EntityFact] = field(default_factory=list)
 
+    @property
+    def is_reference(self) -> bool:
+        return self.entity_grade == "reference"
+
+    @property
+    def is_stub(self) -> bool:
+        return self.entity_grade == "stub"
+
+    @property
+    def is_active(self) -> bool:
+        return self.entity_grade == "active"
+
     def to_dict(self) -> dict:
-        return {
+        d = {
             "entity": self.entity,
             "entity_type": self.entity_type,
             "last_updated_chapter": self.last_updated_chapter,
             "facts": [f.to_dict() for f in self.facts],
         }
+        if self.entity_grade != "stub":
+            d["entity_grade"] = self.entity_grade
+        if self.first_seen_chapter:
+            d["first_seen_chapter"] = self.first_seen_chapter
+        return d
 
     def get_fact(self, predicate: str) -> EntityFact | None:
         """获取某谓词的最新有效事实。"""
@@ -403,6 +809,8 @@ def load_entity_state(state_path: Path) -> EntityState | None:
             entity=data["entity"],
             entity_type=data.get("entity_type", "person"),
             last_updated_chapter=data.get("last_updated_chapter", 0),
+            entity_grade=data.get("entity_grade", "stub"),
+            first_seen_chapter=data.get("first_seen_chapter", 0),
             facts=facts,
         )
     except (json.JSONDecodeError, KeyError, TypeError) as e:

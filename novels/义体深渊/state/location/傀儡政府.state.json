@@ -1,0 +1,28 @@
+{
+  "entity": "傀儡政府",
+  "entity_type": "location",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: ### 6. [[傀儡政府]]（行政工具） - 名义上的[[铁幕都市行政院]]，所有决策需经[[宙斯集团]]审核。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

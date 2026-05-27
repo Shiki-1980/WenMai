@@ -1,0 +1,28 @@
+{
+  "entity": "信息流税",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: ### 4. [[信息流税]] - 每次数据上传/下载、每次神经链路连接、每次使用[[数据云]]，均需缴纳 0.1% 的流量税给[[宙斯集团]]。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

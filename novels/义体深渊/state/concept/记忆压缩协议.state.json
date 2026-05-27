@@ -1,0 +1,28 @@
+{
+  "entity": "记忆压缩协议",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: 主角 **[[陈铭]]** 原为[[宙斯集团]]中层技术员，[[三阶赛博格]]，[[信用评分]] 4800，过着[[钢骨走廊]]的体面生活。他负责维护[[记忆交割仪式]]中的[[记忆压缩协议]]。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

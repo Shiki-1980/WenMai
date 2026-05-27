@@ -1,0 +1,28 @@
+{
+  "entity": "神经污染",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: |------|------|----------| | [[零阶人]] | 天然体 | 无任何义体植入，仅依靠生物肉体。最大优势：对[[神经污染]]免疫，但力量与寿命极度受限。常被视为“原始牲口”。 | | [[一阶义体者]] | 单挂件 | 植入 1-2 件低端义体（如[[机械义眼]]、[[皮下通讯芯片]]）。改造率 ≤15%。可进行基础数据交互，但无法接入[[深层数据流]]。 |",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

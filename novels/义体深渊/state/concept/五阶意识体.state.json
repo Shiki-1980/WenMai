@@ -1,0 +1,28 @@
+{
+  "entity": "五阶意识体",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: - 阶级vs阶级：[[锈蚀深渊]]的底层回收者们（[[灰鼠]]）与[[钢骨走廊]]的受管理者之间的压迫与反叛。 - 新神vs旧人：[[五阶意识体]]（试图主宰现实）与[[零阶人]]（代表生物本能与情感）的对立。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

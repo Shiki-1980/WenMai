@@ -1,0 +1,28 @@
+{
+  "entity": "核心服务器",
+  "entity_type": "item",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: | [[四阶神经链接者]] | 云端之脑 | 改造率 65%-90%，脑部植入[[量子神经桥]]，能够直接与[[宙斯主脑]]或本地[[数据池]]进行[[无延迟同步]]。可同时操作数百个[[虚拟化身]]。 | | [[五阶意识体]] | 数字幽灵 | 改造率 >90%，仅保留少量原生脑组织，通过[[意识上载]]脱离肉体，以[[量子态]]存在于[[核心服务器]]中。理论上永生，但需消耗巨额[[信用点数",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

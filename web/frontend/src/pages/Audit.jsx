@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getAuditSummary, getWorld, getMainPlot } from "../lib/api";
+import { getAuditSummary, getWorld, getArc } from "../lib/api";
 import Terminal from "../components/Terminal";
 
 async function saveContent(endpoint, content) {
@@ -17,11 +17,12 @@ export default function Audit() {
   const [loading, setLoading] = useState(true);
   const [revise, setRevise] = useState("");
   const [target, setTarget] = useState("all");
+  const [selectedArc, setSelectedArc] = useState("");
   const [terminalLines, setTerminalLines] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
 
-  // Full content viewer
-  const [viewer, setViewer] = useState(null); // "world" | "main" | null
+  // Content viewer
+  const [viewer, setViewer] = useState(null); // "world" | {type:"arc", name}
   const [viewerContent, setViewerContent] = useState("");
   const [editContent, setEditContent] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -31,6 +32,10 @@ export default function Audit() {
     try {
       const data = await getAuditSummary();
       setSummary(data);
+      // Auto-select first arc if available
+      if (data.arcs?.length > 0 && !selectedArc) {
+        setSelectedArc(data.arcs[0].name);
+      }
     } catch {
       // silent
     } finally {
@@ -42,11 +47,20 @@ export default function Audit() {
     loadSummary();
   }, []);
 
-  const openViewer = async (type) => {
-    setViewer(type);
+  const openViewer = async (type, arcName) => {
+    if (type === "arc") {
+      setViewer({ type: "arc", name: arcName });
+    } else {
+      setViewer(type);
+    }
     setIsEditing(false);
     try {
-      const data = type === "world" ? await getWorld() : await getMainPlot();
+      let data;
+      if (type === "world") {
+        data = await getWorld();
+      } else if (type === "arc") {
+        data = await getArc(arcName);
+      }
       setViewerContent(data.content || "");
       setEditContent(data.content || "");
     } catch {
@@ -66,8 +80,10 @@ export default function Audit() {
     if (!viewer) return;
     setSaving(true);
     try {
-      const endpoint = viewer === "world" ? "/world" : "/main-plot";
-      await saveContent(endpoint, editContent);
+      if (viewer === "world") {
+        await saveContent("/world", editContent);
+      }
+      // Arc content is saved via audit revision, direct save not supported here
       setViewerContent(editContent);
       setIsEditing(false);
       loadSummary();
@@ -84,15 +100,22 @@ export default function Audit() {
 
   const runAudit = async () => {
     if (!revise.trim() || isRunning) return;
+    if (target === "outline" && !selectedArc) return;
     setIsRunning(true);
     setTerminalLines([]);
-    addLine(`$ audit --revise "${revise}" --target ${target}\n`, "info");
+
+    const arcInfo = target === "outline" ? ` [${selectedArc}]` : "";
+    addLine(`$ audit --revise "${revise}" --target ${target}${arcInfo}\n`, "info");
 
     try {
       const res = await fetch("/api/audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ revise, target }),
+        body: JSON.stringify({
+          revise,
+          target,
+          arc_name: target === "outline" ? selectedArc : "",
+        }),
       });
 
       const reader = res.body.getReader();
@@ -155,7 +178,7 @@ export default function Audit() {
 
       {summary && (
         <>
-          {/* World & Main Plot cards — now clickable */}
+          {/* World & Arcs cards */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             <motion.button
               initial={{ opacity: 0, y: 16 }}
@@ -177,25 +200,36 @@ export default function Audit() {
               </p>
             </motion.button>
 
-            <motion.button
+            <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              onClick={() => openViewer("main")}
-              className="text-left bg-ink-card border border-ink-border rounded-xl p-5 hover:border-ink-accent/30 transition-colors cursor-pointer group"
+              className="bg-ink-card border border-ink-border rounded-xl p-5"
             >
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-serif text-base text-ink-text">
-                  主线 {summary.main_plot?.exists ? "✓" : "（缺失）"}
-                </h3>
-                <span className="text-xs text-ink-text-muted opacity-0 group-hover:opacity-100 transition-opacity font-sans">
-                  点击查看全文 →
-                </span>
-              </div>
-              <p className="text-xs text-ink-text-secondary font-sans leading-relaxed line-clamp-4">
-                {summary.main_plot?.preview || "未生成"}
-              </p>
-            </motion.button>
+              <h3 className="font-serif text-base text-ink-text mb-3">
+                大纲 ({summary.arcs?.length || 0} 个)
+              </h3>
+              {summary.arcs?.length > 0 ? (
+                <div className="space-y-1 max-h-[120px] overflow-y-auto">
+                  {(summary.arcs || []).map((a) => (
+                    <button
+                      key={a.name}
+                      onClick={() => openViewer("arc", a.name)}
+                      className="w-full flex justify-between items-center text-sm font-sans bg-ink-surface hover:bg-ink-accent/10 rounded px-3 py-1.5 transition-colors group"
+                    >
+                      <span className="text-ink-text group-hover:text-ink-accent transition-colors">
+                        {a.name}
+                      </span>
+                      <span className="text-ink-text-muted text-xs">
+                        {a.range || a.status}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-ink-text-muted font-sans">暂无大纲</p>
+              )}
+            </motion.div>
           </div>
 
           {/* Entity Summary */}
@@ -222,29 +256,6 @@ export default function Audit() {
               ))}
             </div>
           </motion.div>
-
-          {/* Arc Summary */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="bg-ink-card border border-ink-border rounded-xl p-5 mb-6"
-          >
-            <h3 className="font-serif text-base text-ink-text mb-3">
-              大纲 ({summary.arcs?.length || 0} 个)
-            </h3>
-            <div className="space-y-1">
-              {(summary.arcs || []).map((a) => (
-                <div
-                  key={a.name}
-                  className="flex justify-between text-sm font-sans bg-ink-surface rounded px-3 py-1.5"
-                >
-                  <span className="text-ink-text">{a.name}</span>
-                  <span className="text-ink-text-muted">{a.range}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
         </>
       )}
 
@@ -256,11 +267,12 @@ export default function Audit() {
         className="bg-ink-card border border-ink-border rounded-xl p-5 mb-6"
       >
         <h3 className="font-serif text-base text-ink-text mb-4">修订内容</h3>
+
+        {/* Target selector */}
         <div className="flex gap-2 mb-3">
           {[
             ["all", "全部"],
             ["world", "世界观"],
-            ["plot", "主线"],
             ["entities", "实体"],
             ["outline", "大纲"],
           ].map(([value, label]) => (
@@ -277,6 +289,25 @@ export default function Audit() {
             </button>
           ))}
         </div>
+
+        {/* Arc selector — visible when target is outline */}
+        {target === "outline" && (
+          <div className="mb-3">
+            <select
+              value={selectedArc}
+              onChange={(e) => setSelectedArc(e.target.value)}
+              className="w-full bg-ink-surface border border-ink-border text-ink-text text-sm rounded-lg px-3 py-2 font-sans focus:outline-none focus:border-ink-accent transition-colors"
+            >
+              <option value="">选择要修订的大纲...</option>
+              {(summary?.arcs || []).map((a) => (
+                <option key={a.name} value={a.name}>
+                  {a.name} ({a.range})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <textarea
           value={revise}
           onChange={(e) => setRevise(e.target.value)}
@@ -286,14 +317,18 @@ export default function Audit() {
         />
         <button
           onClick={runAudit}
-          disabled={isRunning || !revise.trim()}
+          disabled={isRunning || !revise.trim() || (target === "outline" && !selectedArc)}
           className={`w-full py-2.5 rounded-lg font-sans text-sm font-medium transition-all ${
-            isRunning || !revise.trim()
+            isRunning || !revise.trim() || (target === "outline" && !selectedArc)
               ? "bg-ink-border text-ink-text-muted cursor-not-allowed"
               : "bg-ink-accent text-ink-bg hover:bg-ink-accent-hover active:scale-[0.99]"
           }`}
         >
-          {isRunning ? "修订中..." : "执行修订"}
+          {isRunning
+            ? "修订中..."
+            : target === "outline" && selectedArc
+              ? `执行修订 — ${selectedArc}`
+              : "执行修订"}
         </button>
       </motion.div>
 
@@ -413,38 +448,47 @@ export default function Audit() {
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-ink-border shrink-0">
                   <h3 className="font-serif text-xl text-ink-text font-semibold">
-                    {viewer === "world" ? "世界观" : "主线"}
+                    {viewer === "world"
+                      ? "世界观"
+                      : `大纲 — ${viewer.name}`}
                   </h3>
                   <div className="flex items-center gap-2">
-                    {!isEditing ? (
-                      <button
-                        onClick={() => {
-                          setEditContent(viewerContent);
-                          setIsEditing(true);
-                        }}
-                        className="px-3 py-1.5 text-xs font-sans rounded-lg bg-ink-surface border border-ink-border text-ink-text-secondary hover:text-ink-text transition-colors"
-                      >
-                        编辑
-                      </button>
-                    ) : (
-                      <>
-                        <button
-                          onClick={handleSave}
-                          disabled={saving}
-                          className="px-3 py-1.5 text-xs font-sans rounded-lg bg-ink-accent text-ink-bg hover:bg-ink-accent-hover transition-colors disabled:opacity-50"
-                        >
-                          {saving ? "保存中..." : "保存"}
-                        </button>
+                    {viewer === "world" && (
+                      !isEditing ? (
                         <button
                           onClick={() => {
                             setEditContent(viewerContent);
-                            setIsEditing(false);
+                            setIsEditing(true);
                           }}
                           className="px-3 py-1.5 text-xs font-sans rounded-lg bg-ink-surface border border-ink-border text-ink-text-secondary hover:text-ink-text transition-colors"
                         >
-                          取消
+                          编辑
                         </button>
-                      </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={handleSave}
+                            disabled={saving}
+                            className="px-3 py-1.5 text-xs font-sans rounded-lg bg-ink-accent text-ink-bg hover:bg-ink-accent-hover transition-colors disabled:opacity-50"
+                          >
+                            {saving ? "保存中..." : "保存"}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditContent(viewerContent);
+                              setIsEditing(false);
+                            }}
+                            className="px-3 py-1.5 text-xs font-sans rounded-lg bg-ink-surface border border-ink-border text-ink-text-secondary hover:text-ink-text transition-colors"
+                          >
+                            取消
+                          </button>
+                        </>
+                      )
+                    )}
+                    {typeof viewer === "object" && viewer.type === "arc" && (
+                      <span className="text-xs text-ink-text-muted font-sans">
+                        用左侧「修订内容」的 LLM 修订来修改大纲
+                      </span>
                     )}
                     <button
                       onClick={closeViewer}
@@ -457,23 +501,25 @@ export default function Audit() {
 
                 {/* Body */}
                 <div className="overflow-y-auto px-6 py-5 flex-1">
-                  {isEditing ? (
+                  {typeof viewer === "object" || viewer !== "world" || !isEditing ? (
+                    <div className="text-ink-text-secondary font-sans leading-relaxed whitespace-pre-wrap text-sm">
+                      {viewerContent || "（无内容）"}
+                    </div>
+                  ) : (
                     <textarea
                       value={editContent}
                       onChange={(e) => setEditContent(e.target.value)}
                       className="w-full h-full min-h-[60vh] bg-ink-surface border border-ink-border rounded-lg px-4 py-3 text-sm text-ink-text font-sans leading-relaxed focus:outline-none focus:border-ink-accent transition-colors resize-none"
                     />
-                  ) : (
-                    <div className="text-ink-text-secondary font-sans leading-relaxed whitespace-pre-wrap text-sm">
-                      {viewerContent || "（无内容）"}
-                    </div>
                   )}
                 </div>
 
                 {/* Footer */}
                 <div className="px-6 py-3 border-t border-ink-border shrink-0 flex justify-between text-xs text-ink-text-muted font-sans">
                   <span>
-                    {viewer === "world" ? "plot/世界观.md" : "plot/主线.md"}
+                    {viewer === "world"
+                      ? "plot/世界观.md"
+                      : `plot/arcs/${viewer.name}.md`}
                   </span>
                   <span>
                     {viewerContent.length} 字

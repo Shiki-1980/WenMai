@@ -1,0 +1,28 @@
+{
+  "entity": "资本信用评分",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 居民：企业中层、技术核心、[[二阶改造人]]及[[三阶赛博格]]。 - 特征：密集的[[立体交通网络]]，24 小时不熄的霓虹广告屏；每个社区都有[[信用监测站]]；居住条件按[[资本信用评分]]分配。 - 地标：[[义体保障局]]（改造审批与评级机构）、[[数据交易所]]（非法的记忆交易黑市）。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

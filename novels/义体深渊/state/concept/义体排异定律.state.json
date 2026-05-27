@@ -1,0 +1,28 @@
+{
+  "entity": "义体排异定律",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: **注：** 改造率超过 35% 后，必须定期注射[[排异抑制剂]]（由巨企垄断生产），否则会触发[[义体排异定律]]——神经熔毁，最终化为[[信息腐肉]]。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

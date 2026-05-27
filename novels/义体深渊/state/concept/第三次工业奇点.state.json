@@ -1,0 +1,28 @@
+{
+  "entity": "第三次工业奇点",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: 公元2199年，人类文明在[[第三次工业奇点]]后彻底重构。义体技术、神经接口、脑机交互达到巅峰，但一切技术都被资本垄断于少数[[巨企]]手中。由[[宙斯集团]]主导的[[铁幕都市]]是全球秩序的缩影：表面是璀璨的[[水晶穹顶]]，脚下是腐烂的[[锈蚀深渊]]。科技并未带来解放，反而将人性碾碎为可量化的数据流。一个名为[[记忆交割仪式]]的黑色产业让无数个体沦为资本的记忆燃料——故事正始于一名遭",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

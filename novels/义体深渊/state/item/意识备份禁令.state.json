@@ -1,0 +1,28 @@
+{
+  "entity": "意识备份禁令",
+  "entity_type": "item",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: ### 5. [[意识备份禁令]] - 只有[[五阶意识体]]及[[宙斯集团]]董事会成员可合法进行[[意识上载]]。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

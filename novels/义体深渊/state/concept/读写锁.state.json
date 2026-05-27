@@ -1,0 +1,28 @@
+{
+  "entity": "读写锁",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 精神领袖：[[解码者·零]]，自称是[[五阶意识体]]的叛逃者。 - 目标：破解[[宙斯主脑]]的[[读写锁]]，解放被资本控制的[[数据云]]。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

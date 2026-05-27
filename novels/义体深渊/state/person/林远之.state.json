@@ -1,0 +1,28 @@
+{
+  "entity": "林远之",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 名义上的[[铁幕都市行政院]]，所有决策需经[[宙斯集团]]审核。 - 首脑[[林远之]]每三年由[[资本信用评分]]最高的前 0.01% 公民选举产生（实际上由集团指定）。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

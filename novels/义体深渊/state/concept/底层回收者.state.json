@@ -1,0 +1,28 @@
+{
+  "entity": "底层回收者",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: ### 独特能力/天赋 - [[神经残留直觉]] 在[[晴空坠落]]事件中，一股异常数据流熔毁了他的部分[[量子神经桥]]，却意外激活了一种生物-机械混合的直觉：他能“嗅”到一段电子信号背后的“人类情绪残留”——比如能从广告代码中感到绝望，从[[底层回收者]]的旧义体中读取残留的、未经信用的“渴望”。这能力被官方诊断为“[[神经精神病]]”，但正是他看穿巨企谎言的本钱。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

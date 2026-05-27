@@ -1,0 +1,28 @@
+{
+  "entity": "纳米粉尘",
+  "entity_type": "item",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 居民：破产者、[[零阶人]]、[[一阶义体者]]、逃犯、黑客、回收者。 - 特征：空气中弥漫[[纳米粉尘]]与[[义体废油]]气味；电力供应极不稳定；污水横流，犯罪率 100%；[[宙斯集团]]在此设置[[垃圾投放口]]，将巨企淘汰的义体零件倾倒而下，形成[[数据坟场]]。 - 地标：[[神经丛林]]（非法黑客聚集地，由废弃服务器与临时搭建的通信塔构成）、[[食腐者酒吧]]（底层信息交换中心）",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

@@ -39,10 +39,7 @@ constraints: "本卷的角色状态、战力限制等约束"
 4. 伏笔规划表格
 5. 约束条件详细说明"""
 
-OUTLINE_USER = """## 故事主线
-{main_plot}
-
-## 世界观
+OUTLINE_USER = """## 世界观（含主角设定和故事开篇）
 {world_setting}
 
 ## 当前进度

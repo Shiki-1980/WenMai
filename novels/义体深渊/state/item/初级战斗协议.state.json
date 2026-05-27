@@ -1,0 +1,28 @@
+{
+  "entity": "初级战斗协议",
+  "entity_type": "item",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: | [[一阶义体者]] | 单挂件 | 植入 1-2 件低端义体（如[[机械义眼]]、[[皮下通讯芯片]]）。改造率 ≤15%。可进行基础数据交互，但无法接入[[深层数据流]]。 | | [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体，改造率 15%-35%。可启用[[]低阶神经加速]]，反应速度提升 2 倍，并能运行[[初级战斗协议]]。 | | [[三阶赛博格]] | 合金骨骼",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

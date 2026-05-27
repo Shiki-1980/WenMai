@@ -1,0 +1,28 @@
+{
+  "entity": "自由黑客联盟",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 主要业务：从[[数据坟场]]偷取义体零件、走私[[排异抑制剂]]代用品、盗窃[[记忆晶片]]。 - 与[[自由黑客联盟]]有隐蔽合作。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

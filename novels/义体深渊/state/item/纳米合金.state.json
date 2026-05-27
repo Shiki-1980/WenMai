@@ -1,0 +1,28 @@
+{
+  "entity": "纳米合金",
+  "entity_type": "item",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: | [[二阶改造人]] | 半金属 | 植入 3-5 件主流义体，改造率 15%-35%。可启用[[]低阶神经加速]]，反应速度提升 2 倍，并能运行[[初级战斗协议]]。 | | [[三阶赛博格]] | 合金骨骼 | 改造率 35%-65%，核心骨骼与主要器官均替换为[[纳米合金]]。拥有[[局部数据超频]]能力，可短时间免疫[[数据震慑]]。 | | [[四阶神经链接者]] | 云端之脑 |",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

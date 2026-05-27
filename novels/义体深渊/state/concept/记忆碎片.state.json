@@ -1,0 +1,28 @@
+{
+  "entity": "记忆碎片",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: - **[[简·周]]**：[[宙斯集团]]的[[金融派]]助理，实际上是[[晴空坠落]]的直接执行人。她出现在[[锈蚀深渊]]伪装成中介，试图说服[[陆沉]]签署一份“自愿抹除协议”，以换取“平静的死亡”。她代表着系统内部的无限妥协与罪恶。 3.  **关键转折点**：[[陆沉]]成功从[[数据坟场]]的“[[剥离协议V3.0]]”原始服务器中，分离出自己的[[记忆碎片]]——全息影像显示，他的",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "entity": "剥离协议",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: - **触发事件**：[[晴空坠落]]——集团[[金融派]]派系，为了掩盖一个秘密实验室的非法行为（该实验室正尝试将死刑犯的神经元直接转化为[[宙斯主脑]]的[[永久算力]]），发动了信息清洗。他们伪装成意外的[[神经链路污染]]，将污点导向[[技术派]]的棋子，[[陆沉]]被精准标记。他的神经接口被强行注入一个“黑洞文件”，瞬间切断了所有[[信用点数]]、身份权限与房屋授权。他被安保程序当作“[",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

@@ -1,0 +1,660 @@
+{
+  "version": 1,
+  "entities": {
+    "第三次工业奇点": {
+      "canonical": "第三次工业奇点",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "巨企": {
+      "canonical": "巨企",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "宙斯集团": {
+      "canonical": "宙斯集团",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "铁幕都市": {
+      "canonical": "铁幕都市",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "水晶穹顶": {
+      "canonical": "水晶穹顶",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "锈蚀深渊": {
+      "canonical": "锈蚀深渊",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "记忆交割仪式": {
+      "canonical": "记忆交割仪式",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经链路污染": {
+      "canonical": "神经链路污染",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "义体进化序列": {
+      "canonical": "义体进化序列",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经-机械共生": {
+      "canonical": "神经-机械共生",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经接口核心": {
+      "canonical": "神经接口核心",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "数据云": {
+      "canonical": "数据云",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "义体评级局": {
+      "canonical": "义体评级局",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "零阶人": {
+      "canonical": "零阶人",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经污染": {
+      "canonical": "神经污染",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "一阶义体者": {
+      "canonical": "一阶义体者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "机械义眼": {
+      "canonical": "机械义眼",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "皮下通讯芯片": {
+      "canonical": "皮下通讯芯片",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "深层数据流": {
+      "canonical": "深层数据流",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "二阶改造人": {
+      "canonical": "二阶改造人",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "初级战斗协议": {
+      "canonical": "初级战斗协议",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "三阶赛博格": {
+      "canonical": "三阶赛博格",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "纳米合金": {
+      "canonical": "纳米合金",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "局部数据超频": {
+      "canonical": "局部数据超频",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "数据震慑": {
+      "canonical": "数据震慑",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "四阶神经链接者": {
+      "canonical": "四阶神经链接者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "量子神经桥": {
+      "canonical": "量子神经桥",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "宙斯主脑": {
+      "canonical": "宙斯主脑",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "数据池": {
+      "canonical": "数据池",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "无延迟同步": {
+      "canonical": "无延迟同步",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "虚拟化身": {
+      "canonical": "虚拟化身",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "五阶意识体": {
+      "canonical": "五阶意识体",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "意识上载": {
+      "canonical": "意识上载",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "量子态": {
+      "canonical": "量子态",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "核心服务器": {
+      "canonical": "核心服务器",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "信用点数": {
+      "canonical": "信用点数",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "排异抑制剂": {
+      "canonical": "排异抑制剂",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "义体排异定律": {
+      "canonical": "义体排异定律",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "信息腐肉": {
+      "canonical": "信息腐肉",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "穹顶结构": {
+      "canonical": "穹顶结构",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "顶级投资人": {
+      "canonical": "顶级投资人",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "意识直连": {
+      "canonical": "意识直连",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "纳米合成厨房": {
+      "canonical": "纳米合成厨房",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "宙斯之眼": {
+      "canonical": "宙斯之眼",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "天梯站": {
+      "canonical": "天梯站",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "钢骨走廊": {
+      "canonical": "钢骨走廊",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "立体交通网络": {
+      "canonical": "立体交通网络",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "信用监测站": {
+      "canonical": "信用监测站",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "资本信用评分": {
+      "canonical": "资本信用评分",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "义体保障局": {
+      "canonical": "义体保障局",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "数据交易所": {
+      "canonical": "数据交易所",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "纳米粉尘": {
+      "canonical": "纳米粉尘",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "义体废油": {
+      "canonical": "义体废油",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "垃圾投放口": {
+      "canonical": "垃圾投放口",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "数据坟场": {
+      "canonical": "数据坟场",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经丛林": {
+      "canonical": "神经丛林",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "食腐者酒吧": {
+      "canonical": "食腐者酒吧",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "意识残次品": {
+      "canonical": "意识残次品",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "回收者工会": {
+      "canonical": "回收者工会",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "低阶神经加速": {
+      "canonical": "低阶神经加速",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "坟场之魂": {
+      "canonical": "坟场之魂",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "技术派": {
+      "canonical": "技术派",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "金融派": {
+      "canonical": "金融派",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "安保派": {
+      "canonical": "安保派",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "终身契约": {
+      "canonical": "终身契约",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "底层回收者": {
+      "canonical": "底层回收者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "灰鼠": {
+      "canonical": "灰鼠",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "记忆晶片": {
+      "canonical": "记忆晶片",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "自由黑客联盟": {
+      "canonical": "自由黑客联盟",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "解码者·零": {
+      "canonical": "解码者·零",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "读写锁": {
+      "canonical": "读写锁",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "义体教团": {
+      "canonical": "义体教团",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "先知·铁骨": {
+      "canonical": "先知·铁骨",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "机械飞升教义": {
+      "canonical": "机械飞升教义",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "净化者": {
+      "canonical": "净化者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "傀儡政府": {
+      "canonical": "傀儡政府",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "铁幕都市行政院": {
+      "canonical": "铁幕都市行政院",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "林远之": {
+      "canonical": "林远之",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经警察": {
+      "canonical": "神经警察",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经压制网": {
+      "canonical": "神经压制网",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "凯瑟琳·范": {
+      "canonical": "凯瑟琳·范",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "记忆交割": {
+      "canonical": "记忆交割",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "天梯": {
+      "canonical": "天梯",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "记忆燃料容器": {
+      "canonical": "记忆燃料容器",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经容错阈值": {
+      "canonical": "神经容错阈值",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经熔毁": {
+      "canonical": "神经熔毁",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "记忆产权法": {
+      "canonical": "记忆产权法",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "记忆豁免证": {
+      "canonical": "记忆豁免证",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "精神残缺": {
+      "canonical": "精神残缺",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "身份认同障碍": {
+      "canonical": "身份认同障碍",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "信息流税": {
+      "canonical": "信息流税",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "意识备份禁令": {
+      "canonical": "意识备份禁令",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "记忆燃料": {
+      "canonical": "记忆燃料",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "数据污染规则": {
+      "canonical": "数据污染规则",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "记忆坍缩事件": {
+      "canonical": "记忆坍缩事件",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "陈铭": {
+      "canonical": "陈铭",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "信用评分": {
+      "canonical": "信用评分",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "记忆压缩协议": {
+      "canonical": "记忆压缩协议",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "": {
+      "canonical": "",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "反向神经冲击": {
+      "canonical": "反向神经冲击",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "灵魂熔炉计划": {
+      "canonical": "灵魂熔炉计划",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "禁忌记忆": {
+      "canonical": "禁忌记忆",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "底层管理员权限": {
+      "canonical": "底层管理员权限",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "晴空坠落": {
+      "canonical": "晴空坠落",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "第五阶层": {
+      "canonical": "第五阶层",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "陆沉": {
+      "canonical": "陆沉",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经残留直觉": {
+      "canonical": "神经残留直觉",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经精神病": {
+      "canonical": "神经精神病",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "剥离协议V3.0": {
+      "canonical": "剥离协议V3.0",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "情感数据包": {
+      "canonical": "情感数据包",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "永久算力": {
+      "canonical": "永久算力",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "剥离协议": {
+      "canonical": "剥离协议",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "隐形巡警": {
+      "canonical": "隐形巡警",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "光学迷彩": {
+      "canonical": "光学迷彩",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神经飞镖": {
+      "canonical": "神经飞镖",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "天梯票": {
+      "canonical": "天梯票",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "苏医生": {
+      "canonical": "苏医生",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "后人类知觉": {
+      "canonical": "后人类知觉",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "幽灵协议": {
+      "canonical": "幽灵协议",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "简·周": {
+      "canonical": "简·周",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "记忆碎片": {
+      "canonical": "记忆碎片",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "隐身巡警": {
+      "canonical": "隐身巡警",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "收割者": {
+      "canonical": "收割者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "巴别塔": {
+      "canonical": "巴别塔",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "宙斯主脑2.0": {
+      "canonical": "宙斯主脑2.0",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "力量体系": {
+      "canonical": "力量体系",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "阶位": {
+      "canonical": "阶位",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "地理": {
+      "canonical": "地理",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "势力格局": {
+      "canonical": "势力格局",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "核心概念": {
+      "canonical": "核心概念",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "食腐者酒吧的预言": {
+      "canonical": "食腐者酒吧的预言",
+      "aliases": [],
+      "auto_aliases": []
+    }
+  }
+}

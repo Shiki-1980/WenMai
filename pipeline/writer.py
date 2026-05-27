@@ -333,12 +333,23 @@ class VaultWriter:
         if schema:
             errors = schema.validate_delta(delta, known)
             if errors:
-                print(f"  [WARN] Delta 校验失败: {'; '.join(errors)}")
-            # 检查 override 违规
+                # 只报告 info 级别的 enum 溢出（非阻断）
+                actual_errors = [e for e in errors if not e.startswith("[info]")]
+                if actual_errors:
+                    print(f"  [WARN] Delta 校验失败: {'; '.join(actual_errors)}")
+            # 检查 override 违规 —— 现在是阻断性的
+            blocked = []
             for fact in facts:
-                violation = schema.check_override_violation(fact, current)
+                violation = schema.check_override_violation(
+                    entity_type, fact.predicate, fact.object, current,
+                )
                 if violation:
-                    print(f"  [WARN] Override 违规: {violation}")
+                    blocked.append(violation)
+            if blocked:
+                print(f"  [BLOCKED] Override 违规，状态未更新:")
+                for v in blocked:
+                    print(f"    - {v}")
+                return None  # 阻断写入
 
         new_state = apply_delta_to_state(current, delta)
         self.write_entity_state(new_state)

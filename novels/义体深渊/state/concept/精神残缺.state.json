@@ -1,0 +1,28 @@
+{
+  "entity": "精神残缺",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 集团有权在[[记忆交割仪式]]中提取、复制、修改公民记忆，并作为商品交易。 - 被提取过的记忆片段会留下[[精神残缺]]，导致人格崩解或[[身份认同障碍]]。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

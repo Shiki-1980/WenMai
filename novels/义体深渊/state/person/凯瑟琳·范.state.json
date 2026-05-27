@@ -1,0 +1,28 @@
+{
+  "entity": "凯瑟琳·范",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 装备[[神经压制网]]，可直接通过[[数据云]]远程关闭公民的义体。 - 总监[[凯瑟琳·范]]，以冷酷著称。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

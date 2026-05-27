@@ -1,0 +1,28 @@
+{
+  "entity": "力量体系",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: ## 世界观关键元素 - [[力量体系]]：[[义体进化序列]]、[[阶位]]的社会压迫差异、[[排异抑制剂]]的垄断性依赖。 - [[地理]]：[[铁幕都市]]的四层社会带（[[水晶穹顶]] - [[钢骨走廊]] - [[锈蚀深渊]] - [[数据坟场]]）及其物质、精神象征意义。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

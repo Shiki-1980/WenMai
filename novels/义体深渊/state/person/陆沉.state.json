@@ -1,0 +1,56 @@
+{
+  "entity": "陆沉",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "修为",
+      "object": "三阶赛博格",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "身份",
+      "object": "宙斯集团技术规划部副总监（已被剥夺权限）",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "所在",
+      "object": "锈蚀深渊",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "义体失灵60%，仅靠一对旧型机械手爬行",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "天赋",
+      "object": "神经残留直觉",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "挖掘晴空坠落的真相，找回被剥离的记忆",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "从钢骨走廊跌落后，全身义体大部分失灵，记忆正在加速消失，偶遇底层回收者头目灰鼠",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

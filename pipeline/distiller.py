@@ -25,9 +25,10 @@ class DistillResult:
 
 
 class ChapterDistiller:
-    def __init__(self, generator, reader):
+    def __init__(self, generator, reader, schema=None):
         self.generator = generator
         self.reader = reader
+        self.schema = schema
 
     # ── 公开接口 ──────────────────────────────────────────────
 
@@ -42,18 +43,23 @@ class ChapterDistiller:
         # 获取当前状态摘要
         current_states = self._get_current_states()
 
+        # 构建 schema 提示（供 observer/settler/validator 使用）
+        schema_hint = self._build_entity_schema_hint()
+        constraints_hint = self._build_schema_constraints_hint()
+        schema_context = self._build_validator_schema_context()
+
         # 阶段 1: Observer —— 过度提取
         observations = self.generator.observe(
-            chapter_text, known_names, current_states
+            chapter_text, known_names, current_states,
+            schema_hint=schema_hint,
         )
         if not observations:
             return DistillResult({}, degraded=False)
 
         # 阶段 2: Settler —— 输出 JSON delta（首次尝试）
-        # 传入 schema 的 override 约束，让 Settler 知道哪些字段必须用 append_description
-        override_hint = self._build_override_hint()
         delta = self.generator.settle(
-            observations, known_names, current_states + override_hint
+            observations, known_names, current_states,
+            schema_constraints=constraints_hint,
         )
         if not delta:
             return DistillResult({}, degraded=False)
@@ -63,11 +69,11 @@ class ChapterDistiller:
         new_state = self._simulate_new_state(delta, chapter_number)
 
         validation = self.generator.validate_state(
-            chapter_text[:2000], observations, old_state, new_state
+            chapter_text[:2000], observations, old_state, new_state,
+            schema_context=schema_context,
         )
 
         if validation.get("passed", True):
-            # 校验通过，组装完整结果
             return DistillResult(
                 self._build_result(chapter_number, delta, observations),
                 degraded=False,
@@ -79,15 +85,16 @@ class ChapterDistiller:
         print(f"    问题: {'; '.join(i.get('description', '')[:60] for i in issues)}")
 
         delta_retry = self.generator.settle(
-            observations, known_names, current_states + override_hint,
+            observations, known_names, current_states,
             retry_hint=_format_issues(issues),
+            schema_constraints=constraints_hint,
         )
 
         if delta_retry:
-            # 重试后再次校验
             new_state_retry = self._simulate_new_state(delta_retry, chapter_number)
             validation_retry = self.generator.validate_state(
-                chapter_text[:2000], observations, old_state, new_state_retry
+                chapter_text[:2000], observations, old_state, new_state_retry,
+                schema_context=schema_context,
             )
             if validation_retry.get("passed", True):
                 print(f"  -> Settler 重试成功")
@@ -96,7 +103,6 @@ class ChapterDistiller:
                     degraded=False,
                 )
 
-        # 重试仍失败 → state-degraded
         print(f"  [ERROR] 状态校验重试仍失败，进入 state-degraded 模式")
         print(f"    正文已保存，但实体状态未更新。请手动 review。")
         return DistillResult(
@@ -119,36 +125,93 @@ class ChapterDistiller:
                 lines.append(f"[{etype}] {name}: 无状态记录")
         return "\n".join(lines)
 
-    def _build_override_hint(self) -> str:
-        """从 novel_schema.json 读取 APPEND_ONLY / LOCKED 字段，告知 Settler。"""
+    def _load_schema(self):
+        """惰性加载 schema。"""
+        if self.schema:
+            return self.schema
         from state_schema import NovelSchema
-        import json
-        schema_path = self.reader.root / "novel_schema.json"
-        if not schema_path.exists():
-            return ""
         try:
-            schema = NovelSchema.load(self.reader.root)
-            if not schema:
-                return ""
-            locked = []
-            append_only = []
-            for etype in ["person", "item", "location", "concept"]:
-                for pred_name, pdef in schema.get_predicates(etype).items():
-                    ov = pdef.override.value if hasattr(pdef.override, 'value') else str(pdef.override)
-                    if ov == "locked":
-                        locked.append(f"{etype}.{pred_name}")
-                    elif ov == "append_only":
-                        append_only.append(f"{etype}.{pred_name}")
-            hint = ""
-            if append_only:
-                hint += f"\n\n## Schema 强制约束\n以下字段为 APPEND_ONLY，必须使用 action='append_description'，禁止使用 'change'：\n"
-                hint += "\n".join(f"- {f}" for f in append_only)
-            if locked:
-                hint += f"\n以下字段为 LOCKED，不可修改：\n"
-                hint += "\n".join(f"- {f}" for f in locked)
-            return hint
+            self.schema = NovelSchema.load(self.reader.root)
         except Exception:
+            pass
+        return self.schema
+
+    def _build_entity_schema_hint(self) -> str:
+        """为 Observer 构建实体类型→谓词语义映射指南。"""
+        schema = self._load_schema()
+        if not schema:
             return ""
+        hints = []
+        for etype in ["person", "item", "location", "concept"]:
+            preds = schema.get_predicates(etype)
+            if not preds:
+                continue
+            pred_list = ", ".join(
+                f"{name}({p.type})" if p.category else name
+                for name, p in sorted(preds.items(), key=lambda x: x[1].priority)
+            )
+            es = schema.get_entity_schema(etype)
+            label = es.label if es else etype
+            hints.append(f"- {etype} ({label}): {pred_list}")
+        return "\n".join(hints)
+
+    def _build_schema_constraints_hint(self) -> str:
+        """为 Settler 构建 schema 约束提示。"""
+        schema = self._load_schema()
+        if not schema:
+            return "（无 schema 约束，所有字段均可自由修改）"
+
+        lines = []
+        for etype in ["person", "item", "location", "concept"]:
+            locked = schema.get_locked_predicates(etype)
+            append_only = schema.get_append_only_predicates(etype)
+            enums = schema.get_enum_predicates(etype)
+
+            if locked or append_only or enums:
+                es = schema.get_entity_schema(etype)
+                label = es.label if es else etype
+                lines.append(f"### {label} ({etype})")
+
+            if locked:
+                lines.append(f"- LOCKED（不可修改）: {', '.join(locked)}")
+            if append_only:
+                lines.append(f"- APPEND_ONLY（只能追加）: {', '.join(append_only)}")
+            if enums:
+                for pname, pvals in enums.items():
+                    lines.append(f"- {pname} 允许值: {', '.join(pvals[:8])}")
+
+        return "\n".join(lines) if lines else "（无 schema 约束）"
+
+    def _build_validator_schema_context(self) -> str:
+        """为 State Validator 构建 schema 上下文（5 维度 OOC）。"""
+        schema = self._load_schema()
+        if not schema:
+            return "（无 schema，仅做通用一致性检查）"
+
+        lines = []
+        # 力量体系
+        for etype in ["person"]:
+            es = schema.get_entity_schema(etype)
+            if es and es.power_system and es.power_system.levels:
+                ps = es.power_system
+                levels_str = " → ".join(lv.name for lv in sorted(ps.levels, key=lambda x: x.rank))
+                lines.append(f"力量体系: {ps.name or '修为'}")
+                lines.append(f"等级序列: {levels_str}")
+                lines.append(f"单章最大突破: {ps.max_advance_per_chapter} 级")
+
+        # 每个实体类型的 OOC 规则
+        for etype in ["person", "item", "location", "concept"]:
+            es = schema.get_entity_schema(etype)
+            if not es:
+                continue
+            # 收集所有有性格标签的谓词
+            for p in es.predicates.values():
+                if p.personality_tags:
+                    lines.append(f"{es.label or etype}.{p.name} 性格标签: {', '.join(p.personality_tags)}")
+                if p.taboos:
+                    lines.append(f"{es.label or etype}.{p.name} 禁忌: {', '.join(p.taboos)}")
+
+        return "\n".join(lines) if lines else ""
 
     def _get_old_state_snapshot(self) -> str:
         """获取旧状态快照（供 Validator 比较）。"""
@@ -204,6 +267,7 @@ class ChapterDistiller:
                 "new_entities": delta.get("new_entities", []),
                 "revealed_plots": delta.get("revealed_plots", []),
                 "new_plots": delta.get("new_plots", []),
+                "plots_advanced": delta.get("plots_advanced", []),
                 "keywords": delta.get("keywords", []),
                 "key_residue": delta.get("key_residue", ""),
             },
@@ -216,6 +280,7 @@ class ChapterDistiller:
             "new_entities": delta.get("new_entities", []),
             "new_plots": delta.get("new_plots", []),
             "revealed_plots": delta.get("revealed_plots", []),
+            "plots_advanced": delta.get("plots_advanced", []),
             "observations": observations,
             "index_updates": self._build_index_updates(chapter_number, delta),
             "degraded": False,
@@ -244,6 +309,7 @@ class ChapterDistiller:
             "new_entities": [],
             "new_plots": [],
             "revealed_plots": [],
+            "plots_advanced": [],
             "observations": observations,
             "index_updates": {},
             "validation_issues": issues,

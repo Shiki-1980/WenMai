@@ -1,0 +1,28 @@
+{
+  "entity": "零阶人",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: ### 性格关键词 理性、克制、习惯性服从系统规则。表面温和，拥有严重的自我异化倾向——他早已将“成功”等同于最大化数据贡献。内心深处存在被压抑的父辈记忆碎片（一个曾参与[[数据坟场]]抗议的[[零阶人]]父亲），而这段记忆在[[神经链路污染]]后被异常激活。 ### 核心动机",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

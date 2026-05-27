@@ -1,0 +1,28 @@
+{
+  "entity": "信用评分",
+  "entity_type": "concept",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: ### 初始身份与处境 [[宙斯集团]]技术规划部副总监，[[三阶赛博格]]，改造率61%。拥有[[钢骨走廊]]C-7区的公寓与稳定[[信用评分]]，正准备完成第五次升阶评估。他以为自己是[[铁幕都市]]的精英，实则是[[记忆交割仪式]]的标准化零件。 ### 性格关键词",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

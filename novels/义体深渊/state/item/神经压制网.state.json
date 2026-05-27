@@ -1,0 +1,28 @@
+{
+  "entity": "神经压制网",
+  "entity_type": "item",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - [[宙斯集团]]的武装执法部门，全员为[[四阶神经链接者]]以上。 - 装备[[神经压制网]]，可直接通过[[数据云]]远程关闭公民的义体。 - 总监[[凯瑟琳·范]]，以冷酷著称。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

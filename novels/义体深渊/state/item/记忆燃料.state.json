@@ -1,0 +1,28 @@
+{
+  "entity": "记忆燃料",
+  "entity_type": "item",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - 只有[[五阶意识体]]及[[宙斯集团]]董事会成员可合法进行[[意识上载]]。 - 其他公民私自备份意识，一经发现，备份文件将被销毁，本体强制沦为[[记忆燃料]]。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}
