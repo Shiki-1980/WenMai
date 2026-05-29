@@ -83,7 +83,8 @@ class DeterministicValidators:
 
             if policy == OverridePolicy.LOCKED and current_state:
                 old = current_state.get_fact(fact.predicate)
-                if old and old.object != fact.object:
+                # 只拦截真的有旧值（非空）且被修改的情况
+                if old and old.object.strip() and old.object != fact.object:
                     violations.append(Violation(
                         dimension="plot",
                         rule="override_locked",
@@ -101,23 +102,23 @@ class DeterministicValidators:
 
             elif policy == OverridePolicy.APPEND_ONLY and current_state:
                 old = current_state.get_fact(fact.predicate)
-                if old and old.object != fact.object:
-                    # append_only: 新值必须包含旧值（追加语义）
-                    if old.object not in fact.object:
-                        violations.append(Violation(
-                            dimension="plot",
-                            rule="override_append_only",
-                            severity="critical",
-                            entity=current_state.entity,
-                            predicate=fact.predicate,
-                            old_value=old.object,
-                            new_value=fact.object,
-                            description=(
-                                f"APPEND_ONLY 字段 '{fact.predicate}' 不允许修改已有值 "
-                                f"'{old.object[:50]}'"
-                            ),
-                            evidence=fact.evidence,
-                        ))
+                # 只拦截真的有旧值（非空）且新值不包含旧值的情况
+                # 旧值为空 → 首次写入，放行
+                if old and old.object.strip() and old.object not in fact.object:
+                    violations.append(Violation(
+                        dimension="plot",
+                        rule="override_append_only",
+                        severity="critical",
+                        entity=current_state.entity,
+                        predicate=fact.predicate,
+                        old_value=old.object,
+                        new_value=fact.object,
+                        description=(
+                            f"APPEND_ONLY 字段 '{fact.predicate}' 不允许覆盖已有值 "
+                            f"'{old.object[:50]}'，新值应包含旧值"
+                        ),
+                        evidence=fact.evidence,
+                    ))
 
         return violations
 

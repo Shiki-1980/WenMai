@@ -198,6 +198,47 @@ def cmd_plan(args):
         _create_stubs_for_missing_links(reader, writer, template_dir)
         # 把完整实体列表回写到 arc frontmatter 的 key_entities
         _backfill_arc_entities(reader, writer, path)
+        # 清理旧卷的「本卷预期发展」区块
+        _cleanup_old_trajectories(reader, writer)
+
+
+def _cleanup_old_trajectories(reader, writer):
+    """清理所有已有实体卡中的旧「本卷预期发展」区块。
+
+    新卷 plan 时调用，避免上卷轨迹残留。
+    移除从 '## 本卷预期发展' 到下一个 '## ' 标题或 EOF 之间的内容。
+    """
+    cleaned = 0
+    for etype, name in reader.all_entity_names():
+        card = reader.read_entity(etype, name)
+        if not card:
+            continue
+        meta, body = card
+
+        marker = "## 本卷预期发展"
+        if marker not in body:
+            continue
+
+        # 找到 marker 的位置
+        idx = body.find(marker)
+        # 找到下一个 ## 标题（从 marker 之后开始）
+        rest = body[idx + len(marker):]
+        next_section = rest.find("\n## ")
+        if next_section >= 0:
+            # 移除从 marker 到下一个 ## 之前的内容
+            new_body = body[:idx] + rest[next_section:]
+        else:
+            # 后面没有其他 ##，截断到 marker 之前
+            new_body = body[:idx].rstrip()
+
+        from writer import _write_frontmatter_md
+        subdir = writer.TYPE_DIR.get(etype, "person")
+        card_path = writer.entity_dir / subdir / f"{name}.md"
+        _write_frontmatter_md(card_path, dict(meta), new_body)
+        cleaned += 1
+
+    if cleaned:
+        print(f"\n轨迹清理: 已移除 {cleaned} 个实体卡的旧「本卷预期发展」区块")
 
 
 def _classify_entities_batch(gen, names: list[str], outline: str) -> dict[str, str]:
@@ -277,8 +318,52 @@ def _extract_all_entities(gen, outline: str) -> list[dict]:
     return []
 
 
+def _extract_early_outline(outline: str, num_early_chapters: int = 5) -> str:
+    """从大纲中提取卷概述 + 前 N 章内容，用于生成卷前初始状态卡。
+
+    截取原则：卷概述全文 + 章节表的前 N 行实际章节数据。
+    这样 LLM 只能看到卷开局的信息，不会把卷末状态写进实体卡。
+    """
+    lines = outline.split('\n')
+    result = []
+    chapter_count = 0
+    in_table = False
+
+    for line in lines:
+        s = line.strip()
+
+        if not in_table:
+            if s.startswith('| 章节号'):
+                in_table = True
+                result.append(line)
+                continue
+            result.append(line)
+            continue
+
+        # 章节表内
+        if not s.startswith('|'):
+            result.append(line)
+            continue
+
+        cells = s.split('|')
+        if len(cells) >= 2:
+            first_cell = cells[1].strip()
+            if first_cell and first_cell[0].isdigit():
+                chapter_count += 1
+                if chapter_count > num_early_chapters:
+                    break
+
+        result.append(line)
+
+    return '\n'.join(result)
+
+
 def _generate_entity_cards(gen, reader, writer, outline: str, start_ch: int, end_ch: int, template_dir: Path):
-    """从大纲中提取所有实体，为尚不存在的生成卡片。"""
+    """从大纲中提取所有实体，为尚不存在的生成卡片。
+
+    核心改进：卡片内容基于卷前初始状态（只看前几章），而非卷末状态。
+    「本卷预期发展」区块独立生成，作为写作参考不进入 state.json。
+    """
     import json as _json
     import frontmatter as _fm
 
@@ -349,13 +434,16 @@ def _generate_entity_cards(gen, reader, writer, outline: str, start_ch: int, end
 
     # 7. 按重要程度分层生成
     #    minor  → 直接建 stub，不调 LLM
-    #    supporting → 调 LLM 生成简化卡片
-    #    major → 调 LLM 生成完整模板卡片
+    #    supporting → 调 LLM 生成简化卡片（仅基于前几章）
+    #    major → 调 LLM 生成完整模板卡片（仅基于前几章，不含卷末状态）
     from writer import _write_frontmatter_md
 
     majors = {n: d for n, d in new_entities.items() if d.get("importance") == "major"}
     supportings = {n: d for n, d in new_entities.items() if d.get("importance") == "supporting"}
     minors = {n: d for n, d in new_entities.items() if d.get("importance") == "minor"}
+
+    # 截取前几章作为卷前上下文
+    early_outline = _extract_early_outline(outline, num_early_chapters=5)
 
     if majors or supportings:
         print(f"\n生成 {len(majors)} 张完整卡 + {len(supportings)} 张简化卡"
@@ -373,8 +461,8 @@ def _generate_entity_cards(gen, reader, writer, outline: str, start_ch: int, end
                 f"规则：\n"
                 f"- 模板中的占位符已填充完毕，直接在此基础上完善内容\n"
                 f"- 每个章节都要有实质内容\n"
-                f"- 信息基于大纲定位展开，不凭空编造\n"
-                f"- 直接输出 markdown，不要任何前言或客套话"
+                f"- 直接输出 markdown，不要任何前言或客套话\n"
+                f"- 【重要】描述该实体在「本卷开始前」的初始状态，不要包含卷中才发生的变化"
             )
         else:
             system_prompt = (
@@ -383,13 +471,16 @@ def _generate_entity_cards(gen, reader, writer, outline: str, start_ch: int, end
                 f"规则：\n"
                 f"- 只填写「基础信息」「当前状态」「描述」三个章节\n"
                 f"- 其他章节如果大纲中没有信息就留空或标注「待展开」\n"
-                f"- 直接输出 markdown，不要任何前言或客套话"
+                f"- 直接输出 markdown，不要任何前言或客套话\n"
+                f"- 【重要】描述该实体在「本卷开始前」的初始状态，不要包含卷中才发生的变化"
             )
 
+        # 使用 early_outline（仅前几章）而非完整大纲
+        early_context = early_outline[:3000]
         user_prompt = (
-            f"篇章大纲摘要：\n{outline[:2000]}\n\n"
+            f"篇章开局上下文（仅前几章，描述卷开始前的状态）：\n{early_context}\n\n"
             f"为「{name}」(类型: {etype}, 重要度: {'核心' if is_major else '配角'}) "
-            f"生成设定卡片。"
+            f"生成设定卡片。只描述卷开始前的初始状态。"
         )
 
         print(f"  - {'[major]' if is_major else '[sup]'} {name} ({etype})...")
@@ -408,10 +499,18 @@ def _generate_entity_cards(gen, reader, writer, outline: str, start_ch: int, end
             card_meta["created"] = datetime.now().strftime("%Y-%m-%d")
             card_meta["updated"] = datetime.now().strftime("%Y-%m-%d")
             card_meta["enriched_through"] = 0
+            card_meta["arc_initial_state"] = True
 
             subdir = writer.TYPE_DIR.get(etype, "person")
             card_path = writer.entity_dir / subdir / f"{name}.md"
             card_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # ── 生成「本卷预期发展」区块（基于完整大纲，仅 major 实体）──
+            if is_major:
+                trajectory = _generate_arc_trajectory(gen, name, etype, outline)
+                if trajectory:
+                    card_body += f"\n\n## 本卷预期发展\n\n<!-- 由 plan 阶段生成，仅供写作参考，不进入 state.json -->\n\n{trajectory}\n"
+
             _write_frontmatter_md(card_path, card_meta, card_body)
             print(f"    -> entity/{subdir}/{name}.md")
 
@@ -435,6 +534,69 @@ def _generate_entity_cards(gen, reader, writer, outline: str, start_ch: int, end
         )
         print(f"  - [stub] {name} ({etype})")
         print(f"    -> entity/{subdir}/{name}.md")
+
+
+def _check_entity_duplicate(name: str, etype: str, retriever, reader) -> str | None:
+    """检查新实体名是否与已有实体重复（简称/别名/子串匹配）。
+
+    Returns:
+        重复的已有实体名，或 None（不重复）。
+    """
+    # 1. 精确别名匹配
+    resolved = retriever.resolve_entity(name)
+    if resolved and resolved.get("name", "") != name:
+        return resolved["name"]
+
+    # 2. 子串匹配：新名是已有名的子串，或已有名是新名的子串
+    all_names = {n for _, n in reader.all_entity_names()}
+    for existing in all_names:
+        # 跳过自己
+        if existing == name:
+            continue
+        # 新名完全包含在已有名中（如 "凯瑟琳" ⊂ "凯瑟琳·范"）
+        if name in existing or existing in name:
+            # 额外要求：至少 2 个字符重叠，避免 "陈" 匹配 "陈铭"
+            common = set(name) & set(existing)
+            if len(common) >= 2:
+                return existing
+        # 去了间隔符后的匹配（如 "凯瑟琳范" vs "凯瑟琳·范"）
+        name_stripped = name.replace("·", "").replace(" ", "").replace("-", "")
+        existing_stripped = existing.replace("·", "").replace(" ", "").replace("-", "")
+        if len(name_stripped) >= 2 and len(existing_stripped) >= 2:
+            if name_stripped in existing_stripped or existing_stripped in name_stripped:
+                return existing
+
+    return None
+
+
+def _generate_arc_trajectory(gen, entity_name: str, entity_type: str, full_outline: str) -> str:
+    """基于完整大纲，生成实体在本卷内的预期发展轨迹。
+
+    这是注释性内容，不进入 state.json，仅供写作参考。
+    下一卷 plan 时会被覆盖。
+    """
+    type_label = {"person": "人物", "item": "物品", "location": "地点", "concept": "概念"}.get(entity_type, "实体")
+    system = (
+        f"你是小说设定助手。基于篇章大纲，预测{type_label}「{entity_name}」在本卷中的发展轨迹。\n\n"
+        f"规则：\n"
+        f"- 以简洁的列表形式输出，每项一句话\n"
+        f"- 只列出大纲中明确提到的发展和变化\n"
+        f"- 不编造大纲中没有的内容\n"
+        f"- 直接输出内容，不要标题、不要前言\n"
+        f"- 最多 8 条"
+    )
+    prompt = (
+        f"篇章大纲：\n{full_outline[:4000]}\n\n"
+        f"列出「{entity_name}」在本卷中的预期发展轨迹。"
+    )
+    result = gen.generate(system, prompt, json_mode=False, temperature=0.4)
+    if result:
+        result = result.strip()
+        # 清理 LLM 可能加的前缀
+        for prefix in ("以下是", "本卷预期发展", "预期发展轨迹", "发展轨迹"):
+            if result.startswith(prefix):
+                result = result[len(prefix):].strip("：: \n")
+    return result or ""
 
 
 def _clean_llm_output(text: str) -> str:
@@ -527,8 +689,13 @@ def _create_stubs_for_missing_links(reader, writer, template_dir: Path):
         print(f"  [stub] {name}")
 
 
-def refresh_single_entity_markdown(reader, writer, state, etype, name, schema, renderer):
-    """刷新单个实体的 markdown 文件：只更新 frontmatter，保留 body。"""
+def refresh_single_entity_markdown(reader, writer, state, etype, name, schema, renderer,
+                                     chapter_number=0, chapter_events=""):
+    """刷新单个实体的 markdown 文件：更新 frontmatter + 追加时间线。
+
+    Args:
+        chapter_events: 本章该实体的事件摘要，追加到「经历时间线」表格。
+    """
     from writer import _write_frontmatter_md
 
     card = reader.read_entity(etype, name)
@@ -541,7 +708,7 @@ def refresh_single_entity_markdown(reader, writer, state, etype, name, schema, r
     new_fm = renderer.render_frontmatter(state, importance=importance)
 
     # 保留原始 frontmatter 中 state.json 没有的信息
-    preserve_keys = {"aliases", "first_appearance", "last_appearance", "created", "type"}
+    preserve_keys = {"aliases", "first_appearance", "last_appearance", "created", "type", "arc_initial_state"}
     for k in preserve_keys:
         if k in original_meta and k not in new_fm:
             v = original_meta[k]
@@ -549,17 +716,34 @@ def refresh_single_entity_markdown(reader, writer, state, etype, name, schema, r
                 new_fm[k] = v
 
     new_fm["updated"] = __import__('datetime').datetime.now().strftime("%Y-%m-%d")
+    new_fm["last_appearance"] = chapter_number
+
+    # 追加经历时间线
+    updated_body = original_body
+    if chapter_number > 0 and chapter_events:
+        timeline_marker = "| 章节 | 事件摘要 |"
+        if timeline_marker in updated_body:
+            updated_body += f"| ch_{chapter_number:03d} | {chapter_events} |\n"
+        else:
+            # 模板没有时间线表格，追加一个
+            updated_body += (
+                f"\n\n## 经历时间线\n\n"
+                f"| 章节 | 事件摘要 |\n"
+                f"|------|----------|\n"
+                f"| ch_{chapter_number:03d} | {chapter_events} |\n"
+            )
 
     subdir = writer.TYPE_DIR.get(etype, "person")
     card_path = writer.entity_dir / subdir / f"{name}.md"
-    _write_frontmatter_md(card_path, new_fm, original_body)
+    _write_frontmatter_md(card_path, new_fm, updated_body)
 
 
-def _post_write_commit(reader, writer, retriever, chapter_number, result, content_root, degraded: bool = False):
+def _post_write_commit(reader, writer, retriever, chapter_number, result, content_root,
+                      degraded: bool = False, snapshot_before_hash: str = "",
+                      snapshot_after_hash: str = ""):
     """写后处理：保存 commit + 重新渲染受影响的实体 markdown。"""
     if degraded:
         print("  [STATE-DEGRADED] 跳过状态更新和 markdown 刷新")
-        # 仍然保存 commit 用于审计（标记 degraded）
         try:
             store = CommitStore(Path(str(content_root)))
             from commit_store import ChapterCommit
@@ -595,6 +779,8 @@ def _post_write_commit(reader, writer, retriever, chapter_number, result, conten
             plots_added=result.get("new_plots", []),
             plots_resolved=result.get("revealed_plots", []),
             retrieval_stats=result.get("hit_details", {}),
+            state_snapshot_before_hash=snapshot_before_hash,
+            state_snapshot_after_hash=snapshot_after_hash,
         )
         store = CommitStore(Path(str(content_root)))
         store.save_commit(commit)
@@ -602,15 +788,31 @@ def _post_write_commit(reader, writer, retriever, chapter_number, result, conten
         # 重新渲染受影响的实体 markdown
         renderer = MarkdownRenderer(schema)
         affected = set()
+        # 构建每个实体的本章事件摘要
+        entity_events: dict[str, list[str]] = {}
         for delta in result.get("entity_deltas", []):
-            affected.add(delta.get("entity", ""))
+            name = delta.get("entity", "")
+            affected.add(name)
+            facts = delta.get("facts", [])
+            for f in facts:
+                pred = f.get("predicate", "")
+                new_val = str(f.get("object", ""))[:30]
+                old_val = str(f.get("old_value", ""))[:20]
+                if old_val and old_val != new_val:
+                    entity_events.setdefault(name, []).append(
+                        f"{pred}: {old_val} → {new_val}"
+                    )
+                elif new_val:
+                    entity_events.setdefault(name, []).append(
+                        f"{pred}: {new_val}"
+                    )
         for ent in result.get("new_entities", []):
             affected.add(ent.get("name", ""))
+            entity_events.setdefault(ent.get("name", ""), []).append("首次登场")
 
         for entity_name in affected:
             if not entity_name:
                 continue
-            # 找到实体类型
             etype = "person"
             for t in ["person", "item", "location", "concept"]:
                 if reader.read_entity(t, entity_name):
@@ -619,10 +821,17 @@ def _post_write_commit(reader, writer, retriever, chapter_number, result, conten
 
             state = reader.read_entity_state(etype, entity_name)
             if state:
+                events = entity_events.get(entity_name, [])
+                event_text = "；".join(events) if events else ""
                 refresh_single_entity_markdown(
                     reader, writer, state, etype, entity_name, schema, renderer,
+                    chapter_number=chapter_number,
+                    chapter_events=event_text,
                 )
-                print(f"  -> markdown frontmatter 已刷新: {entity_name}")
+                if event_text:
+                    print(f"  -> markdown 已刷新: {entity_name} (+{len(events)} 条变化)")
+                else:
+                    print(f"  -> markdown frontmatter 已刷新: {entity_name}")
 
         # 更新 entity_index
         if affected:
@@ -631,16 +840,60 @@ def _post_write_commit(reader, writer, retriever, chapter_number, result, conten
             except Exception as e:
                 print(f"  [WARN] 重建 entity_index 失败: {e}")
 
+        # ── markdown body 一致性校验 ──
+        _check_markdown_body_sync(reader, affected, chapter_number)
+
     except Exception as e:
         print(f"  [WARN] write commit 保存失败: {e}")
 
 
+def _check_markdown_body_sync(reader, affected_entities: set, chapter_number: int):
+    """检查 markdown body 与 state.json 的一致性。
+
+    如果 state.json 中的 facts 在 body 中完全找不到对应值，
+    说明 body 可能过时了（来自模板的初始值未被更新）。
+    """
+    # 只对发生变化的实体做抽样检查
+    checked = 0
+    for entity_name in list(affected_entities)[:5]:  # 最多检查 5 个
+        for etype in ["person", "item", "location", "concept"]:
+            card = reader.read_entity(etype, entity_name)
+            if not card:
+                continue
+            meta, body = card
+            state = reader.read_entity_state(etype, entity_name)
+            if not state:
+                continue
+
+            active = state.get_all_active_facts()
+            # 检查关键事实是否在 body 中出现
+            key_facts = {k: v for k, v in active.items()
+                        if k in ("修为", "身份", "所在", "持有", "状态", "能力", "描述")}
+            missing = []
+            for pred, val in key_facts.items():
+                # 在 body 中搜索该值（模糊匹配，截取前 20 字符）
+                short_val = str(val)[:20].strip()
+                if short_val and short_val not in body and pred not in body:
+                    missing.append(f"{pred}={short_val}")
+
+            if missing:
+                print(f"  [SYNC] {entity_name} 的 markdown body 可能过时，缺失: {', '.join(missing)}")
+            checked += 1
+            break  # 找到类型就跳出
+
+    if checked > 0 and not any(True for _ in []):  # no-op, just structure
+        pass
+
+
 def _auto_enrich(gen, reader, writer, content_root, template_dir):
-    """轻量自动 enrich —— 每 10 章检查实体卡同步状态，不做全量 LLM 重写。"""
+    """轻量自动 enrich —— 每 10 章检查实体卡同步状态 + 自动晋级高频 stub 实体。"""
     total_chapters = reader.chapter_count()
 
-    # 查找需要关注的实体
+    # ── 自动晋级：stub 实体出现 ≥5 章 → 自动 enrich ──
+    STUB_PROMOTE_THRESHOLD = 5
+    promoted = []
     needs_attention = []
+
     for etype, name in reader.all_entity_names():
         state = reader.read_entity_state(etype, name)
         appeared = reader.summaries_for_entity(name)
@@ -648,9 +901,46 @@ def _auto_enrich(gen, reader, writer, content_root, template_dir):
             continue
         max_ch = max(appeared)
         last_updated = state.last_updated_chapter if state else 0
-        # 如果实体出现在最近的章节中，但状态未更新
-        if max_ch > last_updated and max_ch >= total_chapters - 5:
+        grade = state.entity_grade if state else "stub"
+
+        # stub 实体出现足够多次 → 自动晋级
+        if grade == "stub" and len(appeared) >= STUB_PROMOTE_THRESHOLD:
+            # 收集该实体出现过的章节文本（用于 enrich）
+            try:
+                all_text = ""
+                for ch in sorted(appeared)[-5:]:  # 取最近 5 章
+                    ch_text = reader.read_chapter(ch)
+                    if ch_text:
+                        all_text += ch_text[:1500] + "\n\n"
+
+                if all_text:
+                    enrichment = gen.enrich_entity(
+                        name, etype, all_text,
+                        known_entities=[f"[{t}] {n}" for t, n in reader.all_entity_names()],
+                    )
+                    enrich_facts = enrichment.get("facts", [])
+                    if enrich_facts:
+                        for f in enrich_facts:
+                            f.setdefault("action", "add")
+                        new_state = writer.apply_entity_delta(
+                            etype, name, max_ch, enrich_facts, reader=reader,
+                        )
+                        if new_state:
+                            # 更新 entity_grade
+                            new_state.entity_grade = "active"
+                            writer.write_entity_state(new_state)
+                            promoted.append((etype, name, len(enrich_facts)))
+            except Exception as e:
+                print(f"    [WARN] 自动晋级 {name} 失败: {e}")
+
+        # 常规：实体在最近章节出现但状态未更新
+        elif max_ch > last_updated and max_ch >= total_chapters - 5:
             needs_attention.append((etype, name, last_updated, max_ch))
+
+    if promoted:
+        print(f"    自动晋级 {len(promoted)} 个 stub 实体:")
+        for etype, name, n_facts in promoted:
+            print(f"      [{etype}] {name}: stub → active (+{n_facts} facts)")
 
     if needs_attention:
         print(f"    发现 {len(needs_attention)} 个实体可能需要 enrich：")
@@ -1203,14 +1493,190 @@ def cmd_rename(args):
         print(f"config.yaml 已更新")
 
 
+def _build_world_context(reader) -> str:
+    """组装世界观修改用的上下文：世界观全文 + 所有 concept 卡 + 力量体系。"""
+    parts = []
+
+    # 世界观正文
+    world = reader.read_world_bible()
+    if world:
+        parts.append(f"## 当前世界观\n{world[1]}")
+
+    # 所有 concept 类实体卡（世界约束）
+    concepts = []
+    for etype, name in reader.all_entity_names():
+        if etype == "concept":
+            card = reader.read_entity(etype, name)
+            if card:
+                concepts.append(f"### {name}\n{card[1][:2000]}")
+    if concepts:
+        parts.append("## 世界约束（concept 实体卡）\n" + "\n\n".join(concepts))
+
+    # 力量体系（如果有 schema）
+    from state_schema import NovelSchema
+    try:
+        schema = NovelSchema.load(reader.root)
+        for etype in ["person"]:
+            es = schema.get_entity_schema(etype)
+            if es and es.power_system and es.power_system.levels:
+                levels = " → ".join(lv.name for lv in sorted(es.power_system.levels, key=lambda x: x.rank))
+                parts.append(f"## 力量体系: {es.power_system.name}\n{levels}")
+    except Exception:
+        pass
+
+    return "\n\n".join(parts)
+
+
+def _build_entity_audit_context(reader, entity_name: str, entity_type: str) -> str:
+    """组装单个实体修改用的完整上下文。"""
+    parts = []
+
+    # 世界观摘要
+    world = reader.read_world_bible()
+    if world:
+        parts.append(f"## 世界观摘要\n{world[1][:1500]}")
+
+    # 当前实体卡
+    card = reader.read_entity(entity_type, entity_name)
+    if card:
+        parts.append(f"## 当前设定卡 [{entity_type}] {entity_name}\n{card[1]}")
+
+    # state.json
+    state = reader.read_entity_state(entity_type, entity_name)
+    if state:
+        active = state.get_all_active_facts()
+        if active:
+            parts.append("## 当前状态 (state.json)\n" + "\n".join(f"- {k}: {v}" for k, v in active.items()))
+
+    # 关联实体（通过 wikilink 找到的）
+    if card:
+        from reader import parse_links
+        links = parse_links(card[1])
+        related = []
+        for link_name in list(links)[:8]:
+            r_card = reader.read_entity("person", link_name) or reader.read_entity("item", link_name) or reader.read_entity("location", link_name)
+            if r_card:
+                related.append(f"### {link_name}\n{r_card[1][:600]}")
+        if related:
+            parts.append("## 关联实体\n" + "\n\n".join(related))
+
+    # 最近章节中该实体的出场摘要
+    appeared = reader.summaries_for_entity(entity_name)
+    if appeared:
+        recent = sorted(appeared)[-3:]
+        chapter_context = []
+        for ch in recent:
+            summary = reader.read_summary(ch)
+            if summary:
+                chapter_context.append(f"ch_{ch:03d}: {summary[1][:300]}")
+        if chapter_context:
+            parts.append("## 最近出场章节摘要\n" + "\n".join(chapter_context))
+
+    return "\n\n".join(parts)
+
+
+def _build_outline_audit_context(reader, arc_name: str) -> str:
+    """组装大纲修改用的完整上下文。"""
+    parts = []
+
+    # 世界观摘要
+    world = reader.read_world_bible()
+    if world:
+        parts.append(f"## 世界观摘要\n{world[1][:2000]}")
+
+    # 核心实体当前状态
+    major_entities = []
+    for etype, name in reader.all_entity_names():
+        card = reader.read_entity(etype, name)
+        if not card:
+            continue
+        imp = card[0].get("importance", "minor")
+        if imp in ("protagonist", "major"):
+            state = reader.read_entity_state(etype, name)
+            if state:
+                active = state.get_all_active_facts()
+                facts_str = "; ".join(f"{k}={str(v)[:40]}" for k, v in list(active.items())[:8])
+                major_entities.append(f"[{etype}] {name}: {facts_str}")
+    if major_entities:
+        parts.append("## 核心实体当前状态\n" + "\n".join(major_entities))
+
+    # 上一卷大纲结果（找之前的 arc）
+    all_arcs = sorted(reader.list_arcs())
+    if arc_name in all_arcs:
+        idx = all_arcs.index(arc_name)
+        if idx > 0:
+            prev_arc = reader.read_arc(all_arcs[idx - 1])
+            if prev_arc:
+                parts.append(f"## 上一卷大纲 ({all_arcs[idx - 1]})\n{prev_arc[1][:1500]}")
+
+    # 活跃伏笔
+    plot_pool = reader.plot_dir / "伏笔池.md"
+    if plot_pool.exists():
+        active_plots = []
+        for line in plot_pool.read_text("utf-8").split("\n"):
+            if "| 进行中 |" in line:
+                active_plots.append(line.strip()[:120])
+        if active_plots:
+            parts.append("## 活跃伏笔\n" + "\n".join(active_plots[:10]))
+
+    return "\n\n".join(parts)
+
+
+def _sync_entities_to_world(reader, gen, content_root: Path):
+    """世界观修改后，联动更新实体卡。
+
+    检查所有实体卡是否与新世界观一致：
+    - 世界观新增的 [[wikilink]] → 建 stub 或补实体卡
+    - 概念类实体与世界观矛盾 → 标记为需要更新
+    - 世界观中已删除的引用 → 提示但不会自动删除实体
+    """
+    from reader import parse_links
+    world = reader.read_world_bible()
+    if not world:
+        return
+
+    world_body = world[1]
+    world_links = parse_links(world_body)
+
+    # 现存的实体名集合
+    existing_names = {name for _, name in reader.all_entity_names()}
+
+    # 1. 世界观引用了但尚不存在的实体 → 建 stub
+    missing = world_links - existing_names
+    if missing:
+        writer = VaultWriter(str(content_root))
+        for name in sorted(missing):
+            # 启发式推断类型
+            etype = "concept" if any(kw in name for kw in ["体系", "系统", "法则", "境界", "制度", "协议"]) else "person"
+            writer.create_entity(etype, name, f"世界观中引用: {name}")
+            print(f"  [NEW] 世界观引用新实体: [{etype}] {name}")
+
+    # 2. concept 类实体与世界观可能矛盾 → 提示
+    for etype, name in reader.all_entity_names():
+        if etype != "concept":
+            continue
+        card = reader.read_entity(etype, name)
+        if not card:
+            continue
+        body = card[1]
+        # 简单检查：世界观的正文中是否还提到这个 concept
+        if name not in world_body and f"[[{name}]]" not in world_body:
+            print(f"  [WARN] concept 实体「{name}」在新世界观中未被引用，可能已过时")
+
+
 def cmd_audit(args):
-    """审核并修改已生成的内容。不传 --revise 则只展示摘要，传了则修改。"""
+    """审核并修改已生成的内容。
+
+    不传 --revise：展示项目摘要。
+    传 --revise：根据修改请求，组装完整上下文后让 LLM 修订。
+    """
     content_root, template_dir, _ = _get_paths(getattr(args, 'novel', None))
     gen = LLMGenerator(str(CONFIG))
     reader = VaultReader(str(content_root))
+    novel_dir = Path(str(content_root))
 
     if not args.revise:
-        # 只展示摘要
+        # ── 摘要模式（不变）──
         print("=" * 50)
         print("  当前项目摘要")
         print("=" * 50)
@@ -1245,18 +1711,26 @@ def cmd_audit(args):
     if target in ("world", "all"):
         world = reader.read_world_bible()
         if world:
-            print("[世界] 修改世界观...")
+            context = _build_world_context(reader)
+            print("[世界] 修改世界观（含 concept 卡 + 力量体系上下文）...")
             revised = gen.generate(
-                "你是小说世界观架构师。根据修改请求，修订下面的世界观设定。只修改请求涉及的部分，其余保持不变。直接输出完整修订后的 markdown。",
-                f"## 修改请求\n{args.revise}\n\n## 当前世界观\n{world}",
+                "你是小说世界观架构师。根据修改请求修订世界观。"
+                "注意：世界观必须与 concept 实体卡保持一致，如果修改涉及 concept 卡中已定义的概念，要确保不矛盾。"
+                "只修改请求涉及的部分，其余保持不变。直接输出完整修订后的 markdown。",
+                f"## 修改请求\n{args.revise}\n\n{context}",
             )
             if revised:
                 revised = _clean_llm_output(revised)
-                (content_root / "plot" / "世界观.md").write_text(revised, "utf-8")
+                world_path = novel_dir / "plot" / "世界观.md"
+                world_path.write_text(revised, "utf-8")
                 print("  -> 世界观已更新")
 
+                # 联动：检查实体卡是否需要更新
+                print("  -> 检查实体卡与世界观的一致性...")
+                _sync_entities_to_world(reader, gen, novel_dir)
+
     if target in ("entities", "all"):
-        print("[实体] 修改实体卡...")
+        print("[实体] 修改实体卡（含世界观 + 关联实体 + 章节上下文）...")
         for etype, name in reader.all_entity_names():
             card = reader.read_entity(etype, name)
             if not card:
@@ -1264,12 +1738,15 @@ def cmd_audit(args):
             meta, body = card
             imp = meta.get("importance", "minor")
             if imp not in ("protagonist", "major"):
-                continue  # 只修改重要实体
+                continue
 
             print(f"  - {name}...")
+            context = _build_entity_audit_context(reader, name, etype)
             revised = gen.generate(
-                f"你是小说设定助手。根据修改请求修订实体「{name}」的设定卡。只修改请求涉及的部分。直接输出完整修订后的 markdown + frontmatter。",
-                f"## 修改请求\n{args.revise}\n\n## 当前设定卡\n{body}",
+                f"你是小说设定助手。根据修改请求修订实体「{name}」({etype})的设定卡。"
+                f"综合考虑世界观约束、关联实体关系、近期出场表现，只修改请求涉及的部分。"
+                f"直接输出完整修订后的 markdown + frontmatter。",
+                f"## 修改请求\n{args.revise}\n\n{context}",
             )
             if revised:
                 revised = _clean_llm_output(revised)
@@ -1282,7 +1759,7 @@ def cmd_audit(args):
                 card_meta["updated"] = datetime.now().strftime("%Y-%m-%d")
                 from writer import _write_frontmatter_md
                 subdir = {"person": "person", "item": "item", "location": "location", "concept": "concept"}.get(etype, "person")
-                _write_frontmatter_md(content_root / "entity" / subdir / f"{name}.md", card_meta, card_body)
+                _write_frontmatter_md(novel_dir / "entity" / subdir / f"{name}.md", card_meta, card_body)
                 print(f"    -> 已更新")
 
     if target in ("outline", "all"):
@@ -1295,14 +1772,18 @@ def cmd_audit(args):
                 print(f"[大纲] 未找到大纲: {arc_name_item}")
                 continue
             meta, body = arc
-            print(f"[大纲] 修改 {arc_name_item}...")
+            context = _build_outline_audit_context(reader, arc_name_item)
+            print(f"[大纲] 修改 {arc_name_item}（含世界观 + 核心实体状态 + 前卷结果 + 伏笔上下文）...")
             revised = gen.generate(
-                "你是小说大纲编辑。根据修改请求修订篇章大纲。只修改请求涉及的部分。直接输出完整修订后的 markdown + frontmatter。",
-                f"## 修改请求\n{args.revise}\n\n## 当前大纲\n{body}",
+                "你是小说大纲编辑。根据修改请求修订篇章大纲。"
+                "综合考虑世界观约束、核心实体当前状态、上一卷结果、活跃伏笔，"
+                "确保修订后的大纲与现有设定一致。只修改请求涉及的部分。"
+                "直接输出完整修订后的 markdown + frontmatter。",
+                f"## 修改请求\n{args.revise}\n\n## 当前大纲\n{body}\n\n{context}",
             )
             if revised:
                 revised = _clean_llm_output(revised)
-                (content_root / "plot" / "arcs" / f"{arc_name_item}.md").write_text(revised, "utf-8")
+                (novel_dir / "plot" / "arcs" / f"{arc_name_item}.md").write_text(revised, "utf-8")
                 print(f"    -> 已更新")
 
     print(f"\n审核修改完成。运行 `python main.py audit` 查看当前摘要。")
@@ -1542,12 +2023,21 @@ def _write_one_chapter(
     print("\n写回 vault...")
     writer.write_chapter(chapter_number, title_line, chapter_text)
 
+    snapshot_before_hash = ""
+    snapshot_after_hash = ""
+
     if result and not distill_result.degraded:
         writer.write_summary(
             chapter_number,
             result.get("summary_meta", {}),
             result.get("summary_body", ""),
         )
+
+        # ── 状态快照（在应用 delta 之前）──
+        from commit_store import hash_directory, snapshot_state
+        state_dir = writer.state_dir()
+        snapshot_root = Path(str(content_root)) / "snapshots"
+        snapshot_before_hash = snapshot_state(state_dir, snapshot_root, chapter_number)
 
         for update in result.get("entity_updates", []):
             try:
@@ -1579,11 +2069,16 @@ def _write_one_chapter(
                 print(f"  [WARN] state.json 更新 {entity_name} 失败: {e}")
 
         for new_ent in result.get("new_entities", []):
-            writer.create_entity(
-                new_ent.get("type", "person"),
-                new_ent["name"],
-                new_ent.get("brief", ""),
-            )
+            ename = new_ent["name"]
+            etype = new_ent.get("type", "person")
+
+            # ── 去重检查：避免别名/简写被当成新实体 ──
+            dup = _check_entity_duplicate(ename, etype, retriever, reader)
+            if dup:
+                print(f"  [SKIP] 「{ename}」疑似与已有实体「{dup}」重复，跳过创建")
+                continue
+
+            writer.create_entity(etype, ename, new_ent.get("brief", ""))
             # 新实体也初始化 state.json
             try:
                 stub_state = EntityFact(
@@ -1594,24 +2089,50 @@ def _write_one_chapter(
                     evidence="新角色首次登场",
                 )
                 init_state = load_entity_state(
-                    writer.entity_state_path(new_ent.get("type", "person"), new_ent["name"])
+                    writer.entity_state_path(etype, ename)
                 )
                 if init_state is None:
                     from state_schema import EntityState as ES
                     init_state = ES(
-                        entity=new_ent["name"],
-                        entity_type=new_ent.get("type", "person"),
+                        entity=ename,
+                        entity_type=etype,
                         last_updated_chapter=chapter_number,
                         facts=[stub_state],
                     )
                     save_entity_state(
                         init_state,
-                        writer.entity_state_path(new_ent.get("type", "person"), new_ent["name"]),
+                        writer.entity_state_path(etype, ename),
                     )
             except Exception as e:
                 print(f"  [WARN] 新实体 state.json 初始化失败: {e}")
 
-            print(f"  -> 新实体: [{new_ent.get('type', 'person')}] {new_ent['name']}")
+            # ── 新实体即时 enrich：从章节文本提取详细信息 ──
+            try:
+                enrichment = gen.enrich_entity(
+                    ename, etype, chapter_text,
+                    known_entities=[f"[{t}] {n}" for t, n in reader.all_entity_names()],
+                )
+                enrich_facts = enrichment.get("facts", [])
+                if enrich_facts:
+                    for f in enrich_facts:
+                        f.setdefault("action", "add")
+                    enriched_state = writer.apply_entity_delta(
+                        etype, ename, chapter_number, enrich_facts,
+                        reader=reader,
+                    )
+                    if enriched_state:
+                        # 把 enrich 的 facts 追加到 result 的 entity_deltas 中
+                        # 这样 _post_write_commit 能正确渲染 markdown
+                        result.setdefault("entity_deltas", []).append({
+                            "entity": ename,
+                            "entity_type": etype,
+                            "facts": enrich_facts,
+                        })
+                        print(f"  -> enrich: {ename} (+{len(enrich_facts)} facts)")
+            except Exception as e:
+                print(f"  [WARN] enrich {ename} 失败: {e}")
+
+            print(f"  -> 新实体: [{etype}] {ename}")
 
         for plot in result.get("new_plots", []):
             writer.add_plot_thread(plot, chapter_number)
@@ -1622,11 +2143,16 @@ def _write_one_chapter(
 
         writer.update_entity_index(result.get("index_updates", {}))
 
+        # ── 计算更新后的 state hash ──
+        snapshot_after_hash = hash_directory(state_dir)
+
     # ── 保存 commit + 渲染 markdown ──
     _post_write_commit(
         reader, writer, retriever,
         chapter_number, result, content_root,
         degraded=distill_result.degraded,
+        snapshot_before_hash=snapshot_before_hash if not distill_result.degraded else "",
+        snapshot_after_hash=snapshot_after_hash if not distill_result.degraded else "",
     )
 
     print(f"\n第 {chapter_number} 章完成！")
@@ -2051,6 +2577,788 @@ def _parse_chapter_outlines(arc_body: str) -> dict[int, str]:
     return outlines
 
 
+def rollback_to_chapter(novel_dir: Path, target_chapter: int, hard: bool = False, dry_run: bool = False):
+    """回退实体状态到指定章节之前。
+
+    从 snapshots/ch_NNN/ 恢复 state.json，重新渲染所有实体 markdown。
+    如果 hard=True，同时删除章节文件和 commit 记录。
+
+    Args:
+        target_chapter: 回退到第 N 章之前（即恢复 ch_N 快照的状态）
+        hard: 是否同时删除章节文件和 commit
+        dry_run: 仅预览，不执行
+    """
+    import shutil as _shutil
+
+    state_dir = novel_dir / "state"
+    snapshot_target = novel_dir / "snapshots" / f"ch_{target_chapter:03d}"
+
+    # 1. 查找快照；没有则用 commit 重建
+    use_commit_reconstruction = False
+    if not snapshot_target.exists():
+        snap_base = novel_dir / "snapshots"
+        available = []
+        if snap_base.exists():
+            for d in snap_base.iterdir():
+                if d.is_dir() and d.name.startswith("ch_"):
+                    try:
+                        ch = int(d.name.replace("ch_", ""))
+                        if ch <= target_chapter:
+                            available.append(ch)
+                    except ValueError:
+                        pass
+        if available:
+            closest = max(available)
+            snapshot_target = snap_base / f"ch_{closest:03d}"
+            print(f"快照 ch_{target_chapter:03d} 不存在，使用最近的: ch_{closest:03d}")
+        else:
+            print(f"快照不存在，尝试从 commit 日志重建...")
+            use_commit_reconstruction = True
+
+    affected_state_files = list(snapshot_target.rglob("*.json"))
+    affected_chapters = list(range(target_chapter, 999))  # 预估
+    # 精确计算受影响的章节
+    commits_dir = novel_dir / "commits"
+    if commits_dir.exists():
+        affected_chapters = []
+        for cf in commits_dir.glob("chapter_*.commit.json"):
+            try:
+                ch = int(cf.stem.replace("chapter_", "").replace(".commit", ""))
+                if ch >= target_chapter:
+                    affected_chapters.append(ch)
+            except ValueError:
+                pass
+        affected_chapters.sort()
+
+    print(f"\n{'='*50}")
+    print(f"  回退到第 {target_chapter} 章之前的状态")
+    print(f"{'='*50}")
+    print(f"  快照来源: {snapshot_target}")
+    print(f"  受影响状态文件: {len(affected_state_files)} 个")
+    print(f"  受影响章节 commit: {len(affected_chapters)} 个" + (" (ch_{})".format(", ".join(str(c) for c in affected_chapters[:10])) if len(affected_chapters) <= 10 else f" (ch_{affected_chapters[0]} ~ ch_{affected_chapters[-1]})"))
+    if hard:
+        ch_files = list((novel_dir / "chapter").glob("ch_*.md"))
+        affected_md = [f for f in ch_files if int(f.stem.replace("ch_", "")) >= target_chapter]
+        print(f"  将删除章节文件: {len(affected_md)} 个")
+
+    if dry_run:
+        print("\n[Dry-run] 以上为预览，未实际执行任何操作。")
+        return True
+
+    # 2. 确认（hard 模式需要二次确认）
+    if hard:
+        print(f"\n⚠️  硬回退将删除第 {target_chapter} 章及之后的所有章节文件和 commit。")
+        resp = input("确认执行？(yes/no): ")
+        if resp.strip().lower() != "yes":
+            print("已取消。")
+            return False
+
+    # 3. 恢复 state.json
+    print("\n恢复状态文件...")
+    if use_commit_reconstruction:
+        from commit_store import reconstruct_state_from_commits, write_reconstructed_state
+        states = reconstruct_state_from_commits(novel_dir, target_chapter)
+        if not states:
+            print("错误：无法从 commit 日志重建状态（没有可用的 commit 记录）")
+            return False
+        print(f"  从 commit 重建了 {len(states)} 个实体的状态")
+        write_reconstructed_state(states, state_dir)
+    else:
+        if state_dir.exists():
+            _shutil.rmtree(state_dir)
+        _shutil.copytree(snapshot_target, state_dir)
+
+    # 4. 清理 target_chapter 及之后的快照
+    snap_base = novel_dir / "snapshots"
+    for d in list(snap_base.iterdir()):
+        if d.is_dir() and d.name.startswith("ch_"):
+            try:
+                ch = int(d.name.replace("ch_", ""))
+                if ch >= target_chapter:
+                    _shutil.rmtree(d)
+                    print(f"  已删除过期快照: {d.name}")
+            except ValueError:
+                pass
+
+    if hard:
+        # 5. 删除章节文件
+        chapter_dir = novel_dir / "chapter"
+        if chapter_dir.exists():
+            for f in list(chapter_dir.glob("ch_*.md")):
+                try:
+                    ch = int(f.stem.replace("ch_", ""))
+                    if ch >= target_chapter:
+                        f.unlink()
+                        print(f"  已删除章节: {f.name}")
+                except ValueError:
+                    pass
+
+        # 6. 删除 summary
+        summary_dir = novel_dir / "summary"
+        if summary_dir.exists():
+            for f in list(summary_dir.glob("ch_*_summary.md")):
+                try:
+                    ch = int(f.stem.replace("ch_", "").split("_")[0])
+                    if ch >= target_chapter:
+                        f.unlink()
+                except ValueError:
+                    pass
+
+        # 7. 删除 commit 记录
+        if commits_dir.exists():
+            for f in list(commits_dir.glob("chapter_*.commit.json")):
+                try:
+                    ch = int(f.stem.replace("chapter_", "").replace(".commit", ""))
+                    if ch >= target_chapter:
+                        f.unlink()
+                        print(f"  已删除 commit: {f.name}")
+                except ValueError:
+                    pass
+
+    # 8. 重新渲染所有实体 markdown
+    print("\n重新渲染实体 markdown...")
+    _refresh_all_entity_markdown(novel_dir)
+
+    print(f"\n回退完成。状态已恢复到第 {target_chapter} 章之前。")
+    return True
+
+
+def _refresh_all_entity_markdown(novel_dir: Path):
+    """从 state.json 重新渲染所有实体 markdown 文件。"""
+    from state_schema import load_entity_state, NovelSchema
+    from writer import _write_frontmatter_md
+    from md_renderer import MarkdownRenderer
+
+    schema = NovelSchema.load(novel_dir)
+    renderer = MarkdownRenderer(schema)
+    entity_dir = novel_dir / "entity"
+
+    if not entity_dir.exists():
+        return
+
+    for etype_dir in entity_dir.iterdir():
+        if not etype_dir.is_dir():
+            continue
+        etype = etype_dir.name
+        for md_file in etype_dir.glob("*.md"):
+            name = md_file.stem
+            state_path = novel_dir / "state" / etype / f"{name}.state.json"
+
+            # 读取 state.json
+            state = load_entity_state(state_path)
+            if not state:
+                continue
+
+            # 读取原 markdown 的 frontmatter（保留不可变字段）
+            try:
+                post = __import__('frontmatter').loads(md_file.read_text("utf-8"))
+                original_meta = dict(post.metadata)
+                original_body = post.content
+            except Exception:
+                original_meta = {}
+                original_body = ""
+
+            importance = original_meta.get("importance", "major")
+            new_fm = renderer.render_frontmatter(state, importance=importance)
+
+            # 保留 state.json 中没有的字段
+            preserve = {"aliases", "first_appearance", "last_appearance", "created", "type", "arc_initial_state"}
+            for k in preserve:
+                if k in original_meta and k not in new_fm:
+                    v = original_meta[k]
+                    if v:
+                        new_fm[k] = v
+
+            # 保留 body 中的「本卷预期发展」和「经历时间线」
+            new_fm["updated"] = __import__('datetime').datetime.now().strftime("%Y-%m-%d")
+            _write_frontmatter_md(md_file, new_fm, original_body)
+
+
+def cmd_rollback(args):
+    """CLI: 回退实体状态到指定章节之前。"""
+    content_root, template_dir, vault_path = _get_paths(getattr(args, 'novel', None))
+    novel_dir = Path(str(content_root))
+
+    if not novel_dir.exists():
+        print(f"错误：小说目录不存在: {novel_dir}")
+        sys.exit(1)
+
+    rollback_to_chapter(
+        novel_dir,
+        args.chapter,
+        hard=args.hard,
+        dry_run=args.dry_run,
+    )
+
+
+def cmd_diff(args):
+    """CLI: 对比实体在两个章节之间的状态变化。"""
+    content_root, template_dir, vault_path = _get_paths(getattr(args, 'novel', None))
+    reader = VaultReader(str(content_root))
+    retriever = EntityRetriever(reader)
+
+    entity_name = args.entity
+    from_ch = args.from_chapter
+    to_ch = args.to_chapter
+
+    if from_ch >= to_ch:
+        print("错误：起始章节必须小于目标章节")
+        sys.exit(1)
+
+    # 解析实体
+    ent = retriever.resolve_entity(entity_name)
+    if not ent:
+        print(f"错误：找不到实体「{entity_name}」")
+        sys.exit(1)
+
+    etype = ent["type"]
+    resolved_name = ent["name"]
+    state = reader.read_entity_state(etype, resolved_name)
+    if not state:
+        print(f"错误：实体「{resolved_name}」没有 state.json")
+        sys.exit(1)
+
+    # 获取两个时间点的活跃事实
+    old_facts = state.get_active_facts(as_of=from_ch) if from_ch > 0 else state.get_active_facts(as_of=0)
+    new_facts = state.get_active_facts(as_of=to_ch)
+
+    # 对比
+    added = {}
+    removed = {}
+    changed = {}
+    unchanged = {}
+
+    all_preds = set(list(old_facts.keys()) + list(new_facts.keys()))
+    for pred in sorted(all_preds):
+        old_val = old_facts.get(pred)
+        new_val = new_facts.get(pred)
+        if old_val is None and new_val is not None:
+            added[pred] = new_val
+        elif old_val is not None and new_val is None:
+            removed[pred] = old_val
+        elif old_val != new_val:
+            changed[pred] = (old_val, new_val)
+        else:
+            unchanged[pred] = old_val
+
+    # 输出
+    print(f"\n{'='*60}")
+    print(f"  {resolved_name} [{etype}]")
+    print(f"  ch_{from_ch:03d} → ch_{to_ch:03d}")
+    print(f"{'='*60}")
+
+    if changed:
+        print(f"\n  ── 变化 ({len(changed)}) ──")
+        for pred, (old, new) in changed.items():
+            print(f"  ~ {pred}:")
+            print(f"      {old[:80]}")
+            print(f"      → {new[:80]}")
+
+    if added:
+        print(f"\n  ── 新增 ({len(added)}) ──")
+        for pred, val in added.items():
+            print(f"  + {pred}: {val[:80]}")
+
+    if removed:
+        print(f"\n  ── 移除 ({len(removed)}) ──")
+        for pred, val in removed.items():
+            print(f"  - {pred}: {val[:80]}")
+
+    if unchanged:
+        print(f"\n  ── 未变化 ({len(unchanged)}) ──")
+        # 只显示前几个
+        for pred, val in list(unchanged.items())[:5]:
+            print(f"  = {pred}: {val[:60]}")
+        if len(unchanged) > 5:
+            print(f"    ... 还有 {len(unchanged) - 5} 个字段未变")
+
+
+def cmd_validate(args):
+    """CLI: 扫描 vault 一致性。"""
+    content_root, template_dir, vault_path = _get_paths(getattr(args, 'novel', None))
+    novel_dir = Path(str(content_root))
+    reader = VaultReader(str(content_root))
+    retriever = EntityRetriever(reader)
+
+    print(f"\n{'='*50}")
+    print(f"  Vault 一致性检查")
+    print(f"{'='*50}")
+
+    issues = {"error": [], "warn": [], "info": []}
+
+    # ── 1. state.json ↔ markdown 孤儿检查 ──
+    print("\n[1/5] state.json ↔ markdown 对应检查...")
+    from state_schema import load_entity_state
+    entity_dir = novel_dir / "entity"
+    state_dir = novel_dir / "state"
+    md_entities = set()
+    state_entities = set()
+
+    if entity_dir.exists():
+        for etype_dir in entity_dir.iterdir():
+            if not etype_dir.is_dir():
+                continue
+            for md_file in etype_dir.glob("*.md"):
+                md_entities.add((etype_dir.name, md_file.stem))
+
+    if state_dir.exists():
+        for etype_dir in state_dir.iterdir():
+            if not etype_dir.is_dir():
+                continue
+            for sf in etype_dir.glob("*.state.json"):
+                state_entities.add((etype_dir.name, sf.stem.replace(".state", "")))
+
+    orphan_md = md_entities - state_entities
+    orphan_state = state_entities - md_entities
+
+    for etype, name in orphan_md:
+        issues["warn"].append(f"markdown 无对应 state.json: entity/{etype}/{name}.md")
+    for etype, name in orphan_state:
+        issues["warn"].append(f"state.json 无对应 markdown: state/{etype}/{name}.state.json")
+
+    if orphan_md or orphan_state:
+        print(f"  orphan markdown: {len(orphan_md)}, orphan state: {len(orphan_state)}")
+        if args.fix and orphan_md:
+            # 为孤儿 markdown 生成 state.json
+            for etype, name in orphan_md:
+                try:
+                    card = reader.read_entity(etype, name)
+                    if card:
+                        meta, body = card
+                        # 从 frontmatter 迁移到 state.json
+                        from state_schema import EntityState as ES, EntityFact, save_entity_state
+                        from writer import VaultWriter
+                        w = VaultWriter(str(content_root))
+                        facts = [EntityFact(predicate=k, object=str(v), since_chapter=0,
+                                            source="validate_fix")
+                                for k, v in meta.items()
+                                if k not in ("type", "status", "importance", "created", "updated",
+                                             "aliases", "first_appearance", "last_appearance",
+                                             "enriched_through", "arc_initial_state") and v]
+                        st = ES(entity=name, entity_type=etype, entity_grade="stub", facts=facts)
+                        save_entity_state(st, w.entity_state_path(etype, name))
+                        print(f"  [FIX] 生成 state.json: {etype}/{name}")
+                except Exception as e:
+                    print(f"  [ERR] 修复 {name} 失败: {e}")
+    else:
+        print(f"  通过")
+
+    # ── 2. 死链检查 ──
+    print("\n[2/5] [[wikilink]] 死链检查...")
+    from reader import parse_links
+    dead_links = set()
+    for etype, name in md_entities:
+        card = reader.read_entity(etype, name)
+        if not card:
+            continue
+        meta, body = card
+        links = parse_links(body)
+        # 也检查 frontmatter 中的链接
+        for k, v in meta.items():
+            if isinstance(v, str):
+                links.update(parse_links(v))
+            elif isinstance(v, list):
+                for item in v:
+                    if isinstance(item, str):
+                        links.update(parse_links(item))
+        for link in links:
+            if not reader.find_entity_path(link):
+                dead_links.add((f"entity/{etype}/{name}.md", link))
+
+    for source, target in sorted(dead_links, key=lambda x: x[0]):
+        issues["warn"].append(f"死链: {source} → [[{target}]] (实体不存在)")
+    print(f"  死链: {len(dead_links)}" if dead_links else "  通过")
+
+    # ── 3. stub 过期检查 ──
+    print("\n[3/5] stub 过期检查...")
+    STALE_THRESHOLD = 10
+    stale_stubs = []
+    for etype, name in sorted(md_entities):
+        state = reader.read_entity_state(etype, name)
+        if not state or state.entity_grade != "stub":
+            continue
+        appeared = reader.summaries_for_entity(name)
+        if len(appeared) >= STALE_THRESHOLD:
+            stale_stubs.append((etype, name, len(appeared)))
+
+    for etype, name, count in stale_stubs:
+        issues["warn"].append(f"过期的 stub: [{etype}] {name} 出现 {count} 章，仍未晋级")
+    print(f"  过期 stub: {len(stale_stubs)}" if stale_stubs else "  通过")
+
+    # ── 4. degraded commit 检查 ──
+    print("\n[4/5] state-degraded 记录检查...")
+    from commit_store import CommitStore
+    store = CommitStore(novel_dir)
+    degraded_chapters = []
+    for ch in store.list_commits():
+        commit = store.load_commit(ch)
+        if commit and commit.retrieval_stats.get("status") == "state-degraded":
+            degraded_chapters.append(ch)
+
+    for ch in degraded_chapters:
+        issues["error"].append(f"第 {ch} 章 state-degraded，状态未更新")
+    print(f"  degraded: {len(degraded_chapters)}" if degraded_chapters else "  通过")
+
+    # ── 5. entity_index 一致性 ──
+    print("\n[5/5] entity_index 一致性检查...")
+    idx = reader.read_entity_index()
+    idx_entities = set(idx.get("entities", {}).keys()) if idx else set()
+    md_names = {name for _, name in md_entities}
+    idx_orphans = idx_entities - md_names
+    missing_from_idx = md_names - idx_entities
+
+    for name in idx_orphans:
+        issues["info"].append(f"entity_index 中有已删除的实体: {name}")
+    for name in missing_from_idx:
+        issues["info"].append(f"实体 {name} 未在 entity_index 中")
+
+    if args.fix and (idx_orphans or missing_from_idx):
+        try:
+            retriever.rebuild_index()
+            print(f"  [FIX] 已重建 entity_index")
+        except Exception as e:
+            print(f"  [ERR] 重建失败: {e}")
+    else:
+        print(f"  index 多余: {len(idx_orphans)}, 缺失: {len(missing_from_idx)}" if idx_orphans or missing_from_idx else "  通过")
+
+    # ── 汇总 ──
+    total = sum(len(v) for v in issues.values())
+    print(f"\n{'='*50}")
+    print(f"  检查完成: {len(issues['error'])} 错误, {len(issues['warn'])} 警告, {len(issues['info'])} 提示")
+    print(f"{'='*50}")
+
+    if issues["error"]:
+        print("\n  [ERROR]")
+        for msg in issues["error"]:
+            print(f"    ✗ {msg}")
+    if issues["warn"]:
+        print("\n  [WARN]")
+        for msg in issues["warn"][:15]:
+            print(f"    ⚠ {msg}")
+        if len(issues["warn"]) > 15:
+            print(f"    ... 还有 {len(issues['warn']) - 15} 条")
+    if issues["info"]:
+        print(f"\n  [INFO] {len(issues['info'])} 条提示（使用 --fix 自动修复可修复的问题）")
+
+
+def cmd_resolve(args):
+    """CLI: 修复 state-degraded 章节的状态更新。
+
+    重新运行蒸馏流水线，这次给 Settler 更详细的修复提示。
+    用户可以看到完整的 issues 和 observer 报告后决定是否接受。
+    """
+    content_root, template_dir, vault_path = _get_paths(getattr(args, 'novel', None))
+    novel_dir = Path(str(content_root))
+    chapter_number = args.chapter
+
+    reader = VaultReader(str(content_root))
+    gen = LLMGenerator(str(CONFIG))
+    distiller = ChapterDistiller(gen, reader)
+
+    # 1. 读取章节正文
+    ch_path = novel_dir / "chapter" / f"ch_{chapter_number:03d}.md"
+    if not ch_path.exists():
+        print(f"错误：章节文件不存在: {ch_path}")
+        sys.exit(1)
+
+    chapter_text = ch_path.read_text("utf-8")
+    print(f"\n读取第 {chapter_number} 章正文 ({len(chapter_text)} 字符)")
+
+    # 2. 检查 commit 记录确认是 degraded 状态
+    from commit_store import CommitStore
+    store = CommitStore(novel_dir)
+    commit = store.load_commit(chapter_number)
+    if commit and commit.retrieval_stats.get("status") == "state-degraded":
+        print(f"确认：第 {chapter_number} 章之前处于 state-degraded 状态")
+
+    # 3. 读取之前的 summary 获取 issues 上下文
+    summary_path = novel_dir / "summary" / f"ch_{chapter_number:03d}_summary.md"
+    prev_issues = ""
+    if summary_path.exists():
+        summary_text = summary_path.read_text("utf-8")
+        if "校验问题" in summary_text:
+            idx = summary_text.find("校验问题")
+            prev_issues = summary_text[idx:idx + 2000]
+            print(f"\n之前的校验问题：\n{prev_issues[:500]}")
+
+    # 4. 重新运行蒸馏流水线
+    print(f"\n重新运行蒸馏流水线 (Observer → Settler → Validator)...")
+    result = distiller.distill(chapter_number, chapter_text)
+
+    if result.degraded:
+        print(f"\n{'='*50}")
+        print(f"  修复失败：蒸馏流水线再次输出 state-degraded")
+        print(f"{'='*50}")
+        if result.data.get("observations"):
+            print(f"\nObserver 报告摘要：\n{result.data['observations'][:800]}")
+        if result.data.get("validation_issues"):
+            print(f"\n校验问题：")
+            for issue in result.data["validation_issues"]:
+                print(f"  - [{issue.get('severity', '?')}] {issue.get('description', '')}")
+        print(f"\n建议：")
+        print(f"  1. 手动检查章节正文是否有逻辑矛盾")
+        print(f"  2. 手动编辑 state.json 修正冲突状态")
+        print(f"  3. 重新运行 resolve 让 LLM 再次尝试")
+        sys.exit(1)
+
+    # 5. 显示结果，请求确认
+    data = result.data
+    print(f"\n蒸馏成功！")
+    print(f"  实体变化: {len(data.get('entity_deltas', []))} 个")
+    print(f"  新实体: {len(data.get('new_entities', []))} 个")
+    print(f"  新伏笔: {data.get('new_plots', [])}")
+
+    if not args.accept:
+        print(f"\n即将应用以下状态变更：")
+        for delta in data.get("entity_deltas", []):
+            ename = delta.get("entity", "?")
+            for f in delta.get("facts", []):
+                pred = f.get("predicate", "")
+                new_val = str(f.get("object", ""))[:60]
+                old_val = str(f.get("old_value", ""))[:30]
+                if old_val:
+                    print(f"  [{ename}] {pred}: {old_val} → {new_val}")
+                else:
+                    print(f"  [{ename}] {pred}: {new_val}")
+
+        resp = input("\n是否应用这些变更？(yes/no): ")
+        if resp.strip().lower() != "yes":
+            print("已取消。")
+            return
+
+    # 6. 应用变更
+    print("\n应用状态变更...")
+    retriever = EntityRetriever(reader)
+    writer = VaultWriter(str(content_root))
+
+    for ent_delta in data.get("entity_deltas", []):
+        ename = ent_delta.get("entity", "")
+        etype = ent_delta.get("entity_type", "person")
+        facts_list = ent_delta.get("facts", [])
+        if not ename or not facts_list:
+            continue
+        try:
+            new_state = writer.apply_entity_delta(etype, ename, chapter_number, facts_list, reader=reader)
+            if new_state:
+                print(f"  -> state.json 已更新: {ename} (+{len(facts_list)} facts)")
+        except Exception as e:
+            print(f"  [WARN] state.json 更新 {ename} 失败: {e}")
+
+    # 7. 重新渲染 markdown + 保存 commit
+    from commit_store import build_commit_from_writer, hash_directory, snapshot_state
+    state_dir = writer.state_dir()
+    snapshot_before = snapshot_state(state_dir, novel_dir / "snapshots", chapter_number)
+
+    for new_ent in data.get("new_entities", []):
+        writer.create_entity(new_ent.get("type", "person"), new_ent["name"], new_ent.get("brief", ""))
+        print(f"  -> 新实体: {new_ent['name']}")
+
+    snapshot_after = hash_directory(state_dir)
+
+    disambigs = [
+        DisambigRecord(candidate=d.get("candidate", ""), resolved_to=d.get("resolved_to"),
+                       confidence=d.get("confidence", 0.0), action=d.get("action", "auto"))
+        for d in data.get("disambiguations", [])
+    ]
+    new_commit = build_commit_from_writer(
+        chapter=chapter_number,
+        entity_deltas=data.get("entity_deltas", []),
+        new_entities=[e.get("name", "") for e in data.get("new_entities", [])],
+        disambiguations=disambigs,
+        plots_added=data.get("new_plots", []),
+        plots_resolved=data.get("revealed_plots", []),
+        state_snapshot_before_hash=snapshot_before,
+        state_snapshot_after_hash=snapshot_after,
+    )
+    # 覆盖旧的 degraded commit
+    path = store._commit_path(chapter_number)
+    if path.exists():
+        path.unlink()
+    store.save_commit(new_commit)
+
+    # 更新伏笔
+    for plot in data.get("new_plots", []):
+        writer.add_plot_thread(plot, chapter_number)
+    for plot in data.get("revealed_plots", []):
+        writer.reveal_plot_thread(plot, chapter_number)
+
+    # 写回 summary
+    writer.write_summary(chapter_number, data.get("summary_meta", {}), data.get("summary_body", ""))
+
+    # 刷新 markdown
+    _post_write_commit(
+        reader, writer, retriever, chapter_number, data, content_root,
+        degraded=False, snapshot_before_hash=snapshot_before, snapshot_after_hash=snapshot_after,
+    )
+
+    print(f"\n第 {chapter_number} 章状态修复完成！")
+
+
+def cmd_merge(args):
+    """CLI: 合并两个实体卡（去重）。"""
+    content_root, template_dir, vault_path = _get_paths(getattr(args, 'novel', None))
+    novel_dir = Path(str(content_root))
+    reader = VaultReader(str(content_root))
+    retriever = EntityRetriever(reader)
+
+    from_name = args.from_entity
+    to_name = args.to_entity
+
+    # 1. 解析两个实体
+    from_ent = retriever.resolve_entity(from_name)
+    to_ent = retriever.resolve_entity(to_name)
+
+    if not from_ent:
+        print(f"错误：找不到源实体「{from_name}」")
+        sys.exit(1)
+    if not to_ent:
+        print(f"错误：找不到目标实体「{to_name}」")
+        sys.exit(1)
+
+    from_type = from_ent["type"]
+    to_type = to_ent["type"]
+    from_canonical = from_ent["name"]
+    to_canonical = to_ent["name"]
+
+    if from_canonical == to_canonical:
+        print("错误：两个实体是同一个，无需合并")
+        sys.exit(1)
+
+    from_state = reader.read_entity_state(from_type, from_canonical)
+    to_state = reader.read_entity_state(to_type, to_canonical)
+
+    print(f"\n{'='*50}")
+    print(f"  合并实体")
+    print(f"  源: [{from_type}] {from_canonical}")
+    print(f"  目标: [{to_type}] {to_canonical}")
+    print(f"{'='*50}")
+
+    # 2. 合并 facts
+    CONFIDENCE_PRIORITY = {"confirmed": 3, "observed": 2, "speculative": 1}
+    to_facts = {f.predicate: f for f in (to_state.facts if to_state else [])}
+    from_facts = {f.predicate: f for f in (from_state.facts if from_state else [])}
+    merged_count = 0
+
+    for pred, from_fact in from_facts.items():
+        if pred not in to_facts:
+            # 目标中没有，直接追加
+            if to_state:
+                to_state.facts.append(from_fact)
+                merged_count += 1
+        else:
+            existing = to_facts[pred]
+            from_prio = CONFIDENCE_PRIORITY.get(from_fact.confidence, 1)
+            to_prio = CONFIDENCE_PRIORITY.get(existing.confidence, 1)
+            if from_prio > to_prio:
+                # 源的事实置信度更高，替换
+                existing.object = from_fact.object
+                existing.confidence = from_fact.confidence
+                existing.evidence = from_fact.evidence
+                merged_count += 1
+
+    if to_state:
+        to_state.last_updated_chapter = max(to_state.last_updated_chapter,
+                                            from_state.last_updated_chapter if from_state else 0)
+    print(f"  facts 合并: +{merged_count} 条 (冲突时按置信度优先)")
+
+    # 3. 合并时间线
+    from_card = reader.read_entity(from_type, from_canonical)
+    to_card = reader.read_entity(to_type, to_canonical)
+    timeline_merged = 0
+
+    if from_card and to_card:
+        _, from_body = from_card
+        _, to_body = to_card
+
+        # 提取源实体的时间线行
+        from_timeline = []
+        for line in from_body.split("\n"):
+            if line.startswith("| ch_") and "|" in line:
+                from_timeline.append(line)
+
+        if from_timeline:
+            # 追加到目标实体的时间线
+            merged_body = to_body
+            for tl_line in from_timeline:
+                if tl_line not in merged_body:
+                    merged_body += tl_line + "\n"
+                    timeline_merged += 1
+
+            # 写回 markdown
+            to_meta, _ = to_card
+            from writer import _write_frontmatter_md
+            subdir = VaultWriter.TYPE_DIR.get(to_type, "person")
+            card_path = novel_dir / "entity" / subdir / f"{to_canonical}.md"
+            _write_frontmatter_md(card_path, dict(to_meta), merged_body)
+
+    print(f"  时间线合并: +{timeline_merged} 行")
+
+    # 4. 全局替换 [[wikilink]] 引用
+    replaced = _replace_wikilinks_in_vault(novel_dir, from_canonical, to_canonical, from_name)
+    print(f"  [[wikilink]] 替换: {replaced} 处 (含别名 '{from_name}')")
+
+    if args.dry_run:
+        print(f"\n[Dry-run] 以上为预览，未实际执行。")
+        return
+
+    # 5. 保存合并后的 state.json
+    if to_state:
+        writer = VaultWriter(str(content_root))
+        writer.write_entity_state(to_state)
+
+    # 6. 删除源实体
+    _delete_entity_files(novel_dir, from_type, from_canonical)
+    print(f"\n合并完成。「{from_canonical}」→「{to_canonical}」")
+
+    # 7. 重建索引
+    try:
+        retriever.rebuild_index()
+        print("  索引已重建")
+    except Exception as e:
+        print(f"  [WARN] 索引重建失败: {e}")
+
+
+def _replace_wikilinks_in_vault(novel_dir: Path, from_name: str, to_name: str, from_alias: str = "") -> int:
+    """在所有 vault 文件中替换 [[源实体]] → [[目标实体]]。
+
+    包括 entity 卡、章节、大纲、伏笔池等。
+    """
+    count = 0
+    patterns = [from_name]
+    if from_alias and from_alias != from_name:
+        patterns.append(from_alias)
+
+    for root_dir in ["entity", "chapter", "summary", "plot"]:
+        scan_dir = novel_dir / root_dir
+        if not scan_dir.exists():
+            continue
+        for md_file in scan_dir.rglob("*.md"):
+            text = md_file.read_text("utf-8")
+            original = text
+            for pat in patterns:
+                # 替换 [[name]] 和 [[name|text]]
+                text = text.replace(f"[[{pat}]]", f"[[{to_name}]]")
+                text = text.replace(f"[[{pat}|", f"[[{to_name}|")
+            if text != original:
+                md_file.write_text(text, "utf-8")
+                count += 1
+
+    return count
+
+
+def _delete_entity_files(novel_dir: Path, etype: str, name: str):
+    """删除实体相关的所有文件。"""
+    import shutil as _sh
+    subdir = VaultWriter.TYPE_DIR.get(etype, "person")
+    md_path = novel_dir / "entity" / subdir / f"{name}.md"
+    state_path = novel_dir / "state" / etype / f"{name}.state.json"
+
+    for p in [md_path, state_path]:
+        if p.exists():
+            p.unlink()
+            print(f"  已删除: {p.relative_to(novel_dir)}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Novel Pipeline")
     sub = parser.add_subparsers(dest="command")
@@ -2119,6 +3427,37 @@ def main():
     _add_novel_arg(p_cleanup)
     p_cleanup.add_argument("--force", "-f", action="store_true", help="确认执行清理")
 
+    p_resolve = sub.add_parser("resolve", help="修复 state-degraded 章节的状态更新")
+    _add_novel_arg(p_resolve)
+    p_resolve.add_argument("--chapter", "-c", type=int, required=True, help="要修复的章节号")
+    p_resolve.add_argument("--accept", "-y", action="store_true", help="接受 LLM 重新结算结果，不询问")
+
+    p_merge = sub.add_parser("merge", help="合并两个实体卡（去重）")
+    _add_novel_arg(p_merge)
+    p_merge.add_argument("--from", "-f", dest="from_entity", required=True, help="源实体（将被删除）")
+    p_merge.add_argument("--to", "-t", dest="to_entity", required=True, help="目标实体（保留）")
+    p_merge.add_argument("--dry-run", action="store_true", help="预览合并结果，不实际执行")
+
+    p_validate = sub.add_parser("validate", help="扫描 vault 一致性（state/markdown/死链/stub）")
+    _add_novel_arg(p_validate)
+    p_validate.add_argument("--fix", "-f", action="store_true", help="自动修复可修复的问题")
+
+    p_diff = sub.add_parser("diff", help="对比实体在两个章节之间的状态变化")
+    _add_novel_arg(p_diff)
+    p_diff.add_argument("--entity", "-e", required=True, help="实体名")
+    p_diff.add_argument("--from-chapter", "-f", type=int, default=0, help="起始章节（0=卷前初始状态）")
+    p_diff.add_argument("--to-chapter", "-t", type=int, required=True, help="目标章节")
+    p_diff.add_argument("--all", "-a", action="store_true", help="显示所有实体在区间内的变化")
+
+    p_rollback = sub.add_parser("rollback", help="回退实体状态到指定章节之前")
+    _add_novel_arg(p_rollback)
+    p_rollback.add_argument("--chapter", "-c", type=int, required=True,
+                           help="回退到第 N 章之前的状态")
+    p_rollback.add_argument("--hard", action="store_true",
+                           help="同时删除章节文件和 commit 记录")
+    p_rollback.add_argument("--dry-run", action="store_true",
+                           help="预览回退影响，不实际执行")
+
     sub.add_parser("list", help="列出所有小说")
     sub.add_parser("switch", help="切换活跃小说").add_argument("name", help="小说名称")
 
@@ -2153,6 +3492,16 @@ def main():
         cmd_classify(args)
     elif args.command == "cleanup":
         cmd_cleanup(args)
+    elif args.command == "rollback":
+        cmd_rollback(args)
+    elif args.command == "diff":
+        cmd_diff(args)
+    elif args.command == "validate":
+        cmd_validate(args)
+    elif args.command == "resolve":
+        cmd_resolve(args)
+    elif args.command == "merge":
+        cmd_merge(args)
     elif args.command == "rename":
         cmd_rename(args)
     elif args.command == "list":

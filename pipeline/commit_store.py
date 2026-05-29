@@ -169,6 +169,8 @@ def build_commit_from_writer(
     plots_added: list[str],
     plots_resolved: list[str],
     retrieval_stats: dict | None = None,
+    state_snapshot_before_hash: str = "",
+    state_snapshot_after_hash: str = "",
 ) -> ChapterCommit:
     """从 writer 的输出构建 ChapterCommit。"""
     records = []
@@ -196,4 +198,135 @@ def build_commit_from_writer(
         plots_added=plots_added,
         plots_resolved=plots_resolved,
         retrieval_stats=retrieval_stats or {},
+        state_snapshot_before_hash=state_snapshot_before_hash,
+        state_snapshot_after_hash=state_snapshot_after_hash,
     )
+
+
+# ═══════════════════════════════════════════════════════════════
+# State snapshot utilities
+# ═══════════════════════════════════════════════════════════════
+
+def hash_directory(dir_path: Path) -> str:
+    """计算 state 目录的 SHA256 hash（用于 commit 校验）。"""
+    if not dir_path.exists():
+        return "no_state"
+    hasher = hashlib.sha256()
+    for f in sorted(dir_path.rglob("*.json")):
+        hasher.update(f.read_bytes())
+    return hasher.hexdigest()[:16]
+
+
+def snapshot_state(state_dir: Path, snapshot_dir: Path, chapter: int) -> str:
+    """将当前 state/ 目录完整复制到 snapshots/ch_NNN/。
+
+    在每次章节写入前调用，保存写入前的状态快照。
+    返回快照目录的 hash。
+
+    如果快照已存在（重复调用），跳过并返回已有 hash。
+    """
+    import shutil
+    target = snapshot_dir / f"ch_{chapter:03d}"
+    if target.exists():
+        return hash_directory(target)
+
+    if not state_dir.exists():
+        return "no_state"
+
+    # 复制 state/ 目录到 snapshots/ch_NNN/
+    shutil.copytree(state_dir, target)
+    return hash_directory(target)
+
+
+# ═══════════════════════════════════════════════════════════════
+# State reconstruction from commits (snapshot fallback)
+# ═══════════════════════════════════════════════════════════════
+
+def reconstruct_state_from_commits(novel_dir: Path, target_chapter: int) -> dict:
+    """从 commit 日志重建 target_chapter 之前的状态（快照不可用时的兜底方案）。
+
+    按章节顺序重放所有 commit，逐章 apply delta，重建完整的 EntityState 字典。
+
+    Args:
+        target_chapter: 重建到这个章节之前的状态（不包含 target_chapter 的变更）
+
+    Returns:
+        {entity_key: EntityState} 字典，key 格式为 "entity_type/entity_name"
+    """
+    from state_schema import EntityState, EntityFact
+
+    store = CommitStore(novel_dir / "commits" if (novel_dir / "commits").exists() else novel_dir)
+    # Handle the case where novel_dir already contains "commits" subpath
+    if not (novel_dir / "commits").exists():
+        store = CommitStore(novel_dir)
+    else:
+        store = CommitStore(novel_dir)
+
+    all_commits = store.list_commits()
+    commits = [c for c in all_commits if c < target_chapter]
+    commits.sort()
+
+    if not commits:
+        return {}
+
+    states: dict[str, EntityState] = {}
+
+    for ch in commits:
+        commit = store.load_commit(ch)
+        if not commit:
+            continue
+
+        for delta_record in commit.entity_deltas_applied:
+            key = f"{delta_record.entity_type}/{delta_record.entity}"
+
+            # 懒初始化实体状态
+            if key not in states:
+                states[key] = EntityState(
+                    entity=delta_record.entity,
+                    entity_type=delta_record.entity_type,
+                    last_updated_chapter=0,
+                )
+
+            state = states[key]
+
+            # Apply facts_added: 标记旧事实为 retired，追加新事实
+            for fact_change in delta_record.facts_added:
+                for old_fact in state.facts:
+                    if old_fact.predicate == fact_change.predicate and old_fact.until_chapter is None:
+                        old_fact.until_chapter = ch
+
+                state.facts.append(EntityFact(
+                    predicate=fact_change.predicate,
+                    object=fact_change.object,
+                    since_chapter=ch,
+                    source=f"ch_{ch:03d}蒸馏",
+                    evidence=fact_change.evidence,
+                ))
+
+            # Apply facts_retired
+            for retired in delta_record.facts_retired:
+                pred = retired.get("predicate", "") if isinstance(retired, dict) else ""
+                for old_fact in state.facts:
+                    if old_fact.predicate == pred and old_fact.until_chapter is None:
+                        old_fact.until_chapter = ch
+
+            state.last_updated_chapter = ch
+
+    return states
+
+
+def write_reconstructed_state(states: dict, state_dir: Path):
+    """将重建的状态字典写入 state/ 目录。"""
+    import shutil as _shutil
+
+    if state_dir.exists():
+        _shutil.rmtree(state_dir)
+
+    for key, state in states.items():
+        etype, name = key.split("/", 1)
+        path = state_dir / etype / f"{name}.state.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            __import__('json').dumps(state.to_dict(), ensure_ascii=False, indent=2),
+            "utf-8",
+        )

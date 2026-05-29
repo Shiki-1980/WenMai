@@ -591,14 +591,12 @@ class NovelSchema:
         """检查一条新事实是否违反 override policy。
 
         返回错误描述，或 None（无违反）。
-
-        Schema 3.0: 第一个参数改为 entity_type（之前从 fact 推断）。
         """
         policy = self.get_override_policy(entity_type, predicate)
 
         if policy == OverridePolicy.LOCKED and existing_state:
             old = existing_state.get_fact(predicate)
-            if old and old.object != new_value:
+            if old and old.object.strip() and old.object != new_value:
                 return (
                     f"LOCKED 字段 '{predicate}' 尝试从 '{old.object}' 改为 "
                     f"'{new_value}' — 拒绝写入"
@@ -606,9 +604,10 @@ class NovelSchema:
 
         if policy == OverridePolicy.APPEND_ONLY and existing_state:
             old = existing_state.get_fact(predicate)
-            if old and old.object != new_value:
+            if old and old.object.strip() and old.object not in new_value:
                 return (
-                    f"APPEND_ONLY 字段 '{predicate}' 不允许修改已有值 '{old.object}'"
+                    f"APPEND_ONLY 字段 '{predicate}' 不允许覆盖已有值 "
+                    f"'{old.object[:60]}'，新值应包含旧值（追加而非替换）"
                 )
 
         return None
@@ -705,17 +704,32 @@ class NovelSchema:
 
 @dataclass
 class EntityFact:
-    """一条实体状态事实。"""
+    """一条实体状态事实。
+
+    confidence 三级：
+      - speculative: plan 阶段生成，未经章节验证
+      - observed: 蒸馏从至少一章中提取
+      - confirmed: 多章蒸馏一致确认（≥2 章独立观察到同一值）
+    """
     predicate: str             # e.g. "修为", "所在", "持有"
     object: str                # e.g. "金丹四层", "青云宗后山"
     since_chapter: int         # 从哪章开始生效
     until_chapter: int | None = None  # 到哪章失效（None = 至今有效）
     source: str = ""           # 来源标识，e.g. "ch_022蒸馏"
     evidence: str = ""         # 从章节正文中引用的证据
+    confidence: str = "observed"  # speculative | observed | confirmed
 
     def to_dict(self) -> dict:
         d = asdict(self)
-        return {k: v for k, v in d.items() if v is not None}
+        # 不保存默认值
+        result = {}
+        for k, v in d.items():
+            if v is None:
+                continue
+            if k == "confidence" and v == "observed":
+                continue  # 默认值不写
+            result[k] = v
+        return result
 
 
 @dataclass
@@ -761,12 +775,23 @@ class EntityState:
         ]
         return active[0] if active else None
 
-    def get_all_active_facts(self) -> dict[str, str]:
-        """返回所有当前有效的事实 {predicate: object}。"""
+    def get_all_active_facts(self, as_of: int = None) -> dict[str, str]:
+        """返回所有有效的事实 {predicate: object}。
+
+        Args:
+            as_of: 指定章节号，返回该章时的状态。None = 当前最新状态。
+        """
+        if as_of is None:
+            return {
+                f.predicate: f.object
+                for f in self.facts
+                if f.until_chapter is None
+            }
         return {
             f.predicate: f.object
             for f in self.facts
-            if f.until_chapter is None
+            if f.since_chapter <= as_of
+            and (f.until_chapter is None or f.until_chapter > as_of)
         }
 
     def get_active_facts_list(self) -> list[EntityFact]:
@@ -802,6 +827,7 @@ def load_entity_state(state_path: Path) -> EntityState | None:
                 until_chapter=f.get("until_chapter"),
                 source=f.get("source", ""),
                 evidence=f.get("evidence", ""),
+                confidence=f.get("confidence", "observed"),
             )
             for f in data.get("facts", [])
         ]

@@ -287,6 +287,9 @@ class VaultWriter:
                 last_updated_chapter=0,
             )
 
+        # ── 不可变字段保护 ──
+        IMMUTABLE_PREDICATES = {"name", "type", "created", "entity_type", "arc_initial_state"}
+
         # 构建 EntityFact 列表
         facts = []
         for f in facts_added:
@@ -295,6 +298,11 @@ class VaultWriter:
             obj = f.get("object", f.get("new_value", "")).strip()
 
             if not predicate or not obj:
+                continue
+
+            # 阻断对不可变字段的修改
+            if predicate.lower() in IMMUTABLE_PREDICATES:
+                print(f"  [BLOCKED] 不可变字段 '{predicate}' 不允许通过 delta 修改: {name}")
                 continue
 
             # ---- 字段值校验 ----
@@ -308,12 +316,23 @@ class VaultWriter:
                 if old_fact:
                     obj = f"{old_fact.object}\n\n{obj}"
 
+            # 置信度：检查同谓词+同值是否在之前章节中已有记录
+            confidence = "observed"
+            existing_fact = current.get_fact(predicate)
+            if existing_fact and existing_fact.object == obj:
+                # 同一值被多章独立观察 → 确认
+                if existing_fact.confidence == "observed":
+                    confidence = "confirmed"
+                    # 回写已有事实的置信度（同步升级）
+                    existing_fact.confidence = "confirmed"
+
             facts.append(EntityFact(
                 predicate=predicate,
                 object=obj,
                 since_chapter=chapter,
                 source=f"ch_{chapter:03d}蒸馏",
                 evidence=f.get("evidence", ""),
+                confidence=confidence,
             ))
 
         if not facts:
@@ -352,8 +371,39 @@ class VaultWriter:
                 return None  # 阻断写入
 
         new_state = apply_delta_to_state(current, delta)
+
+        # ── 精度事后验证：检查是否误改了非目标字段 ──
+        precision_ok = self._verify_delta_precision(current, new_state, facts, name)
+        if not precision_ok:
+            print(f"  [WARN] 精度验证失败，但仍写入（请手动 review）: {name}")
+
         self.write_entity_state(new_state)
         return new_state
+
+    def _verify_delta_precision(self, old_state: EntityState, new_state: EntityState,
+                                 claimed_facts: list, entity_name: str) -> bool:
+        """验证 delta 只修改了声称要修改的字段，未误改无关内容。"""
+        old_active = old_state.get_all_active_facts()
+        new_active = new_state.get_all_active_facts()
+
+        claimed_predicates = set(f.predicate for f in claimed_facts)
+
+        unexpected = []
+        for pred, old_val in old_active.items():
+            if pred in claimed_predicates:
+                continue  # 声称修改的字段，允许变化
+            new_val = new_active.get(pred)
+            if old_val != new_val:
+                unexpected.append(
+                    f"{pred}: '{old_val[:30]}' -> '{str(new_val)[:30]}'"
+                )
+
+        if unexpected:
+            print(f"  [PRECISION] {entity_name} 非预期变化:")
+            for u in unexpected[:5]:
+                print(f"    - {u}")
+            return False
+        return True
 
     def _validate_field_value(self, predicate: str, value: str, entity_type: str, schema: NovelSchema | None = None) -> bool:
         """校验字段值的合法性。优先使用 schema，无 schema 时宽松通过。"""

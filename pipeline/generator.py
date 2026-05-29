@@ -339,6 +339,34 @@ class LLMGenerator:
         raw = self.generate(system, prompt, json_mode=True, temperature=0.15)
         return self._parse_json(raw)
 
+    def enrich_entity(self, entity_name: str, entity_type: str, chapter_text: str,
+                      known_entities: list[str] = None) -> dict:
+        """从章节文本中提取新实体的详细信息，生成初始状态 facts。
+
+        在蒸馏发现新实体后立即调用，避免新实体只留下空 stub。
+        temp 0.3, json_mode=True。
+        """
+        known = ", ".join(known_entities or [])
+        system = (
+            f"你是小说设定提取员。从章节文本中提取关于「{entity_name}」({entity_type}) 的所有信息。\n\n"
+            f"规则：\n"
+            f"- 只提取本章明确提到的信息，不推测、不编造\n"
+            f"- 没有足够信息就返回空 facts 数组\n"
+            f"- 每条 fact 必须从原文中找到 evidence（直接引用原文片段）\n"
+            f"- 关系类信息格式：'目标实体: 关系描述'\n"
+            f"- 输出严格 JSON，不要任何其他内容"
+        )
+        prompt = (
+            f"## 章节正文\n{chapter_text[:4000]}\n\n"
+            f"## 已知实体\n{known}\n\n"
+            f"## 任务\n"
+            f"提取关于「{entity_name}」({entity_type}) 的初始状态信息。\n\n"
+            f"输出 JSON 格式：\n"
+            f'{{"facts": [{{"predicate": "字段名", "object": "字段值", "evidence": "原文引用"}}], "brief": "一句话描述"}}\n'
+        )
+        raw = self.generate(system, prompt, json_mode=True, temperature=0.3)
+        return self._parse_json(raw)
+
     # ── 保留旧 API 兼容 ────────────────────────────────────────
 
     def generate_chapter(self, context: str) -> str:

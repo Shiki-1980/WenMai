@@ -316,11 +316,92 @@ class ChapterDistiller:
             "degraded": True,
         }
 
+    # 关系反向映射：当 A 对 B 有某种关系时，B 对 A 的对应关系
+    RELATION_INVERSE = {
+        "信任": "被信任",
+        "敌视": "被敌视",
+        "爱慕": "被爱慕",
+        "尊敬": "被尊敬",
+        "仰慕": "被仰慕",
+        "追随": "被追随",
+        "效忠": "被效忠",
+        "崇拜": "被崇拜",
+        "仇恨": "被仇恨",
+        "畏惧": "被畏惧",
+        "感激": "被感激",
+        "利用": "被利用",
+        "依赖": "依赖",
+        "恋人": "恋人",
+        "朋友": "朋友",
+        "合作": "合作",
+        "对手": "对手",
+        "师徒": "师徒",
+    }
+
+    @classmethod
+    def _infer_reverse_relations(cls, entity_deltas: list, known_names: set[str],
+                                  entity_types: dict[str, str]) -> list:
+        """为关系类事实推导反向关系 delta。
+
+        当 A 的关系字段出现 "B: 信任" 时，自动为 B 生成 "A: 被信任"。
+        不会覆盖 B 的已有关系事实，只是追加新的。
+
+        Returns:
+            需要追加的反向 delta 列表（与 _normalize_deltas 输出格式相同）
+        """
+        reverse_deltas = []
+        for ent_delta in entity_deltas:
+            source_entity = ent_delta.get("entity", "")
+            source_type = ent_delta.get("entity_type", "person")
+            for fact in ent_delta.get("facts", []):
+                predicate = fact.get("predicate", "")
+                if predicate not in ("关系", "relation", "relationships"):
+                    continue
+                obj = fact.get("object", "")
+                # 格式: "目标实体: 关系描述" 或 "目标实体：关系描述"
+                for sep in (": ", "：", ": ", "："):
+                    if sep in obj:
+                        target_name, rel_desc = obj.split(sep, 1)
+                        target_name = target_name.strip()
+                        rel_desc = rel_desc.strip()
+                        break
+                else:
+                    continue
+
+                if not target_name or target_name not in known_names:
+                    continue
+
+                # 尝试匹配已知关系类型以获取反向描述
+                inverse_desc = None
+                for rel_key, rel_inv in cls.RELATION_INVERSE.items():
+                    if rel_key in rel_desc:
+                        inverse_desc = rel_desc.replace(rel_key, rel_inv, 1)
+                        break
+                if inverse_desc is None:
+                    # 无法匹配，用通用的 "被..." 形式
+                    inverse_desc = f"被{rel_desc}" if not rel_desc.startswith("被") else rel_desc
+
+                target_type = entity_types.get(target_name, "person")
+                reverse_deltas.append({
+                    "entity": target_name,
+                    "entity_type": target_type,
+                    "facts": [{
+                        "predicate": predicate,
+                        "object": f"{source_entity}: {inverse_desc}",
+                        "action": "append",
+                        "evidence": fact.get("evidence", ""),
+                    }],
+                })
+
+        return reverse_deltas
+
     def _normalize_deltas(self, entity_deltas: list) -> list:
         """将 Settler 的 changes dict 转换为 writer 的 facts 数组格式。
 
         Settler 输出: {"entity": "陆沉", "changes": {"修为": {"action": "change", ...}}}
         Writer 期望: {"entity": "陆沉", "entity_type": "person", "facts": [{"predicate": "修为", ...}]}
+
+        同时为关系类变化推导反向关系 delta。
         """
         normalized = []
         for ent_delta in entity_deltas:
@@ -345,6 +426,19 @@ class ChapterDistiller:
                     "entity_type": entity_type,
                     "facts": facts,
                 })
+
+        # 推导反向关系
+        known_names = set()
+        entity_types = {}
+        for etype, name in self.reader.all_entity_names():
+            known_names.add(name)
+            entity_types[name] = etype
+
+        reverse = self._infer_reverse_relations(normalized, known_names, entity_types)
+        if reverse:
+            normalized.extend(reverse)
+            names = [r["entity"] for r in reverse]
+            print(f"  -> 双向关系推导: {', '.join(names)}")
 
         return normalized
 
