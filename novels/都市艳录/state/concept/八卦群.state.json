@@ -1,0 +1,22 @@
+{
+  "entity": "八卦群",
+  "entity_type": "concept",
+  "last_updated_chapter": 5,
+  "facts": [
+    {
+      "predicate": "描述",
+      "object": "出现一张昨晚翠湖南园附近的夜间车辆偷拍照片，引起群内讨论但未点名李薇。",
+      "since_chapter": 5,
+      "until_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "描述",
+      "object": "出现一张昨晚翠湖南园附近的夜间车辆偷拍照片，引起群内讨论但未点名李薇。\n\n出现一张昨晚翠湖南园附近的夜间车辆偷拍照片，引起群内讨论但未点名李薇。",
+      "since_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": "有人拍了张照片，说看到一辆车停在路边……就是靠近翠湖南园那边的路口，晚上十一点多。照片拍得确实模糊……没有任何人提到李薇的名字。"
+    }
+  ]
+}

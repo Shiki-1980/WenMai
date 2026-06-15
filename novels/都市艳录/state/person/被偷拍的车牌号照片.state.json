@@ -1,0 +1,22 @@
+{
+  "entity": "被偷拍的车牌号照片",
+  "entity_type": "person",
+  "last_updated_chapter": 5,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "已被李薇查看，确认无法辨认车牌和人物，但已留下潜在风险",
+      "since_chapter": 5,
+      "until_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "状态",
+      "object": "已被李薇查看，确认无法辨认车牌和人物，但已留下潜在风险",
+      "since_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": "她掏出手机，打开那个小区八卦群……只能隐约看到一辆深色轿车的轮廓……确认画面里没有她的身影——甚至连车门都没拍到。"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "entity": "红酒",
+  "entity_type": "item",
+  "last_updated_chapter": 3,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "在李薇家玄关柜，未开封",
+      "since_chapter": 3,
+      "source": "ch_003蒸馏",
+      "evidence": "把红酒放在玄关柜上"
+    }
+  ]
+}

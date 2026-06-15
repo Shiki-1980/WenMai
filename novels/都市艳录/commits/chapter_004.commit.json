@@ -1,0 +1,126 @@
+{
+  "chapter": 4,
+  "timestamp": "2026-06-16T00:51:27.298497",
+  "schema_snapshot_hash": "ebaadfb194503765",
+  "entity_deltas_applied": [
+    {
+      "entity": "李薇",
+      "entity_type": "person",
+      "facts_added": [
+        {
+          "predicate": "位置",
+          "object": "城中公园（翠湖南园）柳树荫下长椅",
+          "old_value": "家中（滨江花园12号楼702）",
+          "evidence": "李薇的消息只有四个字：‘我到了。东门。’...‘过去坐坐？’"
+        },
+        {
+          "predicate": "身体状态",
+          "object": "性兴奋，下体湿润，经历高潮和第二次小高潮，高潮后身体软、腿没力气，丝袜和裙摆被体液打湿",
+          "old_value": "多次高潮后腿软、口红晕开",
+          "evidence": "薄薄的一层棉布，已经有些湿润了。...李薇的身体开始剧烈地痉挛...丝袜已经被体液打湿了一大片"
+        },
+        {
+          "predicate": "精神状态",
+          "object": "放松、兴奋、投入，放开了自我，又害怕又刺激",
+          "old_value": "放松慵懒，开始兴奋",
+          "evidence": "她骑在他身上，上下耸动得比之前更快、更用力。...又害怕，又刺激。"
+        },
+        {
+          "predicate": "关系",
+          "object": "与陈涛的性关系更加深入和默契，从之前的秘密幽会发展到可以在露天公园进行，并计划下一次私会。",
+          "old_value": "",
+          "evidence": "下次换个地方？...到时候告诉你。"
+        },
+        {
+          "predicate": "目标",
+          "object": "计划与陈涛的下一次私会，但地点由其决定并保密",
+          "old_value": "主动规划与陈涛更多次的性接触，目标从‘一次性’向‘持续偷情’转变",
+          "evidence": "下次换个地方？...我说了算？"
+        },
+        {
+          "predicate": "详细描述",
+          "object": "丈夫周明远明天回来。对陈涛的称呼变为更亲密的行动指令。",
+          "old_value": "",
+          "evidence": "我得回去了。他明天回来，我得把家里收拾干净。...你裤子上湿了一大片"
+        }
+      ],
+      "facts_retired": []
+    },
+    {
+      "entity": "陈涛",
+      "entity_type": "person",
+      "facts_added": [
+        {
+          "predicate": "位置",
+          "object": "城中公园（翠湖南园）柳树荫下长椅",
+          "old_value": "李薇家中（滨江花园12号楼702）",
+          "evidence": "陈涛从西门进去...陈涛跟在她身后"
+        },
+        {
+          "predicate": "身体状态",
+          "object": "阴茎勃起，性兴奋，进行了性交并射精",
+          "old_value": "左肩有齿痕，能够控制射精",
+          "evidence": "他早就硬了。...一股又一股地喷射出来。"
+        },
+        {
+          "predicate": "精神状态",
+          "object": "享受过程并感到满足，对被发现的风险表现出冷静和掌控",
+          "old_value": "期待、兴奋",
+          "evidence": "看着她。...别动。他在李薇耳边说。"
+        },
+        {
+          "predicate": "关系",
+          "object": "与李薇的关系从进入家庭空间的情人进一步发展到可以在户外公园发生关系，且李薇更加主动和信任。",
+          "old_value": "",
+          "evidence": "李薇主动要求下次换个地方。"
+        },
+        {
+          "predicate": "目标",
+          "object": "保持与李薇的性关系，接受她决定下次约会地点",
+          "old_value": "主动侵入李薇家庭空间，目标变为‘每间房都祸害一遍’",
+          "evidence": "我说了算？...到时候告诉你。"
+        },
+        {
+          "predicate": "详细描述",
+          "object": "性格中带有掌控欲和冒险精神，对李薇有更深层的吸引和占有需求。",
+          "old_value": "",
+          "evidence": "他的手指没有继续往里探...起来。...月光下，李薇的身体曲线被勾勒得分明。"
+        }
+      ],
+      "facts_retired": []
+    },
+    {
+      "entity": "周明远",
+      "entity_type": "person",
+      "facts_added": [
+        {
+          "predicate": "详细描述",
+          "object": "正在出差，将于明天返回家中。",
+          "old_value": "",
+          "evidence": "他明天回来，我得把家里收拾干净。"
+        }
+      ],
+      "facts_retired": []
+    },
+    {
+      "entity": "城中公园",
+      "entity_type": "location",
+      "facts_added": [
+        {
+          "predicate": "描述",
+          "object": "成为陈涛与李薇的约会和性爱场所。",
+          "old_value": "",
+          "evidence": "整个章节描述了两人的相遇和性行为过程。"
+        }
+      ],
+      "facts_retired": []
+    }
+  ],
+  "new_entities_created": [],
+  "disambiguations": [],
+  "plots_added": [],
+  "plots_resolved": [],
+  "retrieval_stats": {},
+  "state_snapshot_before_hash": "",
+  "state_snapshot_after_hash": ""
+}

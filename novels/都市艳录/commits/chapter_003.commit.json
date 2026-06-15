@@ -1,0 +1,139 @@
+{
+  "chapter": 3,
+  "timestamp": "2026-06-16T00:49:15.520735",
+  "schema_snapshot_hash": "ebaadfb194503765",
+  "entity_deltas_applied": [
+    {
+      "entity": "李薇",
+      "entity_type": "person",
+      "facts_added": [
+        {
+          "predicate": "位置",
+          "object": "家中（滨江花园12号楼702）",
+          "old_value": "酒店房间",
+          "evidence": "他点开定位。/ 是城东的滨江花园……李薇的家。"
+        },
+        {
+          "predicate": "精神状态",
+          "object": "放松慵懒，开始兴奋",
+          "old_value": "释放/失控",
+          "evidence": "她穿一件米白色的宽松针织衫……声音恢复了些许冷静。"
+        },
+        {
+          "predicate": "持有",
+          "object": "陈涛带来的红酒（玄关柜）",
+          "old_value": "",
+          "evidence": "把红酒放在玄关柜上"
+        },
+        {
+          "predicate": "关系",
+          "object": "与陈涛的性关系从酒店秘密幽会发展到允许对方进入自己的家，在丈夫的书桌上发生关系。",
+          "old_value": "",
+          "evidence": "陈涛……在她丈夫的书桌上……从背后干他的老婆"
+        },
+        {
+          "predicate": "目标",
+          "object": "主动规划与陈涛更多次的性接触，目标从“一次性”向“持续偷情”转变",
+          "old_value": "计划继续与陈涛的性关系，提议下次换场所",
+          "evidence": "所以你还有一天半的时间把这里每一个房间都祸害一遍"
+        },
+        {
+          "predicate": "详细描述",
+          "object": "家住富人小区、有儿子（屏保合照）、丈夫周明远是管理层、家里整洁有钟点工、她做家务熟练。",
+          "old_value": "",
+          "evidence": "屏保是另一张家庭合照——多了个小孩；昨天请了钟点工；她煮面、切黄瓜、拌凉菜，动作娴熟"
+        }
+      ],
+      "facts_retired": []
+    },
+    {
+      "entity": "陈涛",
+      "entity_type": "person",
+      "facts_added": [
+        {
+          "predicate": "位置",
+          "object": "李薇家中（滨江花园12号楼702）",
+          "old_value": "酒店房间",
+          "evidence": "他回了个‘马上到’，锁上出租屋的门；电梯门打开时……李薇已经站在玄关处"
+        },
+        {
+          "predicate": "精神状态",
+          "object": "期待、兴奋",
+          "old_value": "性兴奋满足",
+          "evidence": "这个认知让陈涛的血液都涌向了下身……每一记抽送都带着报复性的力道"
+        },
+        {
+          "predicate": "持有",
+          "object": "携带一瓶红酒，放在玄关柜",
+          "old_value": "",
+          "evidence": "从后备箱里翻出那瓶还剩大半的红酒"
+        },
+        {
+          "predicate": "关系",
+          "object": "与李薇的关系从性伴侣升级为可以进入对方家庭空间的情人；对李薇丈夫周明远产生敌意和攀比心态。",
+          "old_value": "",
+          "evidence": "而他此刻正在这个男人的书桌上，从背后干他的老婆。"
+        },
+        {
+          "predicate": "目标",
+          "object": "主动侵入李薇家庭空间，目标变为‘每间房都祸害一遍’",
+          "old_value": "等待下次约会安排",
+          "evidence": "所以你还有一天半的时间把这里每一个房间都祸害一遍；厨房还没祸害。……那上面还挺宽敞的"
+        },
+        {
+          "predicate": "详细描述",
+          "object": "性格更主动、有装备意识（后备箱常备红酒、遮阳挡板）；对周明远有具体观察：三十五六岁、戴金边眼镜、事业有成、有儿子。",
+          "old_value": "",
+          "evidence": "照片里的周明远……事业有成的体面人；屏保是另一张家庭合照——多了个小孩，应该是他们的儿子"
+        }
+      ],
+      "facts_retired": []
+    },
+    {
+      "entity": "周明远",
+      "entity_type": "person",
+      "facts_added": [
+        {
+          "predicate": "状态",
+          "object": "所在=出差地",
+          "old_value": "所在=家中（出差刚归来）",
+          "evidence": "李薇在微信上发来的，只四个字——‘他走了’"
+        }
+      ],
+      "facts_retired": []
+    },
+    {
+      "entity": "红酒",
+      "entity_type": "item",
+      "facts_added": [
+        {
+          "predicate": "状态",
+          "object": "在李薇家玄关柜，未开封",
+          "old_value": "在陈涛后备箱",
+          "evidence": "把红酒放在玄关柜上"
+        }
+      ],
+      "facts_retired": []
+    },
+    {
+      "entity": "陈涛的车",
+      "entity_type": "item",
+      "facts_added": [
+        {
+          "predicate": "持有",
+          "object": "",
+          "old_value": "红酒（还剩大半）",
+          "evidence": "从后备箱里翻出那瓶还剩大半的红酒。遮阳挡板和浴巾还在。"
+        }
+      ],
+      "facts_retired": []
+    }
+  ],
+  "new_entities_created": [],
+  "disambiguations": [],
+  "plots_added": [],
+  "plots_resolved": [],
+  "retrieval_stats": {},
+  "state_snapshot_before_hash": "",
+  "state_snapshot_after_hash": ""
+}

@@ -1,0 +1,14 @@
+{
+  "entity": "丝袜",
+  "entity_type": "item",
+  "last_updated_chapter": 2,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "膝盖处脱丝损坏",
+      "since_chapter": 2,
+      "source": "ch_002蒸馏",
+      "evidence": "丝袜却没有办法完全复原——膝盖处有一道明显的脱丝痕迹。"
+    }
+  ]
+}

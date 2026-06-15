@@ -1,7 +1,7 @@
 {
   "entity": "陈涛",
   "entity_type": "person",
-  "last_updated_chapter": 1,
+  "last_updated_chapter": 4,
   "facts": [
     {
       "predicate": "位置",
@@ -55,6 +55,7 @@
       "predicate": "位置",
       "object": "酒店房间",
       "since_chapter": 1,
+      "until_chapter": 3,
       "source": "ch_001蒸馏",
       "evidence": "他最后重重顶了几下...然后她瘫软下来"
     },
@@ -62,6 +63,7 @@
       "predicate": "精神状态",
       "object": "性兴奋满足",
       "since_chapter": 1,
+      "until_chapter": 3,
       "source": "ch_001蒸馏",
       "evidence": "他的勃起早已硬得发烫” → “射精的那几秒钟里...大脑一片空白"
     },
@@ -69,6 +71,7 @@
       "predicate": "持有",
       "object": "李薇的个人信息（姓名、年龄、婚姻状况）",
       "since_chapter": 1,
+      "until_chapter": 2,
       "source": "ch_001蒸馏",
       "evidence": "李薇。” / “结婚多久了？”“七年。” / “我比你大六岁。"
     },
@@ -76,6 +79,7 @@
       "predicate": "关系",
       "object": "与李薇的性关系（第一次）",
       "since_chapter": 1,
+      "until_chapter": 2,
       "source": "ch_001蒸馏",
       "evidence": "陈涛把她按在门板上...嘴唇直接压了上去” → 全过程性行为描述"
     },
@@ -83,6 +87,7 @@
       "predicate": "目标",
       "object": "已完成",
       "since_chapter": 1,
+      "until_chapter": 2,
       "source": "ch_001蒸馏",
       "evidence": "从我看到你坐在那里的时候，我就在想一件事”“我想知道你在床上的声音是什么样的"
     },
@@ -90,8 +95,274 @@
       "predicate": "详细描述",
       "object": "外貌：28岁，下颌线条利落，黑色修身T恤，露出前臂结实的肌肉线条；性格：擅长伪装和观察，使用真话策略；行为风格：熟练的情场老手，掌握节奏。\n\n外貌：28岁，下颌线条利落，黑色修身T恤，露出前臂结实的肌肉线条；性格：擅长伪装和观察，使用真话策略；行为风格：熟练的情场老手，掌握节奏。",
       "since_chapter": 1,
+      "until_chapter": 2,
       "source": "ch_001蒸馏",
       "evidence": "二十八岁，下颌线条利落，穿一件黑色修身T恤，袖口微微卷起，露出前臂结实的肌肉线条” / “这是他最擅长使用的伪装——一张让人放松警惕的脸” / “他从来不追问。追问是最蠢的手段，会让人竖起防御。他只是安静地坐着，等她自己转过头来。"
+    },
+    {
+      "predicate": "身体状态",
+      "object": "左肩有齿痕，能够控制射精",
+      "since_chapter": 2,
+      "until_chapter": 2,
+      "source": "ch_002蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "李薇的浴巾（留在车上）",
+      "since_chapter": 2,
+      "until_chapter": 2,
+      "source": "ch_002蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "关系",
+      "object": "与李薇的性关系从第一次发展到第二次，互动更主动直接",
+      "since_chapter": 2,
+      "until_chapter": 2,
+      "source": "ch_002蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "等待下次约会安排",
+      "since_chapter": 2,
+      "until_chapter": 2,
+      "source": "ch_002蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "能控制射精；车上有遮阳挡板等装备",
+      "since_chapter": 2,
+      "until_chapter": 2,
+      "source": "ch_002蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "左肩有齿痕，能够控制射精",
+      "since_chapter": 2,
+      "until_chapter": 4,
+      "source": "ch_002蒸馏",
+      "evidence": "她一口咬在他的肩头上；他忍住了。"
+    },
+    {
+      "predicate": "持有",
+      "object": "李薇的浴巾（留在车上）",
+      "since_chapter": 2,
+      "until_chapter": 3,
+      "source": "ch_002蒸馏",
+      "evidence": "他把它卷起来丢到后座"
+    },
+    {
+      "predicate": "关系",
+      "object": "与李薇的性关系从第一次发展到第二次，互动更主动直接\n\n与李薇的性关系从第一次发展到第二次，互动更主动直接",
+      "since_chapter": 2,
+      "until_chapter": 3,
+      "source": "ch_002蒸馏",
+      "evidence": "全章描述第二次性行为"
+    },
+    {
+      "predicate": "目标",
+      "object": "等待下次约会安排",
+      "since_chapter": 2,
+      "until_chapter": 3,
+      "source": "ch_002蒸馏",
+      "evidence": "下次，'她说，'换个不这么挤的地方。'陈涛靠在座位上，看着她：'你定。'"
+    },
+    {
+      "predicate": "详细描述",
+      "object": "能控制射精；车上有遮阳挡板等装备\n\n能控制射精；车上有遮阳挡板等装备",
+      "since_chapter": 2,
+      "until_chapter": 3,
+      "source": "ch_002蒸馏",
+      "evidence": "他忍住了。从手套箱里翻出两块遮阳挡板..."
+    },
+    {
+      "predicate": "位置",
+      "object": "李薇家中（滨江花园12号楼702）",
+      "since_chapter": 3,
+      "until_chapter": 3,
+      "source": "ch_003蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "精神状态",
+      "object": "期待、兴奋",
+      "since_chapter": 3,
+      "until_chapter": 3,
+      "source": "ch_003蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "携带一瓶红酒，放在玄关柜",
+      "since_chapter": 3,
+      "until_chapter": 3,
+      "source": "ch_003蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "关系",
+      "object": "与李薇的关系从性伴侣升级为可以进入对方家庭空间的情人；对李薇丈夫周明远产生敌意和攀比心态。",
+      "since_chapter": 3,
+      "until_chapter": 3,
+      "source": "ch_003蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "主动侵入李薇家庭空间，目标变为‘每间房都祸害一遍’",
+      "since_chapter": 3,
+      "until_chapter": 3,
+      "source": "ch_003蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "性格更主动、有装备意识（后备箱常备红酒、遮阳挡板）；对周明远有具体观察：三十五六岁、戴金边眼镜、事业有成、有儿子。",
+      "since_chapter": 3,
+      "until_chapter": 3,
+      "source": "ch_003蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "位置",
+      "object": "李薇家中（滨江花园12号楼702）",
+      "since_chapter": 3,
+      "until_chapter": 4,
+      "source": "ch_003蒸馏",
+      "evidence": "他回了个‘马上到’，锁上出租屋的门；电梯门打开时……李薇已经站在玄关处"
+    },
+    {
+      "predicate": "精神状态",
+      "object": "期待、兴奋",
+      "since_chapter": 3,
+      "until_chapter": 4,
+      "source": "ch_003蒸馏",
+      "evidence": "这个认知让陈涛的血液都涌向了下身……每一记抽送都带着报复性的力道"
+    },
+    {
+      "predicate": "持有",
+      "object": "携带一瓶红酒，放在玄关柜",
+      "since_chapter": 3,
+      "source": "ch_003蒸馏",
+      "evidence": "从后备箱里翻出那瓶还剩大半的红酒"
+    },
+    {
+      "predicate": "关系",
+      "object": "与李薇的关系从性伴侣升级为可以进入对方家庭空间的情人；对李薇丈夫周明远产生敌意和攀比心态。\n\n与李薇的关系从性伴侣升级为可以进入对方家庭空间的情人；对李薇丈夫周明远产生敌意和攀比心态。",
+      "since_chapter": 3,
+      "until_chapter": 4,
+      "source": "ch_003蒸馏",
+      "evidence": "而他此刻正在这个男人的书桌上，从背后干他的老婆。"
+    },
+    {
+      "predicate": "目标",
+      "object": "主动侵入李薇家庭空间，目标变为‘每间房都祸害一遍’",
+      "since_chapter": 3,
+      "until_chapter": 4,
+      "source": "ch_003蒸馏",
+      "evidence": "所以你还有一天半的时间把这里每一个房间都祸害一遍；厨房还没祸害。……那上面还挺宽敞的"
+    },
+    {
+      "predicate": "详细描述",
+      "object": "性格更主动、有装备意识（后备箱常备红酒、遮阳挡板）；对周明远有具体观察：三十五六岁、戴金边眼镜、事业有成、有儿子。\n\n性格更主动、有装备意识（后备箱常备红酒、遮阳挡板）；对周明远有具体观察：三十五六岁、戴金边眼镜、事业有成、有儿子。",
+      "since_chapter": 3,
+      "until_chapter": 4,
+      "source": "ch_003蒸馏",
+      "evidence": "照片里的周明远……事业有成的体面人；屏保是另一张家庭合照——多了个小孩，应该是他们的儿子"
+    },
+    {
+      "predicate": "位置",
+      "object": "城中公园（翠湖南园）柳树荫下长椅",
+      "since_chapter": 4,
+      "until_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "身体状态",
+      "object": "阴茎勃起，性兴奋，进行了性交并射精",
+      "since_chapter": 4,
+      "until_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "精神状态",
+      "object": "享受过程并感到满足，对被发现的风险表现出冷静和掌控",
+      "since_chapter": 4,
+      "until_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "关系",
+      "object": "与李薇的关系从进入家庭空间的情人进一步发展到可以在户外公园发生关系，且李薇更加主动和信任。",
+      "since_chapter": 4,
+      "until_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "保持与李薇的性关系，接受她决定下次约会地点",
+      "since_chapter": 4,
+      "until_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "性格中带有掌控欲和冒险精神，对李薇有更深层的吸引和占有需求。",
+      "since_chapter": 4,
+      "until_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "位置",
+      "object": "城中公园（翠湖南园）柳树荫下长椅",
+      "since_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": "陈涛从西门进去...陈涛跟在她身后"
+    },
+    {
+      "predicate": "身体状态",
+      "object": "阴茎勃起，性兴奋，进行了性交并射精",
+      "since_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": "他早就硬了。...一股又一股地喷射出来。"
+    },
+    {
+      "predicate": "精神状态",
+      "object": "享受过程并感到满足，对被发现的风险表现出冷静和掌控",
+      "since_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": "看着她。...别动。他在李薇耳边说。"
+    },
+    {
+      "predicate": "关系",
+      "object": "与李薇的关系从进入家庭空间的情人进一步发展到可以在户外公园发生关系，且李薇更加主动和信任。\n\n与李薇的关系从进入家庭空间的情人进一步发展到可以在户外公园发生关系，且李薇更加主动和信任。",
+      "since_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": "李薇主动要求下次换个地方。"
+    },
+    {
+      "predicate": "目标",
+      "object": "保持与李薇的性关系，接受她决定下次约会地点",
+      "since_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": "我说了算？...到时候告诉你。"
+    },
+    {
+      "predicate": "详细描述",
+      "object": "性格中带有掌控欲和冒险精神，对李薇有更深层的吸引和占有需求。\n\n性格中带有掌控欲和冒险精神，对李薇有更深层的吸引和占有需求。",
+      "since_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": "他的手指没有继续往里探...起来。...月光下，李薇的身体曲线被勾勒得分明。"
     }
   ]
 }

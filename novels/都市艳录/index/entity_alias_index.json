@@ -1,4 +1,177 @@
 {
   "version": 1,
-  "entities": {}
+  "entities": {
+    "丈夫的猜疑苗头": {
+      "canonical": "丈夫的猜疑苗头",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "丝袜": {
+      "canonical": "丝袜",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "单身公寓": {
+      "canonical": "单身公寓",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "同事老张": {
+      "canonical": "同事老张",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "周明远": {
+      "canonical": "周明远",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "周明远（李薇丈夫）": {
+      "canonical": "周明远（李薇丈夫）",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "城中公园长椅": {
+      "canonical": "城中公园长椅",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "城市": {
+      "canonical": "城市",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "婚戒": {
+      "canonical": "婚戒",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "心理掩饰术": {
+      "canonical": "心理掩饰术",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "情欲诱导术": {
+      "canonical": "情欲诱导术",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "暗流酒吧会员卡": {
+      "canonical": "暗流酒吧会员卡",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "李薇": {
+      "canonical": "李薇",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "李薇的内心萌芽": {
+      "canonical": "李薇的内心萌芽",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "浮光市": {
+      "canonical": "浮光市",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "肉体操控术": {
+      "canonical": "肉体操控术",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "苏蔓": {
+      "canonical": "苏蔓",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "苏蔓的警觉": {
+      "canonical": "苏蔓的警觉",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "苏蔓（李薇闺蜜）": {
+      "canonical": "苏蔓（李薇闺蜜）",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "被偷拍的车牌号照片": {
+      "canonical": "被偷拍的车牌号照片",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "都市": {
+      "canonical": "都市",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "陈涛": {
+      "canonical": "陈涛",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "周明远的车": {
+      "canonical": "周明远的车",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "出租车": {
+      "canonical": "出租车",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "城中公园": {
+      "canonical": "城中公园",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "废弃烂尾楼": {
+      "canonical": "废弃烂尾楼",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "暗流酒吧": {
+      "canonical": "暗流酒吧",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "李薇公司地下停车场": {
+      "canonical": "李薇公司地下停车场",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "李薇家": {
+      "canonical": "李薇家",
+      "aliases": [
+        "李宅"
+      ],
+      "auto_aliases": []
+    },
+    "电影院": {
+      "canonical": "电影院",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "酒店（未命名）": {
+      "canonical": "酒店（未命名）",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "陈涛单身公寓": {
+      "canonical": "陈涛单身公寓",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "八卦群": {
+      "canonical": "八卦群",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "轻食简餐店": {
+      "canonical": "轻食简餐店",
+      "aliases": [],
+      "auto_aliases": []
+    }
+  }
 }

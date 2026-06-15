@@ -1,0 +1,82 @@
+{
+  "entity": "苏蔓",
+  "entity_type": "person",
+  "last_updated_chapter": 5,
+  "facts": [
+    {
+      "predicate": "精神状态",
+      "object": "疑虑加深，眼神锐利，从普通闺蜜变为带有试探意图的观察者",
+      "since_chapter": 5,
+      "until_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "位置",
+      "object": "编辑部",
+      "since_chapter": 5,
+      "until_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "关系",
+      "object": "对李薇的信任开始动摇，主动提及八卦群照片进行试探。",
+      "since_chapter": 5,
+      "until_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "通过约饭和言语试探，确认李薇是否出轨",
+      "since_chapter": 5,
+      "until_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "职业：时尚杂志编辑，观察力敏锐；打扮精致（米白色针织开衫、黑色吊带、金色锁骨链、大波浪长发）。",
+      "since_chapter": 5,
+      "until_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "精神状态",
+      "object": "疑虑加深，眼神锐利，从普通闺蜜变为带有试探意图的观察者",
+      "since_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": "苏蔓抬头看她，眼神从菜单上方扫过来，带着职业编辑那种审视的锐度。"
+    },
+    {
+      "predicate": "位置",
+      "object": "编辑部",
+      "since_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": "苏蔓往左走，去地铁站、我下午也要回编辑部赶稿。"
+    },
+    {
+      "predicate": "关系",
+      "object": "对李薇的信任开始动摇，主动提及八卦群照片进行试探。\n\n对李薇的信任开始动摇，主动提及八卦群照片进行试探。",
+      "since_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": "苏蔓忽然放下叉子……用一种漫不经心的语气说一句：‘诶，我前两天刷八卦群，看到一张照片。’"
+    },
+    {
+      "predicate": "目标",
+      "object": "通过约饭和言语试探，确认李薇是否出轨",
+      "since_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": "眼神扫过来……化成一个笑，之后提及照片细节，并观察李薇反应。"
+    },
+    {
+      "predicate": "详细描述",
+      "object": "职业：时尚杂志编辑，观察力敏锐；打扮精致（米白色针织开衫、黑色吊带、金色锁骨链、大波浪长发）。\n\n职业：时尚杂志编辑，观察力敏锐；打扮精致（米白色针织开衫、黑色吊带、金色锁骨链、大波浪长发）。",
+      "since_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": "苏蔓三十一岁，未婚，做时尚杂志的编辑。今天穿了一件米白色的针织开衫，里面是黑色吊带……头发烫了大波浪。"
+    }
+  ]
+}

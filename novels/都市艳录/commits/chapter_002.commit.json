@@ -1,0 +1,116 @@
+{
+  "chapter": 2,
+  "timestamp": "2026-06-16T00:45:20.400340",
+  "schema_snapshot_hash": "ebaadfb194503765",
+  "entity_deltas_applied": [
+    {
+      "entity": "陈涛",
+      "entity_type": "person",
+      "facts_added": [
+        {
+          "predicate": "身体状态",
+          "object": "左肩有齿痕，能够控制射精",
+          "old_value": "性兴奋满足",
+          "evidence": "她一口咬在他的肩头上；他忍住了。"
+        },
+        {
+          "predicate": "持有",
+          "object": "李薇的浴巾（留在车上）",
+          "old_value": "",
+          "evidence": "他把它卷起来丢到后座"
+        },
+        {
+          "predicate": "关系",
+          "object": "与李薇的性关系从第一次发展到第二次，互动更主动直接",
+          "old_value": "",
+          "evidence": "全章描述第二次性行为"
+        },
+        {
+          "predicate": "目标",
+          "object": "等待下次约会安排",
+          "old_value": "已完成",
+          "evidence": "下次，'她说，'换个不这么挤的地方。'陈涛靠在座位上，看着她：'你定。'"
+        },
+        {
+          "predicate": "详细描述",
+          "object": "能控制射精；车上有遮阳挡板等装备",
+          "old_value": "",
+          "evidence": "他忍住了。从手套箱里翻出两块遮阳挡板..."
+        }
+      ],
+      "facts_retired": []
+    },
+    {
+      "entity": "李薇",
+      "entity_type": "person",
+      "facts_added": [
+        {
+          "predicate": "身体状态",
+          "object": "多次高潮后腿软、口红晕开",
+          "old_value": "性高潮后疲惫",
+          "evidence": "阴道开始剧烈收缩...腿明显软了一下...把嘴角边一抹晕开的口红仔细擦掉"
+        },
+        {
+          "predicate": "持有",
+          "object": "陈涛的精液（后腰、浴巾上）",
+          "old_value": "",
+          "evidence": "把精液射在了她的后腰上...浴巾上湿了一大片，还有些白色的浊迹"
+        },
+        {
+          "predicate": "关系",
+          "object": "与陈涛的性关系进一步加强，主动邀约",
+          "old_value": "",
+          "evidence": "李薇主动发消息约陈涛"
+        },
+        {
+          "predicate": "目标",
+          "object": "计划继续与陈涛的性关系，提议下次换场所",
+          "old_value": "已完成",
+          "evidence": "下次，'她说，'换个不这么挤的地方。'"
+        },
+        {
+          "predicate": "详细描述",
+          "object": "驾驶银灰色宝马；工作中穿浅蓝衬衫深灰包臀裙；性格直接主动，性经验丰富",
+          "old_value": "",
+          "evidence": "一辆银灰色的宝马...今天穿了件浅蓝色的衬衫...她自己坐下去的...她正在摊上工作流程"
+        }
+      ],
+      "facts_retired": []
+    },
+    {
+      "entity": "丝袜",
+      "entity_type": "item",
+      "facts_added": [
+        {
+          "predicate": "状态",
+          "object": "膝盖处脱丝损坏",
+          "old_value": "完好",
+          "evidence": "丝袜却没有办法完全复原——膝盖处有一道明显的脱丝痕迹。"
+        }
+      ],
+      "facts_retired": []
+    },
+    {
+      "entity": "李薇公司地下停车场",
+      "entity_type": "location",
+      "facts_added": [
+        {
+          "predicate": "描述",
+          "object": "光线昏暗，部分灯管损坏",
+          "old_value": "",
+          "evidence": "有几根坏了，留下一段段昏暗的间隔"
+        }
+      ],
+      "facts_retired": []
+    }
+  ],
+  "new_entities_created": [],
+  "disambiguations": [],
+  "plots_added": [
+    "李薇计划继续与陈涛的性关系"
+  ],
+  "plots_resolved": [],
+  "retrieval_stats": {},
+  "state_snapshot_before_hash": "",
+  "state_snapshot_after_hash": ""
+}

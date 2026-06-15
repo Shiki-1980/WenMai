@@ -1,0 +1,37 @@
+{
+  "entity": "周明远",
+  "entity_type": "person",
+  "last_updated_chapter": 4,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "所在=出差地",
+      "since_chapter": 3,
+      "until_chapter": 3,
+      "source": "ch_003蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "状态",
+      "object": "所在=出差地",
+      "since_chapter": 3,
+      "source": "ch_003蒸馏",
+      "evidence": "李薇在微信上发来的，只四个字——‘他走了’"
+    },
+    {
+      "predicate": "详细描述",
+      "object": "正在出差，将于明天返回家中。",
+      "since_chapter": 4,
+      "until_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "正在出差，将于明天返回家中。\n\n正在出差，将于明天返回家中。",
+      "since_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": "他明天回来，我得把家里收拾干净。"
+    }
+  ]
+}

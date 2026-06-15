@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { to: "/chapters", label: "章节", icon: "§" },
   { to: "/audit", label: "审阅", icon: "◎" },
   { to: "/novels", label: "小说管理", icon: "▤" },
+  { to: "/settings", label: "设置", icon: "⚙" },
 ];
 
 export default function Sidebar() {
@@ -35,13 +36,14 @@ export default function Sidebar() {
   return (
     <aside className="w-[260px] shrink-0 h-full bg-ink-surface border-r border-ink-border flex flex-col">
       {/* Logo */}
-      <div className="px-6 py-6 border-b border-ink-border">
-        <h1 className="font-serif text-2xl font-semibold text-ink-accent tracking-wide">
-          文脉
-        </h1>
-        <p className="text-xs text-ink-text-muted mt-1 font-sans tracking-wider">
-          WENMAI STUDIO
-        </p>
+      <div className="px-6 py-5 border-b border-ink-border">
+        <div className="flex items-center gap-3">
+          <span className="text-3xl leading-none select-none opacity-40">文</span>
+          <div>
+            <h1 className="font-serif text-xl font-semibold text-ink-accent tracking-wider leading-tight">文脉</h1>
+            <p className="text-[10px] text-ink-text-muted font-sans tracking-[0.15em]">WENMAI STUDIO</p>
+          </div>
+        </div>
       </div>
 
       {/* Novel Switcher */}
@@ -81,16 +83,16 @@ export default function Sidebar() {
       </div>
 
       {/* Nav Links */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5">
+      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.to === "/"}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-sans transition-all duration-200 ${
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-sans transition-all duration-200 relative group ${
                 isActive
-                  ? "bg-ink-accent/10 text-ink-accent font-medium"
+                  ? "bg-ink-accent/10 text-ink-accent font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[3px] before:h-5 before:rounded-r-full before:bg-ink-accent"
                   : "text-ink-text-secondary hover:text-ink-text hover:bg-ink-card"
               }`
             }

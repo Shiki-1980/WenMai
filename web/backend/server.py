@@ -315,11 +315,16 @@ async def _sse_stream(task_id: str, cmd_fn, cmd_args, loop) -> StreamingResponse
 @app.get("/api/config")
 def get_config():
     cfg = load_config()
+    llm = cfg.get("llm", {})
     return {
         "vault_path": cfg["vault"]["path"],
         "active_novel": cfg["vault"].get("novel", ""),
-        "provider": cfg["llm"]["provider"],
-        "model": cfg["llm"]["model"],
+        "provider": llm.get("provider", ""),
+        "model": llm.get("model", ""),
+        "api_base": llm.get("api_base", ""),
+        "api_key": llm.get("api_key", ""),
+        "max_tokens": llm.get("max_tokens", 4096),
+        "temperature": llm.get("temperature", 0.7),
         "chapter_words": cfg["generation"]["chapter_words"],
     }
 
@@ -334,6 +339,39 @@ def update_config(body: ConfigUpdate):
             raise HTTPException(404, f"Novel not found: {body.novel}")
         cfg["vault"]["novel"] = body.novel
         save_config(cfg)
+    return {"ok": True}
+
+
+class LLMConfigUpdate(BaseModel):
+    provider: str = ""
+    model: str = ""
+    api_base: str = ""
+    api_key: str = ""
+    max_tokens: int = 0
+    temperature: float = -1.0
+    chapter_words: int = 0
+
+
+@app.put("/api/config/llm")
+def update_llm_config(body: LLMConfigUpdate):
+    cfg = load_config()
+    if "llm" not in cfg:
+        cfg["llm"] = {}
+    if body.provider:
+        cfg["llm"]["provider"] = body.provider
+    if body.model:
+        cfg["llm"]["model"] = body.model
+    if body.api_base:
+        cfg["llm"]["api_base"] = body.api_base
+    if body.api_key:
+        cfg["llm"]["api_key"] = body.api_key
+    if body.max_tokens:
+        cfg["llm"]["max_tokens"] = body.max_tokens
+    if body.temperature >= 0:
+        cfg["llm"]["temperature"] = body.temperature
+    if body.chapter_words:
+        cfg["generation"]["chapter_words"] = body.chapter_words
+    save_config(cfg)
     return {"ok": True}
 
 

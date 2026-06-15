@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { getConfig, updateConfig } from "../lib/api";
+import { getConfig, updateLLMConfig } from "../lib/api";
 
 const LLM_PROVIDERS = [
   { value: "deepseek", label: "DeepSeek" },
@@ -41,13 +41,14 @@ export default function Settings() {
     setSaving(true);
     setMessage(null);
     try {
-      await updateConfig({
+      await updateLLMConfig({
         provider: config.provider,
         model: config.model,
         api_base: config.api_base,
         api_key: config.api_key,
         max_tokens: config.max_tokens,
         temperature: config.temperature,
+        chapter_words: config.chapter_words,
       });
       setMessage({ type: "success", text: "配置已保存" });
     } catch (e) {
@@ -171,6 +172,18 @@ export default function Settings() {
               value={config.temperature}
               onChange={(e) =>
                 setConfig({ ...config, temperature: parseFloat(e.target.value) || 0 })
+              }
+              className="w-full bg-ink-surface border border-ink-border text-ink-text text-sm rounded-lg px-3 py-2.5 font-mono focus:outline-none focus:border-ink-accent transition-colors"
+            />
+          </Field>
+
+          {/* Chapter Words */}
+          <Field label="章节字数" hint="生成每章时的目标字数">
+            <input
+              type="number"
+              value={config.chapter_words}
+              onChange={(e) =>
+                setConfig({ ...config, chapter_words: parseInt(e.target.value) || 0 })
               }
               className="w-full bg-ink-surface border border-ink-border text-ink-text text-sm rounded-lg px-3 py-2.5 font-mono focus:outline-none focus:border-ink-accent transition-colors"
             />

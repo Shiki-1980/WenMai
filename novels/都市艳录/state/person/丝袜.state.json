@@ -1,0 +1,30 @@
+{
+  "entity": "丝袜",
+  "entity_type": "person",
+  "last_updated_chapter": 5,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "膝盖处脱丝损坏",
+      "since_chapter": 2,
+      "until_chapter": 5,
+      "source": "ch_002蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "状态",
+      "object": "新的肤色丝袜，完好",
+      "since_chapter": 5,
+      "until_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "状态",
+      "object": "新的肤色丝袜，完好",
+      "since_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": "丝袜也是日常肤色。"
+    }
+  ]
+}

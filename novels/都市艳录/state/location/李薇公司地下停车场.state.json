@@ -1,0 +1,22 @@
+{
+  "entity": "李薇公司地下停车场",
+  "entity_type": "location",
+  "last_updated_chapter": 2,
+  "facts": [
+    {
+      "predicate": "描述",
+      "object": "光线昏暗，部分灯管损坏",
+      "since_chapter": 2,
+      "until_chapter": 2,
+      "source": "ch_002蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "描述",
+      "object": "光线昏暗，部分灯管损坏\n\n光线昏暗，部分灯管损坏",
+      "since_chapter": 2,
+      "source": "ch_002蒸馏",
+      "evidence": "有几根坏了，留下一段段昏暗的间隔"
+    }
+  ]
+}

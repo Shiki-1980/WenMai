@@ -1,0 +1,38 @@
+{
+  "entity": "城中公园",
+  "entity_type": "location",
+  "last_updated_chapter": 5,
+  "facts": [
+    {
+      "predicate": "描述",
+      "object": "成为陈涛与李薇的约会和性爱场所。",
+      "since_chapter": 4,
+      "until_chapter": 4,
+      "source": "ch_004蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "描述",
+      "object": "成为陈涛与李薇的约会和性爱场所。\n\n成为陈涛与李薇的约会和性爱场所。",
+      "since_chapter": 4,
+      "until_chapter": 5,
+      "source": "ch_004蒸馏",
+      "evidence": "整个章节描述了两人的相遇和性行为过程。"
+    },
+    {
+      "predicate": "描述",
+      "object": "包括翠湖南园区域，靠近李薇小区侧门路口。",
+      "since_chapter": 5,
+      "until_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "描述",
+      "object": "包括翠湖南园区域，靠近李薇小区侧门路口。\n\n包括翠湖南园区域，靠近李薇小区侧门路口。",
+      "since_chapter": 5,
+      "source": "ch_005蒸馏",
+      "evidence": "昨晚她和陈涛在翠湖南园，从长椅到柳树荫……那个路口确实靠近公园。"
+    }
+  ]
+}
