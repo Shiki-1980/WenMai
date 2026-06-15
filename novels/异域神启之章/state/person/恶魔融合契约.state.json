@@ -1,0 +1,28 @@
+{
+  "entity": "恶魔融合契约",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - **行动方针**：瓦解光明圣庭的统治，释放被封印的远古怪物，收集[[混乱能量]]打破[[世界意志]]的枷锁，最终让邪神重临。 - **对冒险者态度**：招揽道德灰色或走投无路的冒险者，提供快速提升力量的方法（如[[禁忌仪式]]、[[恶魔融合契约]]），若拒绝则列为清除目标。 - **内部矛盾**：议会内部[[传统派]]（希望恢复旧神秩序）与[[激进派]]（希望彻底毁灭世界、把源能还给虚无）正进",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

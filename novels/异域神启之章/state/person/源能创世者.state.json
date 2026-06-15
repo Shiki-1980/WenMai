@@ -1,0 +1,28 @@
+{
+  "entity": "源能创世者",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: - 伏笔4：[[审判所所长洛伦佐]]在[[圣光城]]的几次“意外”决策（如封锁[[翡翠森林]]边境）暗示他的背叛（第二幕揭露） - 伏笔5：[[魔尊·阿兹莫德]]提到“我闻到了创世者的气息”，暗示主角与[[源能创世者]]的关联（第二幕） - 伏笔6：结局少年[[洛]]手腕的[[源能锚点]]纹路，暗示主角灵魂并未完全消散，为潜在续作埋伏笔",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

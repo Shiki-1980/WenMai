@@ -6,7 +6,6 @@ import Entities from "./pages/Entities";
 import Chapters from "./pages/Chapters";
 import Audit from "./pages/Audit";
 import Novels from "./pages/Novels";
-import Settings from "./pages/Settings";
 
 export default function App() {
   return (
@@ -18,7 +17,6 @@ export default function App() {
         <Route path="/chapters" element={<Chapters />} />
         <Route path="/audit" element={<Audit />} />
         <Route path="/novels" element={<Novels />} />
-        <Route path="/settings" element={<Settings />} />
       </Route>
     </Routes>
   );

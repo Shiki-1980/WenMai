@@ -1,0 +1,28 @@
+{
+  "entity": "后勤副会长",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - **对冒险者态度**：冒险者是公会存在的核心，提供庇护、培训、装备折扣与晋升通道。 - **内部矛盾**：五位副会长中，[[后勤副会长]]与[[讨伐副会长]]在资源分配上严重对立，[[情报副会长]]曾遭[[暗影议会]]渗透。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

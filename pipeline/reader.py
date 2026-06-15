@@ -3,19 +3,13 @@
 import json
 import re
 from pathlib import Path
-from typing import Optional
 
 import frontmatter
-import yaml
-
 from state_schema import (
-    EntityState,
     EntityFact,
-    NovelSchema,
+    EntityState,
     load_entity_state,
-    state_to_markdown_fragment,
 )
-
 
 LINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
@@ -33,7 +27,7 @@ def parse_links(text: str) -> list[str]:
 def _combine_links(body: str, metadata: dict) -> list[str]:
     """从 frontmatter 的 list/dict 字段和正文中提取所有链接。"""
     links = parse_links(body)
-    for key, value in metadata.items():
+    for _key, value in metadata.items():
         if isinstance(value, str):
             links.extend(parse_links(value))
         elif isinstance(value, list):

@@ -1,22 +1,36 @@
 """Vault 写入层 —— 将生成内容写回 Obsidian vault。"""
 
 import json
+import logging
+import os
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
 import frontmatter
 import yaml
-
 from state_schema import (
-    EntityState,
     EntityFact,
-    StateDelta,
+    EntityState,
     NovelSchema,
-    OverridePolicy,
-    save_entity_state,
+    StateDelta,
+    ValidationSeverity,
     apply_delta_to_state,
     load_entity_state,
+    save_entity_state,
 )
+
+logger = logging.getLogger(__name__)
+
+
+def _atomic_write(path: Path, content: str):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(suffix=".tmp", prefix=path.name + ".", dir=path.parent)
+    try:
+        os.write(fd, content.encode("utf-8"))
+    finally:
+        os.close(fd)
+    os.replace(tmp, path)
 
 
 def _write_frontmatter_md(path: Path, metadata: dict, body: str):
@@ -31,8 +45,7 @@ def _write_frontmatter_md(path: Path, metadata: dict, body: str):
     content += "---\n\n"
     content += body
 
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, "utf-8")
+    _atomic_write(path, content)
 
 
 class VaultWriter:
@@ -184,9 +197,7 @@ class VaultWriter:
             }
 
         idx["_updated"] = datetime.now().isoformat()
-        idx_path.write_text(
-            json.dumps(idx, ensure_ascii=False, indent=2), "utf-8"
-        )
+        _atomic_write(idx_path, json.dumps(idx, ensure_ascii=False, indent=2))
 
     # ---- 伏笔池 ----
 
@@ -194,7 +205,7 @@ class VaultWriter:
         """确保伏笔池文件存在，不存在则创建空模板。"""
         path = self.root / "plot" / "伏笔池.md"
         if not path.exists():
-            path.write_text(
+            _atomic_write(path,
                 "# 伏笔池\n\n"
                 "## 进行中的伏笔\n\n"
                 "| ID | 描述 | 埋下章节 | 涉及实体 | 预计回收 | 状态 |\n"
@@ -202,7 +213,6 @@ class VaultWriter:
                 "## 已回收的伏笔\n\n"
                 "| ID | 描述 | 埋下章节 | 回收章节 | 涉及实体 | 状态 |\n"
                 "|----|------|----------|----------|----------|------|\n",
-                "utf-8",
             )
         return path
 
@@ -231,7 +241,7 @@ class VaultWriter:
         else:
             content = content[:idx] + line + "\n" + content[idx:]
 
-        path.write_text(content, "utf-8")
+        _atomic_write(path, content)
         return pid
 
     # ---- JSON 状态文件 ----  ↓
@@ -268,7 +278,6 @@ class VaultWriter:
         Returns:
             更新后的 EntityState，或 None（如果校验失败）
         """
-        from state_schema import load_entity_state
 
         path = self.entity_state_path(entity_type, name)
 
@@ -287,9 +296,6 @@ class VaultWriter:
                 last_updated_chapter=0,
             )
 
-        # ── 不可变字段保护 ──
-        IMMUTABLE_PREDICATES = {"name", "type", "created", "entity_type", "arc_initial_state"}
-
         # 构建 EntityFact 列表
         facts = []
         for f in facts_added:
@@ -298,11 +304,6 @@ class VaultWriter:
             obj = f.get("object", f.get("new_value", "")).strip()
 
             if not predicate or not obj:
-                continue
-
-            # 阻断对不可变字段的修改
-            if predicate.lower() in IMMUTABLE_PREDICATES:
-                print(f"  [BLOCKED] 不可变字段 '{predicate}' 不允许通过 delta 修改: {name}")
                 continue
 
             # ---- 字段值校验 ----
@@ -316,23 +317,12 @@ class VaultWriter:
                 if old_fact:
                     obj = f"{old_fact.object}\n\n{obj}"
 
-            # 置信度：检查同谓词+同值是否在之前章节中已有记录
-            confidence = "observed"
-            existing_fact = current.get_fact(predicate)
-            if existing_fact and existing_fact.object == obj:
-                # 同一值被多章独立观察 → 确认
-                if existing_fact.confidence == "observed":
-                    confidence = "confirmed"
-                    # 回写已有事实的置信度（同步升级）
-                    existing_fact.confidence = "confirmed"
-
             facts.append(EntityFact(
                 predicate=predicate,
                 object=obj,
                 since_chapter=chapter,
                 source=f"ch_{chapter:03d}蒸馏",
                 evidence=f.get("evidence", ""),
-                confidence=confidence,
             ))
 
         if not facts:
@@ -352,58 +342,22 @@ class VaultWriter:
         if schema:
             errors = schema.validate_delta(delta, known)
             if errors:
-                # 只报告 info 级别的 enum 溢出（非阻断）
-                actual_errors = [e for e in errors if not e.startswith("[info]")]
-                if actual_errors:
-                    print(f"  [WARN] Delta 校验失败: {'; '.join(actual_errors)}")
-            # 检查 override 违规 —— 现在是阻断性的
-            blocked = []
+                warnings = [msg for msg, sev in errors if sev == ValidationSeverity.WARN]
+                fatals = [msg for msg, sev in errors if sev in (ValidationSeverity.ERROR, ValidationSeverity.FATAL)]
+                if fatals:
+                    print(f"  [ERROR] Delta 校验致命错误: {'; '.join(fatals)}")
+                    return current
+                for msg in warnings:
+                    print(f"  [WARN] Delta 校验: {msg}")
+            # 检查 override 违规
             for fact in facts:
-                violation = schema.check_override_violation(
-                    entity_type, fact.predicate, fact.object, current,
-                )
+                violation = schema.check_override_violation(fact, current)
                 if violation:
-                    blocked.append(violation)
-            if blocked:
-                print(f"  [BLOCKED] Override 违规，状态未更新:")
-                for v in blocked:
-                    print(f"    - {v}")
-                return None  # 阻断写入
+                    print(f"  [WARN] Override 违规: {violation}")
 
         new_state = apply_delta_to_state(current, delta)
-
-        # ── 精度事后验证：检查是否误改了非目标字段 ──
-        precision_ok = self._verify_delta_precision(current, new_state, facts, name)
-        if not precision_ok:
-            print(f"  [WARN] 精度验证失败，但仍写入（请手动 review）: {name}")
-
         self.write_entity_state(new_state)
         return new_state
-
-    def _verify_delta_precision(self, old_state: EntityState, new_state: EntityState,
-                                 claimed_facts: list, entity_name: str) -> bool:
-        """验证 delta 只修改了声称要修改的字段，未误改无关内容。"""
-        old_active = old_state.get_all_active_facts()
-        new_active = new_state.get_all_active_facts()
-
-        claimed_predicates = set(f.predicate for f in claimed_facts)
-
-        unexpected = []
-        for pred, old_val in old_active.items():
-            if pred in claimed_predicates:
-                continue  # 声称修改的字段，允许变化
-            new_val = new_active.get(pred)
-            if old_val != new_val:
-                unexpected.append(
-                    f"{pred}: '{old_val[:30]}' -> '{str(new_val)[:30]}'"
-                )
-
-        if unexpected:
-            print(f"  [PRECISION] {entity_name} 非预期变化:")
-            for u in unexpected[:5]:
-                print(f"    - {u}")
-            return False
-        return True
 
     def _validate_field_value(self, predicate: str, value: str, entity_type: str, schema: NovelSchema | None = None) -> bool:
         """校验字段值的合法性。优先使用 schema，无 schema 时宽松通过。"""
@@ -494,5 +448,5 @@ class VaultWriter:
             else:
                 result += "\n" + revealed_line + "\n"
 
-            path.write_text(result, "utf-8")
-            print(f"  -> 伏笔已回收: {plot_desc[:40]}...")
+            _atomic_write(path, result)
+            logger.info("伏笔已回收: %s...", plot_desc[:40])

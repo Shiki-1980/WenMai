@@ -1,0 +1,37 @@
+{
+  "entity": "暗流酒吧",
+  "entity_type": "location",
+  "last_updated_chapter": 1,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "已离开",
+      "since_chapter": 1,
+      "until_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "灯光暧昧，音乐声大，适合亲密低语",
+      "since_chapter": 1,
+      "until_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "状态",
+      "object": "已离开",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "李薇拿起包，绕过桌子，径直朝门口走去"
+    },
+    {
+      "predicate": "详细描述",
+      "object": "灯光暧昧，音乐声大，适合亲密低语\n\n灯光暧昧，音乐声大，适合亲密低语",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "暗流的灯光永远暧昧，音乐声大得恰到好处"
+    }
+  ]
+}

@@ -1,0 +1,740 @@
+{
+  "version": 1,
+  "entities": {
+    "源能": {
+      "canonical": "源能",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能阶位": {
+      "canonical": "源能阶位",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能学徒": {
+      "canonical": "源能学徒",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能行者": {
+      "canonical": "源能行者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能导师": {
+      "canonical": "源能导师",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "私人结界": {
+      "canonical": "私人结界",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能大师": {
+      "canonical": "源能大师",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能宗师": {
+      "canonical": "源能宗师",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能圣者": {
+      "canonical": "源能圣者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "不朽印记": {
+      "canonical": "不朽印记",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能神子": {
+      "canonical": "源能神子",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能真神": {
+      "canonical": "源能真神",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "世界意志": {
+      "canonical": "世界意志",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能创世者": {
+      "canonical": "源能创世者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "艾尔德兰大陆": {
+      "canonical": "艾尔德兰大陆",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "光之圣典": {
+      "canonical": "光之圣典",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "暗影史诗": {
+      "canonical": "暗影史诗",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "魔力体系": {
+      "canonical": "魔力体系",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "斗气体系": {
+      "canonical": "斗气体系",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "精神体系": {
+      "canonical": "精神体系",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "星辰体系": {
+      "canonical": "星辰体系",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "血脉返祖": {
+      "canonical": "血脉返祖",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "北境冰原": {
+      "canonical": "北境冰原",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "霜巨人": {
+      "canonical": "霜巨人",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "极地龙族": {
+      "canonical": "极地龙族",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "冰晶矿": {
+      "canonical": "冰晶矿",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "寒冰装备": {
+      "canonical": "寒冰装备",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "极地哨站": {
+      "canonical": "极地哨站",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "翡翠森林": {
+      "canonical": "翡翠森林",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "生命泉水": {
+      "canonical": "生命泉水",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "世界树": {
+      "canonical": "世界树",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "和平徽章": {
+      "canonical": "和平徽章",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "森林守护者": {
+      "canonical": "森林守护者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "龙脊山脉": {
+      "canonical": "龙脊山脉",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "龙族议会": {
+      "canonical": "龙族议会",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "熔岩深渊": {
+      "canonical": "熔岩深渊",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "雷霆之巅": {
+      "canonical": "雷霆之巅",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "水晶迷宫": {
+      "canonical": "水晶迷宫",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "龙纹钢": {
+      "canonical": "龙纹钢",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能水晶": {
+      "canonical": "源能水晶",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "黄金平原": {
+      "canonical": "黄金平原",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "光明圣庭": {
+      "canonical": "光明圣庭",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "圣光城": {
+      "canonical": "圣光城",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "地脉网络": {
+      "canonical": "地脉网络",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "地脉石": {
+      "canonical": "地脉石",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "迷雾沼泽": {
+      "canonical": "迷雾沼泽",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "蜥蜴人": {
+      "canonical": "蜥蜴人",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "暗夜精灵": {
+      "canonical": "暗夜精灵",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "混乱之井": {
+      "canonical": "混乱之井",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "暗影议会": {
+      "canonical": "暗影议会",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "死寂沙漠": {
+      "canonical": "死寂沙漠",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "亡灵帝国": {
+      "canonical": "亡灵帝国",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "魔导装甲": {
+      "canonical": "魔导装甲",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "诅咒金币": {
+      "canonical": "诅咒金币",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "耐热药剂": {
+      "canonical": "耐热药剂",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "灵魂灯笼": {
+      "canonical": "灵魂灯笼",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "沙暴邪灵": {
+      "canonical": "沙暴邪灵",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "星辰海岸": {
+      "canonical": "星辰海岸",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "星陨珍珠": {
+      "canonical": "星陨珍珠",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "自由冒险者公会": {
+      "canonical": "自由冒险者公会",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "星辰港": {
+      "canonical": "星辰港",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "珍珠酒吧": {
+      "canonical": "珍珠酒吧",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "天空之城": {
+      "canonical": "天空之城",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "风翼龙": {
+      "canonical": "风翼龙",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "传送阵": {
+      "canonical": "传送阵",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "翼人族": {
+      "canonical": "翼人族",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "空灵水晶": {
+      "canonical": "空灵水晶",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "虚空裂隙": {
+      "canonical": "虚空裂隙",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "暗影深渊": {
+      "canonical": "暗影深渊",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "荧光苔": {
+      "canonical": "荧光苔",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "岩浆河": {
+      "canonical": "岩浆河",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "侏儒": {
+      "canonical": "侏儒",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "穴居人": {
+      "canonical": "穴居人",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "恶魔遗民": {
+      "canonical": "恶魔遗民",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "光之女神": {
+      "canonical": "光之女神",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "奥古斯丁一世": {
+      "canonical": "奥古斯丁一世",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能圣者·上品": {
+      "canonical": "源能圣者·上品",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "圣殿骑士团": {
+      "canonical": "圣殿骑士团",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "审判庭": {
+      "canonical": "审判庭",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "苦修院": {
+      "canonical": "苦修院",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "圣者": {
+      "canonical": "圣者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "神子级": {
+      "canonical": "神子级",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "混沌邪教徒": {
+      "canonical": "混沌邪教徒",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "光之力量": {
+      "canonical": "光之力量",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "圣光同化": {
+      "canonical": "圣光同化",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "审判所": {
+      "canonical": "审判所",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "所长洛伦佐": {
+      "canonical": "所长洛伦佐",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "尤利娅·风暴之子": {
+      "canonical": "尤利娅·风暴之子",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能神子·中品": {
+      "canonical": "源能神子·中品",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "龙族": {
+      "canonical": "龙族",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "五星冒险者": {
+      "canonical": "五星冒险者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "四星": {
+      "canonical": "四星",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "游侠部队": {
+      "canonical": "游侠部队",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "黑夜守望者": {
+      "canonical": "黑夜守望者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "跨大陆传送阵": {
+      "canonical": "跨大陆传送阵",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "后勤副会长": {
+      "canonical": "后勤副会长",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "讨伐副会长": {
+      "canonical": "讨伐副会长",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "情报副会长": {
+      "canonical": "情报副会长",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "虚空帷幕": {
+      "canonical": "虚空帷幕",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "魔尊·阿兹莫德": {
+      "canonical": "魔尊·阿兹莫德",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能真神·下品": {
+      "canonical": "源能真神·下品",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "阴影刺客团": {
+      "canonical": "阴影刺客团",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "恶魔召唤师": {
+      "canonical": "恶魔召唤师",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "咒术师联盟": {
+      "canonical": "咒术师联盟",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "堕天使": {
+      "canonical": "堕天使",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "黑暗精灵": {
+      "canonical": "黑暗精灵",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "混乱能量": {
+      "canonical": "混乱能量",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "禁忌仪式": {
+      "canonical": "禁忌仪式",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "恶魔融合契约": {
+      "canonical": "恶魔融合契约",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "传统派": {
+      "canonical": "传统派",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "激进派": {
+      "canonical": "激进派",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "魔尊": {
+      "canonical": "魔尊",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "龙王": {
+      "canonical": "龙王",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "精灵守望者": {
+      "canonical": "精灵守望者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "死亡之主": {
+      "canonical": "死亡之主",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "矮人工匠同盟": {
+      "canonical": "矮人工匠同盟",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能阶梯": {
+      "canonical": "源能阶梯",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "世界法则压制": {
+      "canonical": "世界法则压制",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "破魔神器": {
+      "canonical": "破魔神器",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "命运匕首": {
+      "canonical": "命运匕首",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "血祭禁忌仪式": {
+      "canonical": "血祭禁忌仪式",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "真名枷锁": {
+      "canonical": "真名枷锁",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "支配法术": {
+      "canonical": "支配法术",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "混沌守恒": {
+      "canonical": "混沌守恒",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能真神·上品": {
+      "canonical": "源能真神·上品",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能神子·上品": {
+      "canonical": "源能神子·上品",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "升格考验": {
+      "canonical": "升格考验",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "规则级": {
+      "canonical": "规则级",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能结晶": {
+      "canonical": "源能结晶",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "恶魔契约书": {
+      "canonical": "恶魔契约书",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "永恒金杯": {
+      "canonical": "永恒金杯",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "灵魂水晶": {
+      "canonical": "灵魂水晶",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能锚点": {
+      "canonical": "源能锚点",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "洛辰·星语": {
+      "canonical": "洛辰·星语",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "锈蚀徽章": {
+      "canonical": "锈蚀徽章",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "晨辉镇": {
+      "canonical": "晨辉镇",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "源能共鸣": {
+      "canonical": "源能共鸣",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "叶琳娜·风行者": {
+      "canonical": "叶琳娜·风行者",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "巴利姆·铁砧": {
+      "canonical": "巴利姆·铁砧",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "尤利娅": {
+      "canonical": "尤利娅",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "审判所所长洛伦佐": {
+      "canonical": "审判所所长洛伦佐",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "叶琳娜": {
+      "canonical": "叶琳娜",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "巴利姆": {
+      "canonical": "巴利姆",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "锻魂熔炉": {
+      "canonical": "锻魂熔炉",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "虚空之眼": {
+      "canonical": "虚空之眼",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "大陆平衡委员会": {
+      "canonical": "大陆平衡委员会",
+      "aliases": [],
+      "auto_aliases": []
+    },
+    "洛": {
+      "canonical": "洛",
+      "aliases": [],
+      "auto_aliases": []
+    }
+  }
+}

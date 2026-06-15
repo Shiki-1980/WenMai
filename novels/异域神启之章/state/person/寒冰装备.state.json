@@ -1,0 +1,28 @@
+{
+  "entity": "寒冰装备",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: 1. **[[北境冰原]]**：终年积雪，生活着[[霜巨人]]与[[极地龙族]]，地下埋藏[[冰晶矿]]，是制造[[寒冰装备]]的唯一产地。冒险者公会在此设有[[极地哨站]]，专收赏金猎人与耐寒种族。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "entity": "侏儒",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: 9. **[[暗影深渊]]**：位于死寂沙漠正下方，是一处巨大的地下世界。没有阳光，依靠[[荧光苔]]与[[岩浆河]]照明。这里生活着[[侏儒]]、[[穴居人]]与[[恶魔遗民]]，也是[[暗影议会]]真正的权力中心。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

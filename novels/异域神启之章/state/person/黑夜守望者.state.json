@@ -1,0 +1,28 @@
+{
+  "entity": "黑夜守望者",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: ### 第二幕：发展 在[[星辰港]]，[[尤利娅]]通过[[空灵水晶]]检测到洛辰体内蕴含[[源能锚点]]印记——这是世界意志为了防止法则崩溃预设的最后保险，只有拥有此印记的人才能进入[[暗影深渊]]核心修补法则裂痕。但[[暗影议会]]也发现了这一点，派出[[魔尊·阿兹莫德]]的分身亲自追杀。[[光明圣庭]]的[[审判所所长洛伦佐]]暗中向[[暗影议会]]泄露情报，导致洛辰在[[死寂沙漠]]被伏",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

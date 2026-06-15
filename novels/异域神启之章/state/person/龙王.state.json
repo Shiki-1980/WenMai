@@ -1,0 +1,28 @@
+{
+  "entity": "龙王",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: ### 其他次要势力（提及即可） - [[龙族议会]]：中立偏秩序，守护龙脊山脉，但内部[[龙王]]沉睡，权利分散。 - [[精灵守望者]]：生态保护者，与翡翠森林绑定，排斥外来开发。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

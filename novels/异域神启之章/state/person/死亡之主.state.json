@@ -1,0 +1,28 @@
+{
+  "entity": "死亡之主",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: - [[精灵守望者]]：生态保护者，与翡翠森林绑定，排斥外来开发。 - [[亡灵帝国]]：被灭国残余，在死寂沙漠地下活动，试图复活[[死亡之主]]。 - [[矮人工匠同盟]]：垄断矿石加工与符文武器制造，和所有势力做生意。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

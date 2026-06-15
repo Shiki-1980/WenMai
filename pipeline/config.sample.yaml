@@ -1,5 +1,5 @@
 vault:
-  path: "/Users/lsslcj/Desktop/writing/WenMai"       # 项目根目录（模板和 pipeline 在这里）
+  path: "~/WenMai"                                     # 项目根目录（模板和 pipeline 在这里）
   novel: "novels/万古劫烬"                             # 小说内容目录（相对于 vault.path）
 
 llm:

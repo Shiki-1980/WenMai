@@ -1,0 +1,97 @@
+{
+  "entity": "陈涛",
+  "entity_type": "person",
+  "last_updated_chapter": 1,
+  "facts": [
+    {
+      "predicate": "位置",
+      "object": "酒店房间",
+      "since_chapter": 1,
+      "until_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "精神状态",
+      "object": "性兴奋满足",
+      "since_chapter": 1,
+      "until_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "持有",
+      "object": "李薇的个人信息（姓名、年龄、婚姻状况）",
+      "since_chapter": 1,
+      "until_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "关系",
+      "object": "与李薇的性关系（第一次）",
+      "since_chapter": 1,
+      "until_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "目标",
+      "object": "已完成",
+      "since_chapter": 1,
+      "until_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "外貌：28岁，下颌线条利落，黑色修身T恤，露出前臂结实的肌肉线条；性格：擅长伪装和观察，使用真话策略；行为风格：熟练的情场老手，掌握节奏。",
+      "since_chapter": 1,
+      "until_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": ""
+    },
+    {
+      "predicate": "位置",
+      "object": "酒店房间",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "他最后重重顶了几下...然后她瘫软下来"
+    },
+    {
+      "predicate": "精神状态",
+      "object": "性兴奋满足",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "他的勃起早已硬得发烫” → “射精的那几秒钟里...大脑一片空白"
+    },
+    {
+      "predicate": "持有",
+      "object": "李薇的个人信息（姓名、年龄、婚姻状况）",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "李薇。” / “结婚多久了？”“七年。” / “我比你大六岁。"
+    },
+    {
+      "predicate": "关系",
+      "object": "与李薇的性关系（第一次）",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "陈涛把她按在门板上...嘴唇直接压了上去” → 全过程性行为描述"
+    },
+    {
+      "predicate": "目标",
+      "object": "已完成",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "从我看到你坐在那里的时候，我就在想一件事”“我想知道你在床上的声音是什么样的"
+    },
+    {
+      "predicate": "详细描述",
+      "object": "外貌：28岁，下颌线条利落，黑色修身T恤，露出前臂结实的肌肉线条；性格：擅长伪装和观察，使用真话策略；行为风格：熟练的情场老手，掌握节奏。\n\n外貌：28岁，下颌线条利落，黑色修身T恤，露出前臂结实的肌肉线条；性格：擅长伪装和观察，使用真话策略；行为风格：熟练的情场老手，掌握节奏。",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "二十八岁，下颌线条利落，穿一件黑色修身T恤，袖口微微卷起，露出前臂结实的肌肉线条” / “这是他最擅长使用的伪装——一张让人放松警惕的脸” / “他从来不追问。追问是最蠢的手段，会让人竖起防御。他只是安静地坐着，等她自己转过头来。"
+    }
+  ]
+}

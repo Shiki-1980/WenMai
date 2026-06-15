@@ -8,12 +8,16 @@
 
 from __future__ import annotations
 
-import json
 import hashlib
-from dataclasses import dataclass, field, asdict
+import json
+import logging
+import os
+import tempfile
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -82,7 +86,7 @@ class ChapterCommit:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> "ChapterCommit":
+    def from_dict(cls, data: dict) -> ChapterCommit:
         return cls(
             chapter=data["chapter"],
             timestamp=data.get("timestamp", ""),
@@ -126,10 +130,14 @@ class CommitStore:
 
         commit.timestamp = datetime.now().isoformat()
         commit.schema_snapshot_hash = self._hash_schema_snapshot()
-        path.write_text(
-            json.dumps(commit.to_dict(), ensure_ascii=False, indent=2),
-            "utf-8",
-        )
+        content = json.dumps(commit.to_dict(), ensure_ascii=False, indent=2)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fd, tmp = tempfile.mkstemp(suffix=".tmp", prefix=path.name + ".", dir=path.parent)
+        try:
+            os.write(fd, content.encode("utf-8"))
+        finally:
+            os.close(fd)
+        os.replace(tmp, path)
 
     def load_commit(self, chapter: int) -> ChapterCommit | None:
         """加载一条提交。"""
@@ -153,6 +161,89 @@ class CommitStore:
     def commit_count(self) -> int:
         return len(self.list_commits())
 
+    def rollback_commit(self, chapter: int, reader, writer) -> int:
+        """回滚指定章节的提交，返回回滚的实体数。
+
+        操作：恢复 facts_added 的旧值、复活 facts_retired、删除新建实体。
+        注意：不删除章节正文文件，只回滚状态变更。
+        """
+        commit = self.load_commit(chapter)
+        if not commit:
+            logger.warning("第 %s 章没有提交记录，无法回滚", chapter)
+            return 0
+
+        rolled = 0
+        from state_schema import (
+            EntityFact,
+            load_entity_state,
+            save_entity_state,
+        )
+
+        for ed in commit.entity_deltas_applied:
+            state_path = writer.entity_state_path(ed.entity_type, ed.entity)
+            current = load_entity_state(state_path)
+            if current is None:
+                logger.warning("实体 %s 没有 state.json，跳过", ed.entity)
+                continue
+
+            # 反向处理：facts_added → 删除新增的、恢复旧值
+            for fc in ed.facts_added:
+                if fc.old_value:
+                    # 恢复旧值
+                    for f in current.facts:
+                        if f.predicate == fc.predicate and f.until_chapter is None:
+                            f.object = fc.old_value
+                            rolled += 1
+                            break
+                    else:
+                        current.facts.append(EntityFact(
+                            predicate=fc.predicate, object=fc.old_value,
+                            since_chapter=chapter,
+                            source=f"rollback_ch_{chapter:03d}",
+                        ))
+                        rolled += 1
+                else:
+                    # 纯新增 → 从当前事实中移除
+                    current.facts = [
+                        f for f in current.facts
+                        if not (f.predicate == fc.predicate and f.object == fc.object)
+                    ]
+                    rolled += 1
+
+            # 反向处理：facts_retired → 恢复为活跃状态
+            for fr in ed.facts_retired:
+                predicate = fr.get("predicate", "")
+                obj = fr.get("object", "")
+                for f in current.facts:
+                    if f.predicate == predicate and f.object == obj:
+                        f.until_chapter = None
+                        rolled += 1
+                        break
+
+            current.last_updated_chapter = chapter
+            save_entity_state(current, state_path)
+            logger.info("回滚实体 %s/%s: %d 条事实恢复", ed.entity_type, ed.entity, rolled)
+
+        # 删除新建的实体卡和 state
+        for name in commit.new_entities_created:
+            for etype in ("person", "item", "location", "concept"):
+                card_path = writer.entity_dir / writer.TYPE_DIR.get(etype, etype) / f"{name}.md"
+                if card_path.exists():
+                    card_path.unlink()
+                    logger.info("删除新建实体卡: %s", card_path)
+                state_path = writer.entity_state_path(etype, name)
+                if state_path.exists():
+                    state_path.unlink()
+                    logger.info("删除新建 state: %s", state_path)
+
+        # 反向伏笔
+        if commit.plots_added:
+            logger.info("需手动处理以下伏笔添加: %s", commit.plots_added)
+        if commit.plots_resolved:
+            logger.info("需手动处理以下伏笔回收: %s", commit.plots_resolved)
+
+        return rolled
+
     def _hash_schema_snapshot(self) -> str:
         """计算当前 schema 文件的 hash。"""
         if not self._schema_path.exists():
@@ -169,8 +260,6 @@ def build_commit_from_writer(
     plots_added: list[str],
     plots_resolved: list[str],
     retrieval_stats: dict | None = None,
-    state_snapshot_before_hash: str = "",
-    state_snapshot_after_hash: str = "",
 ) -> ChapterCommit:
     """从 writer 的输出构建 ChapterCommit。"""
     records = []
@@ -198,135 +287,4 @@ def build_commit_from_writer(
         plots_added=plots_added,
         plots_resolved=plots_resolved,
         retrieval_stats=retrieval_stats or {},
-        state_snapshot_before_hash=state_snapshot_before_hash,
-        state_snapshot_after_hash=state_snapshot_after_hash,
     )
-
-
-# ═══════════════════════════════════════════════════════════════
-# State snapshot utilities
-# ═══════════════════════════════════════════════════════════════
-
-def hash_directory(dir_path: Path) -> str:
-    """计算 state 目录的 SHA256 hash（用于 commit 校验）。"""
-    if not dir_path.exists():
-        return "no_state"
-    hasher = hashlib.sha256()
-    for f in sorted(dir_path.rglob("*.json")):
-        hasher.update(f.read_bytes())
-    return hasher.hexdigest()[:16]
-
-
-def snapshot_state(state_dir: Path, snapshot_dir: Path, chapter: int) -> str:
-    """将当前 state/ 目录完整复制到 snapshots/ch_NNN/。
-
-    在每次章节写入前调用，保存写入前的状态快照。
-    返回快照目录的 hash。
-
-    如果快照已存在（重复调用），跳过并返回已有 hash。
-    """
-    import shutil
-    target = snapshot_dir / f"ch_{chapter:03d}"
-    if target.exists():
-        return hash_directory(target)
-
-    if not state_dir.exists():
-        return "no_state"
-
-    # 复制 state/ 目录到 snapshots/ch_NNN/
-    shutil.copytree(state_dir, target)
-    return hash_directory(target)
-
-
-# ═══════════════════════════════════════════════════════════════
-# State reconstruction from commits (snapshot fallback)
-# ═══════════════════════════════════════════════════════════════
-
-def reconstruct_state_from_commits(novel_dir: Path, target_chapter: int) -> dict:
-    """从 commit 日志重建 target_chapter 之前的状态（快照不可用时的兜底方案）。
-
-    按章节顺序重放所有 commit，逐章 apply delta，重建完整的 EntityState 字典。
-
-    Args:
-        target_chapter: 重建到这个章节之前的状态（不包含 target_chapter 的变更）
-
-    Returns:
-        {entity_key: EntityState} 字典，key 格式为 "entity_type/entity_name"
-    """
-    from state_schema import EntityState, EntityFact
-
-    store = CommitStore(novel_dir / "commits" if (novel_dir / "commits").exists() else novel_dir)
-    # Handle the case where novel_dir already contains "commits" subpath
-    if not (novel_dir / "commits").exists():
-        store = CommitStore(novel_dir)
-    else:
-        store = CommitStore(novel_dir)
-
-    all_commits = store.list_commits()
-    commits = [c for c in all_commits if c < target_chapter]
-    commits.sort()
-
-    if not commits:
-        return {}
-
-    states: dict[str, EntityState] = {}
-
-    for ch in commits:
-        commit = store.load_commit(ch)
-        if not commit:
-            continue
-
-        for delta_record in commit.entity_deltas_applied:
-            key = f"{delta_record.entity_type}/{delta_record.entity}"
-
-            # 懒初始化实体状态
-            if key not in states:
-                states[key] = EntityState(
-                    entity=delta_record.entity,
-                    entity_type=delta_record.entity_type,
-                    last_updated_chapter=0,
-                )
-
-            state = states[key]
-
-            # Apply facts_added: 标记旧事实为 retired，追加新事实
-            for fact_change in delta_record.facts_added:
-                for old_fact in state.facts:
-                    if old_fact.predicate == fact_change.predicate and old_fact.until_chapter is None:
-                        old_fact.until_chapter = ch
-
-                state.facts.append(EntityFact(
-                    predicate=fact_change.predicate,
-                    object=fact_change.object,
-                    since_chapter=ch,
-                    source=f"ch_{ch:03d}蒸馏",
-                    evidence=fact_change.evidence,
-                ))
-
-            # Apply facts_retired
-            for retired in delta_record.facts_retired:
-                pred = retired.get("predicate", "") if isinstance(retired, dict) else ""
-                for old_fact in state.facts:
-                    if old_fact.predicate == pred and old_fact.until_chapter is None:
-                        old_fact.until_chapter = ch
-
-            state.last_updated_chapter = ch
-
-    return states
-
-
-def write_reconstructed_state(states: dict, state_dir: Path):
-    """将重建的状态字典写入 state/ 目录。"""
-    import shutil as _shutil
-
-    if state_dir.exists():
-        _shutil.rmtree(state_dir)
-
-    for key, state in states.items():
-        etype, name = key.split("/", 1)
-        path = state_dir / etype / f"{name}.state.json"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(
-            __import__('json').dumps(state.to_dict(), ensure_ascii=False, indent=2),
-            "utf-8",
-        )

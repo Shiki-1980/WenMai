@@ -8,8 +8,8 @@ Agent 循环模式下，检索主要被 lookup_entity 工具替代。
 
 from pathlib import Path
 
-from reader import VaultReader, parse_links
 from entity_index import EntityIndex
+from reader import VaultReader, parse_links
 
 
 class EntityRetriever:

@@ -1,0 +1,28 @@
+{
+  "entity": "混沌守恒",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: ## 故事核心 一个从[[翡翠森林]]边缘小镇醒来的失忆者，在试图找回身份的过程中意外发现自己是世界意志选中的“[[源能锚点]]”，必须阻止[[暗影议会]]利用[[混乱之井]]颠覆[[混沌守恒]]法则、召唤远古邪神，最终在[[光明圣庭]]与[[自由冒险者公会]]的博弈中，以牺牲自身存在为代价修复世界平衡。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

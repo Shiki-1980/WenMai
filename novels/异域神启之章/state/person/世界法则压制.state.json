@@ -1,0 +1,28 @@
+{
+  "entity": "世界法则压制",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: ### 铁律一：[[源能阶梯]] 源能阶位相差**两阶及以上**时，低位者对所有高阶源能攻击（法术、物理附着源能的打击）免疫至少90%，且自身的攻击无法穿透高位者的源能屏障（带有[[世界法则压制]]）。只有以下情况能绕过： - 使用[[破魔神器]]（如[[命运匕首]]）",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

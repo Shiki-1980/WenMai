@@ -1,0 +1,505 @@
+{
+  "novel": "艾尔德兰大陆",
+  "schema_version": 2,
+  "generated_at": "2026-05-16",
+  "generated_by": "LLM: deepseek-v4-flash",
+  "override_policy": {
+    "locked": [
+      "person.血脉",
+      "person.天赋",
+      "concept.类别"
+    ],
+    "append_only": [
+      "person.关系",
+      "person.技能",
+      "person.功法",
+      "person.详细描述",
+      "item.描述",
+      "item.效果",
+      "item.特殊属性",
+      "location.描述",
+      "concept.定义",
+      "concept.影响",
+      "concept.涉及人物",
+      "concept.涉及地点"
+    ]
+  },
+  "retrieval": {
+    "min_recall": 3,
+    "max_hop": 1,
+    "max_entity_cards": 30
+  },
+  "entity_schemas": {
+    "person": {
+      "label": "人物",
+      "predicates": {
+        "血脉": {
+          "type": "enum",
+          "category": "天赋",
+          "priority": 6,
+          "override": "locked",
+          "values": [
+            "人类",
+            "精灵",
+            "矮人",
+            "侏儒",
+            "半兽人",
+            "龙裔",
+            "翼人",
+            "蜥蜴人",
+            "亡灵",
+            "恶魔遗民",
+            "霜巨人",
+            "极地龙族",
+            "暗夜精灵",
+            "黑暗精灵",
+            "穴居人",
+            "龙族"
+          ],
+          "description": "血统或种族"
+        },
+        "修为": {
+          "type": "enum",
+          "category": "实力",
+          "priority": 1,
+          "override": "override_allowed",
+          "values": [
+            "源能学徒·下品",
+            "源能学徒·中品",
+            "源能学徒·上品",
+            "源能行者·下品",
+            "源能行者·中品",
+            "源能行者·上品",
+            "源能导师·下品",
+            "源能导师·中品",
+            "源能导师·上品",
+            "源能大师·下品",
+            "源能大师·中品",
+            "源能大师·上品",
+            "源能宗师·下品",
+            "源能宗师·中品",
+            "源能宗师·上品",
+            "源能圣者·下品",
+            "源能圣者·中品",
+            "源能圣者·上品",
+            "源能神子·下品",
+            "源能神子·中品",
+            "源能神子·上品",
+            "源能真神·下品",
+            "源能真神·中品",
+            "源能真神·上品",
+            "源能创世者·下品",
+            "源能创世者·中品",
+            "源能创世者·上品"
+          ],
+          "description": "当前源能阶位及品级"
+        },
+        "职业": {
+          "type": "enum",
+          "category": "实力",
+          "priority": 3,
+          "override": "override_allowed",
+          "values": [
+            "战士",
+            "法师",
+            "游侠",
+            "牧师",
+            "盗贼",
+            "吟游诗人",
+            "德鲁伊",
+            "骑士",
+            "召唤师",
+            "炼金术师",
+            "占星师"
+          ],
+          "description": "战斗职业"
+        },
+        "冒险者等级": {
+          "type": "enum",
+          "category": "实力",
+          "priority": 2,
+          "override": "override_allowed",
+          "values": [
+            "见习",
+            "一星",
+            "二星",
+            "三星",
+            "四星",
+            "五星"
+          ],
+          "description": "公会冒险者等级"
+        },
+        "身份": {
+          "type": "string",
+          "category": "基础",
+          "priority": 10,
+          "override": "override_allowed",
+          "values": [],
+          "description": "社会身份或头衔"
+        },
+        "所属势力": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 11,
+          "override": "override_allowed",
+          "values": [
+            "光明圣庭",
+            "自由冒险者公会",
+            "暗影议会",
+            "龙族议会",
+            "精灵守望者",
+            "亡灵帝国",
+            "矮人工匠同盟",
+            "大陆平衡委员会"
+          ],
+          "description": "当前隶属的势力"
+        },
+        "所在": {
+          "type": "string",
+          "category": "状态",
+          "priority": 20,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前所在地点"
+        },
+        "持有": {
+          "type": "list",
+          "category": "状态",
+          "priority": 21,
+          "override": "override_allowed",
+          "values": [],
+          "description": "拥有的重要物品列表"
+        },
+        "状态": {
+          "type": "enum",
+          "category": "状态",
+          "priority": 22,
+          "override": "override_allowed",
+          "values": [
+            "健康",
+            "受伤",
+            "昏迷",
+            "中毒",
+            "诅咒",
+            "死亡"
+          ],
+          "description": "身体状态"
+        },
+        "目标": {
+          "type": "string",
+          "category": "状态",
+          "priority": 23,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前主要目标"
+        },
+        "天赋": {
+          "type": "string",
+          "category": "天赋",
+          "priority": 5,
+          "override": "locked",
+          "values": [],
+          "description": "特殊天赋或异能"
+        },
+        "功法": {
+          "type": "list",
+          "category": "能力",
+          "priority": 30,
+          "override": "append_only",
+          "values": [],
+          "description": "已修炼的功法列表"
+        },
+        "技能": {
+          "type": "list",
+          "category": "能力",
+          "priority": 31,
+          "override": "append_only",
+          "values": [],
+          "description": "已掌握的技能列表"
+        },
+        "关系": {
+          "type": "list",
+          "category": "关系",
+          "priority": 40,
+          "override": "append_only",
+          "values": [],
+          "description": "与其他实体的关系"
+        },
+        "详细描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "外貌、性格、背景故事等详细描述"
+        }
+      },
+      "tags": [
+        "#character"
+      ],
+      "markdown_template": "---\ntype: person\nstatus: {{状态}}\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 身份：{{身份}}\n- 所属势力：{{所属势力}}\n- 所在：{{所在}}\n\n## 实力\n- 修为：{{修为}}\n- 职业：{{职业}}\n- 冒险者等级：{{冒险者等级}}\n\n## 天赋与能力\n- 血脉：{{血脉}}\n- 天赋：{{天赋}}\n- 功法：{{#each 功法}}{{this}} {{/each}}\n- 技能：{{#each 技能}}{{this}} {{/each}}\n\n## 状态\n- 状态：{{状态}}\n- 目标：{{目标}}\n- 持有物品：{{#each 持有}}{{this}} {{/each}}\n\n## 关系\n{{#each 关系}}- {{this}}\n{{/each}}\n\n## 详细描述\n{{详细描述}}"
+    },
+    "item": {
+      "label": "物品",
+      "predicates": {
+        "类别": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 1,
+          "override": "locked",
+          "values": [
+            "武器",
+            "防具",
+            "饰品",
+            "丹药",
+            "功法秘籍",
+            "材料",
+            "信物",
+            "法器",
+            "神器",
+            "装备",
+            "消耗品"
+          ],
+          "description": "物品类型"
+        },
+        "品级": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 2,
+          "override": "locked",
+          "values": [
+            "普通",
+            "精良",
+            "稀有",
+            "史诗",
+            "传说",
+            "神话"
+          ],
+          "description": "物品品质"
+        },
+        "所有者": {
+          "type": "string",
+          "category": "状态",
+          "priority": 10,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前持有者"
+        },
+        "状态": {
+          "type": "enum",
+          "category": "状态",
+          "priority": 11,
+          "override": "override_allowed",
+          "values": [
+            "完好",
+            "破损",
+            "损坏",
+            "销毁"
+          ],
+          "description": "物品状态"
+        },
+        "描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "外观、来历等描述"
+        },
+        "效果": {
+          "type": "string",
+          "category": "属性",
+          "priority": 20,
+          "override": "append_only",
+          "values": [],
+          "description": "功能或效果"
+        },
+        "材料": {
+          "type": "string",
+          "category": "属性",
+          "priority": 21,
+          "override": "append_only",
+          "values": [],
+          "description": "制造材料"
+        },
+        "特殊属性": {
+          "type": "string",
+          "category": "属性",
+          "priority": 22,
+          "override": "append_only",
+          "values": [],
+          "description": "特殊能力或限制"
+        }
+      },
+      "tags": [
+        "#item"
+      ],
+      "markdown_template": "---\ntype: item\nstatus: {{状态}}\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 类别：{{类别}}\n- 品级：{{品级}}\n- 所有者：{{所有者}}\n\n## 属性\n- 材料：{{材料}}\n- 效果：{{效果}}\n- 特殊属性：{{特殊属性}}\n\n## 描述\n{{描述}}"
+    },
+    "location": {
+      "label": "地点",
+      "predicates": {
+        "类别": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 1,
+          "override": "locked",
+          "values": [
+            "城镇",
+            "城市",
+            "区域",
+            "秘境",
+            "洞府",
+            "山脉",
+            "森林",
+            "沼泽",
+            "沙漠",
+            "海洋",
+            "天空",
+            "地下",
+            "建筑"
+          ],
+          "description": "地点类型"
+        },
+        "所在区域": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 2,
+          "override": "locked",
+          "values": [
+            "北境冰原",
+            "翡翠森林",
+            "龙脊山脉",
+            "黄金平原",
+            "迷雾沼泽",
+            "死寂沙漠",
+            "星辰海岸",
+            "天空之城",
+            "暗影深渊"
+          ],
+          "description": "所属大区域"
+        },
+        "势力归属": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 3,
+          "override": "append_only",
+          "values": [
+            "光明圣庭",
+            "自由冒险者公会",
+            "暗影议会",
+            "龙族议会",
+            "精灵守望者",
+            "亡灵帝国",
+            "矮人工匠同盟",
+            "无"
+          ],
+          "description": "当前控制势力"
+        },
+        "重要度": {
+          "type": "enum",
+          "category": "状态",
+          "priority": 10,
+          "override": "override_allowed",
+          "values": [
+            "安全",
+            "危险",
+            "禁地",
+            "中立"
+          ],
+          "description": "相对危险等级"
+        },
+        "状态": {
+          "type": "enum",
+          "category": "状态",
+          "priority": 11,
+          "override": "override_allowed",
+          "values": [
+            "正常",
+            "受损",
+            "毁灭",
+            "被侵蚀"
+          ],
+          "description": "当前状态"
+        },
+        "描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "地理特征、历史等描述"
+        }
+      },
+      "tags": [
+        "#location"
+      ],
+      "markdown_template": "---\ntype: location\nstatus: {{状态}}\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 类别：{{类别}}\n- 所在区域：{{所在区域}}\n- 势力归属：{{势力归属}}\n\n## 状态\n- 重要度：{{重要度}}\n- 状态：{{状态}}\n\n## 描述\n{{描述}}"
+    },
+    "concept": {
+      "label": "概念",
+      "predicates": {
+        "类别": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 1,
+          "override": "locked",
+          "values": [
+            "世界规则",
+            "力量体系",
+            "组织",
+            "制度",
+            "职业",
+            "物质",
+            "能量"
+          ],
+          "description": "概念类型"
+        },
+        "定义": {
+          "type": "string",
+          "category": "核心",
+          "priority": 10,
+          "override": "append_only",
+          "values": [],
+          "description": "基本定义"
+        },
+        "影响": {
+          "type": "string",
+          "category": "核心",
+          "priority": 11,
+          "override": "append_only",
+          "values": [],
+          "description": "对世界的影响"
+        },
+        "涉及人物": {
+          "type": "list",
+          "category": "关联",
+          "priority": 20,
+          "override": "append_only",
+          "values": [],
+          "description": "相关人物列表"
+        },
+        "涉及地点": {
+          "type": "list",
+          "category": "关联",
+          "priority": 21,
+          "override": "append_only",
+          "values": [],
+          "description": "相关地点列表"
+        },
+        "详细描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "详尽说明"
+        }
+      },
+      "tags": [
+        "#concept"
+      ],
+      "markdown_template": "---\ntype: concept\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 类别：{{类别}}\n\n## 核心\n- 定义：{{定义}}\n- 影响：{{影响}}\n\n## 关联\n- 涉及人物：{{#each 涉及人物}}{{this}} {{/each}}\n- 涉及地点：{{#each 涉及地点}}{{this}} {{/each}}\n\n## 详细描述\n{{详细描述}}"
+    }
+  }
+}

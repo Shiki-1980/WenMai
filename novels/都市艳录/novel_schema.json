@@ -1,0 +1,326 @@
+{
+  "novel": "都市寻欢",
+  "schema_version": 2,
+  "generated_at": "2026-05-25",
+  "generated_by": "LLM: deepseek-v4-flash",
+  "override_policy": {
+    "locked": [
+      "person.姓名",
+      "person.性别",
+      "person.性取向"
+    ],
+    "append_only": [
+      "person.性伴侣列表",
+      "person.性经历记录",
+      "person.详细描述"
+    ]
+  },
+  "retrieval": {
+    "min_recall": 3,
+    "max_hop": 1,
+    "max_entity_cards": 30
+  },
+  "entity_schemas": {
+    "person": {
+      "label": "人物",
+      "predicates": {
+        "姓名": {
+          "type": "string",
+          "category": "基础",
+          "priority": 1,
+          "override": "locked",
+          "values": [],
+          "description": "角色真实姓名或化名"
+        },
+        "性别": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 2,
+          "override": "locked",
+          "values": [
+            "男",
+            "女",
+            "其他"
+          ],
+          "description": "生理性别"
+        },
+        "年龄": {
+          "type": "string",
+          "category": "基础",
+          "priority": 3,
+          "override": "override_allowed",
+          "values": [],
+          "description": "年龄或年龄段"
+        },
+        "身份": {
+          "type": "string",
+          "category": "社会",
+          "priority": 4,
+          "override": "override_allowed",
+          "values": [],
+          "description": "职业或社会角色"
+        },
+        "所在": {
+          "type": "string",
+          "category": "状态",
+          "priority": 20,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前所在地点"
+        },
+        "持有": {
+          "type": "list",
+          "category": "物品",
+          "priority": 30,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前携带或拥有的物品"
+        },
+        "关系": {
+          "type": "list",
+          "category": "关系",
+          "priority": 40,
+          "override": "append_only",
+          "values": [],
+          "description": "与其他人物之间的关系"
+        },
+        "目标": {
+          "type": "string",
+          "category": "状态",
+          "priority": 50,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前欲望或行为目标"
+        },
+        "身体状态": {
+          "type": "string",
+          "category": "生理",
+          "priority": 60,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前身体兴奋程度"
+        },
+        "性取向": {
+          "type": "enum",
+          "category": "基础",
+          "priority": 5,
+          "override": "locked",
+          "values": [
+            "异性恋",
+            "同性恋",
+            "双性恋",
+            "泛性恋"
+          ],
+          "description": "性吸引方向"
+        },
+        "性偏好": {
+          "type": "list",
+          "category": "性癖",
+          "priority": 70,
+          "override": "append_only",
+          "values": [],
+          "description": "喜欢的体位、玩法、角色扮演等"
+        },
+        "性伴侣列表": {
+          "type": "list",
+          "category": "关系",
+          "priority": 45,
+          "override": "append_only",
+          "values": [],
+          "description": "发生过性关系的对象列表"
+        },
+        "性经历记录": {
+          "type": "list",
+          "category": "性史",
+          "priority": 80,
+          "override": "append_only",
+          "values": [],
+          "description": "每次性交的概要记录（时间、地点、对象）"
+        },
+        "详细描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "外貌、性格、背景故事等详细描述，每次可追加"
+        }
+      },
+      "tags": [
+        "#character"
+      ],
+      "markdown_template": "---\ntype: person\nstatus: {{身体状态}}\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础信息\n- 性别：{{性别}}\n- 年龄：{{年龄}}\n- 身份：{{身份}}\n- 性取向：{{性取向}}\n\n## 当前状态\n- 所在：{{所在}}\n- 目标：{{目标}}\n- 身体状态：{{身体状态}}\n\n## 物品\n- 持有：{{持有}}\n\n## 性癖\n- 偏好：{{性偏好}}\n\n## 关系\n- 关系：{{关系}}\n- 性伴侣：{{性伴侣列表}}\n\n## 经历\n- 性经历：{{性经历记录}}\n\n## 描述\n{{详细描述}}"
+    },
+    "item": {
+      "label": "物品",
+      "predicates": {
+        "名称": {
+          "type": "string",
+          "category": "基础",
+          "priority": 1,
+          "override": "locked",
+          "values": [],
+          "description": "物品名称"
+        },
+        "类型": {
+          "type": "enum",
+          "category": "分类",
+          "priority": 2,
+          "override": "locked",
+          "values": [
+            "性玩具",
+            "避孕套",
+            "润滑液",
+            "情趣内衣",
+            "化妆品",
+            "日常用品",
+            "其他"
+          ],
+          "description": "物品类别"
+        },
+        "当前持有者": {
+          "type": "string",
+          "category": "状态",
+          "priority": 20,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前谁持有或使用"
+        },
+        "状态": {
+          "type": "enum",
+          "category": "状态",
+          "priority": 10,
+          "override": "override_allowed",
+          "values": [
+            "完好",
+            "已拆封",
+            "已使用",
+            "损坏",
+            "丢失"
+          ],
+          "description": "物品当前状态"
+        },
+        "描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "物品外观、材质等详细描述"
+        }
+      },
+      "tags": [
+        "#item"
+      ],
+      "markdown_template": "---\ntype: item\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础\n- 类型：{{类型}}\n- 状态：{{状态}}\n\n## 持有\n- 当前持有者：{{当前持有者}}\n\n## 描述\n{{描述}}"
+    },
+    "location": {
+      "label": "地点",
+      "predicates": {
+        "名称": {
+          "type": "string",
+          "category": "基础",
+          "priority": 1,
+          "override": "locked",
+          "values": [],
+          "description": "地点名称"
+        },
+        "类型": {
+          "type": "enum",
+          "category": "分类",
+          "priority": 2,
+          "override": "locked",
+          "values": [
+            "酒吧",
+            "夜店",
+            "酒店",
+            "公寓",
+            "办公室",
+            "公园",
+            "停车场",
+            "私人会所",
+            "卫生间",
+            "户外",
+            "其他"
+          ],
+          "description": "地点类别"
+        },
+        "当前人物": {
+          "type": "list",
+          "category": "状态",
+          "priority": 20,
+          "override": "override_allowed",
+          "values": [],
+          "description": "当前在场的人物列表"
+        },
+        "氛围": {
+          "type": "enum",
+          "category": "环境",
+          "priority": 10,
+          "override": "override_allowed",
+          "values": [
+            "浪漫",
+            "激情",
+            "隐秘",
+            "嘈杂",
+            "安静",
+            "脏乱",
+            "整洁"
+          ],
+          "description": "当前环境氛围"
+        },
+        "描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "地点细节描述"
+        }
+      },
+      "tags": [
+        "#location"
+      ],
+      "markdown_template": "---\ntype: location\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础\n- 类型：{{类型}}\n- 氛围：{{氛围}}\n\n## 当前在场\n- 人物：{{当前人物}}\n\n## 描述\n{{描述}}"
+    },
+    "concept": {
+      "label": "概念",
+      "predicates": {
+        "名称": {
+          "type": "string",
+          "category": "基础",
+          "priority": 1,
+          "override": "locked",
+          "values": [],
+          "description": "概念名称"
+        },
+        "类型": {
+          "type": "enum",
+          "category": "分类",
+          "priority": 2,
+          "override": "locked",
+          "values": [
+            "性姿势",
+            "玩法",
+            "规则",
+            "社交规范",
+            "其他"
+          ],
+          "description": "概念类别"
+        },
+        "描述": {
+          "type": "string",
+          "category": "描述",
+          "priority": 99,
+          "override": "append_only",
+          "values": [],
+          "description": "概念的详细解释"
+        }
+      },
+      "tags": [
+        "#concept"
+      ],
+      "markdown_template": "---\ntype: concept\nimportance: {{importance}}\ntags: [{{tags}}]\n---\n\n# {{name}}\n\n## 基础\n- 类型：{{类型}}\n\n## 描述\n{{描述}}"
+    }
+  }
+}

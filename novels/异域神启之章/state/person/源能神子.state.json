@@ -1,0 +1,28 @@
+{
+  "entity": "源能神子",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: | [[源能圣者]] | 觉醒者 | 自身成为小型源能核心，可吸收周围环境能量，轻伤瞬间愈合，拥有[[不朽印记]]。 | | [[源能神子]] | 半神 | 领域可覆盖整个城市，能读取部分世界法则碎片，被世界意志视作“临时管理员”。 | | [[源能真神]] | 神祇 | 完全掌握一条法则分支，创造独立半位面，寿命近乎无限，但受[[世界意志]]限制。 |",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

@@ -25,6 +25,9 @@ export default function Write() {
   const [numChapters, setNumChapters] = useState(30);
   const [force, setForce] = useState(false);
   const [volumeNum, setVolumeNum] = useState(0);
+  const [antiAi, setAntiAi] = useState(false);
+  const [polishChapter, setPolishChapter] = useState("");
+  const [polishForce, setPolishForce] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoadError("");
@@ -148,20 +151,22 @@ export default function Write() {
           addLine("错误：请先选择一个篇章\n", "error");
           return;
         }
-        addLine(`$ write --arc "${arcName}" --words ${wordCount} --yes\n`, "info");
+        addLine(`$ write --arc "${arcName}" --words ${wordCount} --yes${antiAi ? " --anti-ai" : ""}\n`, "info");
         runCommand("/write", {
           arc: arcName,
           words: wordCount,
           force,
           yes: true,
+          anti_ai: antiAi,
         });
         break;
       case "write-one":
-        addLine(`$ write-one --chapter ${chapterNum} --words ${wordCount}\n`, "info");
+        addLine(`$ write-one --chapter ${chapterNum} --words ${wordCount}${antiAi ? " --anti-ai" : ""}\n`, "info");
         runCommand("/write-one", {
           chapter: parseInt(chapterNum) || 0,
           outline: chapterOutline,
           words: wordCount,
+          anti_ai: antiAi,
         });
         break;
       case "distill":
@@ -170,12 +175,23 @@ export default function Write() {
           chapter: parseInt(chapterNum) || 0,
         });
         break;
+      case "polish":
+        if (!polishChapter) {
+          addLine("错误：请输入章节号\n", "error");
+          return;
+        }
+        addLine(`$ polish ${polishChapter}${polishForce ? " --force" : ""}\n`, "info");
+        runCommand("/polish", {
+          chapter: parseInt(polishChapter) || 0,
+          force: polishForce,
+        });
+        break;
       default:
         break;
     }
   };
 
-  const isWriteCommand = cmd === "write";
+  const isWriteCommand = cmd === "write" || cmd === "write-one";
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -277,6 +293,7 @@ export default function Write() {
             ["write", "批量写作"],
             ["write-one", "写单章"],
             ["distill", "重新蒸馏"],
+            ["polish", "去AI味"],
           ].map(([value, label]) => (
             <button
               key={value}
@@ -389,6 +406,21 @@ export default function Write() {
                   </label>
                 </div>
               </div>
+              {cmd === "write" && (
+                <div className="flex items-center">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={antiAi}
+                      onChange={(e) => setAntiAi(e.target.checked)}
+                      className="w-4 h-4 rounded border-ink-border bg-ink-surface accent-ink-accent"
+                    />
+                    <span className="text-sm text-ink-text-secondary font-sans">
+                      每章写完自动去AI味 (L1规则→L2句法→L3润色→L4校验)
+                    </span>
+                  </label>
+                </div>
+              )}
             </>
           )}
 
@@ -431,6 +463,56 @@ export default function Write() {
                   rows={2}
                   className="w-full bg-ink-surface border border-ink-border rounded-lg px-3 py-2 text-sm text-ink-text font-sans placeholder-ink-text-muted focus:outline-none focus:border-ink-accent transition-colors resize-none"
                 />
+              </div>
+              <div className="flex items-center">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={antiAi}
+                    onChange={(e) => setAntiAi(e.target.checked)}
+                    className="w-4 h-4 rounded border-ink-border bg-ink-surface accent-ink-accent"
+                  />
+                  <span className="text-sm text-ink-text-secondary font-sans">
+                    写完自动去AI味
+                  </span>
+                </label>
+              </div>
+            </>
+          )}
+
+          {/* Polish fields */}
+          {cmd === "polish" && (
+            <>
+              <div>
+                <label className="block text-xs text-ink-text-secondary mb-1.5 font-sans">
+                  章节号 <span className="text-ink-error">*</span>
+                </label>
+                <input
+                  type="number"
+                  value={polishChapter}
+                  onChange={(e) => setPolishChapter(e.target.value)}
+                  className="w-full bg-ink-surface border border-ink-border rounded-lg px-3 py-2 text-sm text-ink-text font-mono focus:outline-none focus:border-ink-accent transition-colors"
+                  required
+                  placeholder="输入要改写的章节号..."
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={polishForce}
+                    onChange={(e) => setPolishForce(e.target.checked)}
+                    className="w-4 h-4 rounded border-ink-border bg-ink-surface accent-ink-accent"
+                  />
+                  <span className="text-sm text-ink-text-secondary font-sans">
+                    强制覆盖（跳过实体校验）
+                  </span>
+                </label>
+              </div>
+              <div className="p-3 bg-ink-surface rounded-lg">
+                <p className="text-xs text-ink-text-muted font-sans leading-relaxed">
+                  去AI味四层流水线：L1 规则清洗 → L2 句法调优 → L3 LLM润色 → L4 实体校验。L1+L2 纯规则驱动，零风险覆盖 70% 工作。实体丢失自动回退原文。
+                </p>
               </div>
             </>
           )}

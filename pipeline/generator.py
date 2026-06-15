@@ -4,18 +4,14 @@ import json
 import os
 import re
 import time
-from typing import Optional
 
 import certifi
 import httpx
 import yaml
 
 
-def _retry_api_call(fn, max_retries: int = 4, base_delay: float = 10.0):
-    """带指数退避的 API 调用重试，处理 429/5xx 等临时故障。
-
-    429 用更长的延迟（DeepSeek 限流通常需要 30-60s 冷却）。
-    """
+def _retry_api_call(fn, max_retries: int = 3, base_delay: float = 2.0):
+    """带指数退避的 API 调用重试，处理 429/5xx 等临时故障。"""
     last_exc = None
     for attempt in range(max_retries + 1):
         try:
@@ -24,17 +20,9 @@ def _retry_api_call(fn, max_retries: int = 4, base_delay: float = 10.0):
             last_exc = e
             status = e.response.status_code
             if status in (429, 500, 502, 503, 504) and attempt < max_retries:
-                # 429 限流：尝试从 Retry-After 头读取等待时间
-                if status == 429:
-                    retry_after = e.response.headers.get("Retry-After", "")
-                    if retry_after and retry_after.isdigit():
-                        delay = int(retry_after) + 1
-                    else:
-                        delay = base_delay * (3 ** attempt)  # 10s, 30s, 90s, 270s
-                else:
-                    delay = base_delay * (2 ** attempt)
-
-                print(f"\n  [RETRY] HTTP {status}，{delay:.0f}s 后重试 ({attempt + 1}/{max_retries})...")
+                delay = base_delay * (2 ** attempt)
+                import sys
+                print(f"  [RETRY] HTTP {status}，{delay:.0f}s 后重试 ({attempt + 1}/{max_retries})...", file=sys.stderr)
                 time.sleep(delay)
                 continue
             raise
@@ -42,10 +30,6 @@ def _retry_api_call(fn, max_retries: int = 4, base_delay: float = 10.0):
 
 
 class LLMGenerator:
-    # 类级别的调用间隔，防止批量操作（如 audit all）触发限流
-    _last_call_time: float = 0.0
-    _min_call_interval: float = 2.0  # DeepSeek 免费 tier 约 5 RPM，留足余量
-
     def __init__(self, config_path: str):
         with open(config_path) as f:
             cfg = yaml.safe_load(f)
@@ -64,13 +48,6 @@ class LLMGenerator:
             "api_base", "https://api.deepseek.com"
         )
 
-    def _rate_limit_wait(self):
-        """确保连续调用之间有最小间隔，防止触发 API 限流。"""
-        elapsed = time.time() - LLMGenerator._last_call_time
-        if elapsed < LLMGenerator._min_call_interval:
-            time.sleep(LLMGenerator._min_call_interval - elapsed)
-        LLMGenerator._last_call_time = time.time()
-
     # ── 底层 API 调用 ──────────────────────────────────────────
 
     def _chat_once(
@@ -81,7 +58,6 @@ class LLMGenerator:
         tool_choice: str | None = "auto",
     ) -> dict:
         """单次 LLM 调用，返回完整 response object。"""
-        self._rate_limit_wait()
         body = {
             "model": self.model,
             "messages": messages,
@@ -113,11 +89,12 @@ class LLMGenerator:
                 verify=certifi.where(),
             )
             if resp.status_code >= 400:
-                print(f"\n[LLM ERROR] HTTP {resp.status_code}")
-                print(f"  Request body keys: {list(body.keys())}")
+                import sys
+                print(f"\n[LLM ERROR] HTTP {resp.status_code}", file=sys.stderr)
+                print(f"  Request body keys: {list(body.keys())}", file=sys.stderr)
                 try:
                     err_body = resp.text[:1000]
-                    print(f"  Response: {err_body}")
+                    print(f"  Response: {err_body}", file=sys.stderr)
                 except Exception:
                     pass
             resp.raise_for_status()
@@ -273,7 +250,6 @@ class LLMGenerator:
     def generate(self, system: str, user: str, json_mode: bool = False,
                  temperature: float | None = None) -> str:
         """统一接口（无 tools）。"""
-        self._rate_limit_wait()
         if self.provider == "anthropic":
             return self._call_anthropic(system, user)
         else:
@@ -282,7 +258,7 @@ class LLMGenerator:
     # ── 蒸馏三阶段 ────────────────────────────────────────────
 
     def observe(self, chapter_text: str, known_entities: list[str],
-                current_states: str, schema_hint: str = "") -> str:
+                current_states: str) -> str:
         """Observer: 自由文本观察，过度提取事实变化。temp 0.6"""
         from prompts.observer import OBSERVER_SYSTEM, OBSERVER_USER
         prompt = OBSERVER_USER.format(
@@ -291,23 +267,14 @@ class LLMGenerator:
         )
         known = ", ".join(known_entities[:50])
         system = OBSERVER_SYSTEM.replace("{known_entities}", known)
-        if schema_hint:
-            system = system.replace("{entity_schema_hint}", schema_hint)
-        else:
-            system = system.replace("{entity_schema_hint}", "")
         return self.generate(system, prompt, json_mode=False, temperature=0.6)
 
     def settle(self, observations: str, known_entities: list[str],
-               current_states: str, retry_hint: str = "",
-               schema_constraints: str = "") -> dict:
+               current_states: str, retry_hint: str = "") -> dict:
         """Settler: 将观察转化为 JSON delta。temp 0.25"""
         from prompts.settler import SETTLER_SYSTEM, SETTLER_USER
         known = ", ".join(known_entities[:50])
         system = SETTLER_SYSTEM
-        if schema_constraints:
-            system = system.replace("{schema_constraints_hint}", schema_constraints)
-        else:
-            system = system.replace("{schema_constraints_hint}", "")
 
         user_text = SETTLER_USER.format(
             observations=observations,
@@ -321,9 +288,8 @@ class LLMGenerator:
         return self._parse_json(raw)
 
     def validate_state(self, chapter_text: str, observations: str,
-                       old_state: str, new_state: str,
-                       schema_context: str = "") -> dict:
-        """State Validator: 比较新旧状态，检测 5 维度 OOC。temp 0.15"""
+                       old_state: str, new_state: str) -> dict:
+        """State Validator: 比较新旧状态，检测矛盾。temp 0.15"""
         from prompts.state_validator import VALIDATOR_SYSTEM, VALIDATOR_USER
         prompt = VALIDATOR_USER.format(
             chapter_summary=chapter_text[:2000],
@@ -331,40 +297,7 @@ class LLMGenerator:
             old_state=old_state[:5000],
             new_state=new_state[:5000],
         )
-        system = VALIDATOR_SYSTEM
-        if schema_context:
-            system = system.replace("{schema_context}", schema_context)
-        else:
-            system = system.replace("{schema_context}", "")
-        raw = self.generate(system, prompt, json_mode=True, temperature=0.15)
-        return self._parse_json(raw)
-
-    def enrich_entity(self, entity_name: str, entity_type: str, chapter_text: str,
-                      known_entities: list[str] = None) -> dict:
-        """从章节文本中提取新实体的详细信息，生成初始状态 facts。
-
-        在蒸馏发现新实体后立即调用，避免新实体只留下空 stub。
-        temp 0.3, json_mode=True。
-        """
-        known = ", ".join(known_entities or [])
-        system = (
-            f"你是小说设定提取员。从章节文本中提取关于「{entity_name}」({entity_type}) 的所有信息。\n\n"
-            f"规则：\n"
-            f"- 只提取本章明确提到的信息，不推测、不编造\n"
-            f"- 没有足够信息就返回空 facts 数组\n"
-            f"- 每条 fact 必须从原文中找到 evidence（直接引用原文片段）\n"
-            f"- 关系类信息格式：'目标实体: 关系描述'\n"
-            f"- 输出严格 JSON，不要任何其他内容"
-        )
-        prompt = (
-            f"## 章节正文\n{chapter_text[:4000]}\n\n"
-            f"## 已知实体\n{known}\n\n"
-            f"## 任务\n"
-            f"提取关于「{entity_name}」({entity_type}) 的初始状态信息。\n\n"
-            f"输出 JSON 格式：\n"
-            f'{{"facts": [{{"predicate": "字段名", "object": "字段值", "evidence": "原文引用"}}], "brief": "一句话描述"}}\n'
-        )
-        raw = self.generate(system, prompt, json_mode=True, temperature=0.3)
+        raw = self.generate(VALIDATOR_SYSTEM, prompt, json_mode=True, temperature=0.15)
         return self._parse_json(raw)
 
     # ── 保留旧 API 兼容 ────────────────────────────────────────

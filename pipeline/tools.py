@@ -14,7 +14,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 # ── Tool definitions (OpenAI function calling format) ──────────
 
@@ -76,7 +75,7 @@ WRITER_TOOLS = [
 class ToolExecutor:
     """执行工具调用，返回精简的结构化信息。"""
 
-    def __init__(self, reader, chapter_context: dict | None = None, schema=None):
+    def __init__(self, reader, chapter_context: dict | None = None):
         """
         Args:
             reader: VaultReader 实例
@@ -84,11 +83,9 @@ class ToolExecutor:
                 "chapter_number": int,
                 "protagonist_name": str,
             }
-            schema: NovelSchema 实例（用于 schema 驱动排序和约束提示）
         """
         self.reader = reader
         self.ctx = chapter_context or {}
-        self.schema = schema
         self._entity_cache: dict[str, str] = {}  # 会话内缓存，避免重复查同一实体
 
     def execute(self, tool_name: str, arguments: dict) -> str:
@@ -126,17 +123,15 @@ class ToolExecutor:
         # 从 state.json 获取最新状态
         if state and state.facts:
             active = state.get_all_active_facts()
-            # Schema 驱动排序：按 predicate.priority，无 schema 时字母序
-            if self.schema:
-                pdefs = self.schema.get_predicates(etype)
-                sorted_items = sorted(
-                    active.items(),
-                    key=lambda item: pdefs[item[0]].priority if item[0] in pdefs else 99,
-                )
-            else:
-                sorted_items = list(active.items())
-            for pred, val in sorted_items:
-                lines.append(f"- {pred}：{val}")
+            # 按重要性排列
+            priority = ["修为", "身份", "所在", "持有", "状态", "目标", "身体状态",
+                        "功法", "天赋", "技能", "血脉", "关系"]
+            for pred in priority:
+                if pred in active:
+                    lines.append(f"- {pred}：{active[pred]}")
+            for pred, val in active.items():
+                if pred not in priority:
+                    lines.append(f"- {pred}：{val}")
 
         # 从 frontmatter 补充
         if meta.get("importance"):
@@ -153,7 +148,7 @@ class ToolExecutor:
         # 关联实体（wikilinks）
         links = meta.get("_links", [])
         if links:
-            main_links = [l for l in links if l in _get_main_entities(self.reader)][:8]
+            main_links = [link for link in links if link in _get_main_entities(self.reader)][:8]
             if main_links:
                 lines.append(f"- 关联实体：{', '.join(main_links)}")
 

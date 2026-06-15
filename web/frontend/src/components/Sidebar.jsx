@@ -10,7 +10,6 @@ const NAV_ITEMS = [
   { to: "/chapters", label: "章节", icon: "§" },
   { to: "/audit", label: "审阅", icon: "◎" },
   { to: "/novels", label: "小说管理", icon: "▤" },
-  { to: "/settings", label: "设置", icon: "⚙" },
 ];
 
 export default function Sidebar() {

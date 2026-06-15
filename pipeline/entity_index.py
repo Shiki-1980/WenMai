@@ -10,8 +10,13 @@ Trie 用于从大纲文本中快速匹配实体名（canonical + aliases → 实
 from __future__ import annotations
 
 import json
+import logging
+import os
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 # ── Trie（前缀树，子串扫描）───────────────────────────────────
@@ -79,7 +84,7 @@ class EntityTrie:
             node = node.children[ch]
         node.entity_names.discard(canonical_name)
 
-    def rebuild(self, entity_alias_index: dict[str, "EntityAliasEntry"], canonical: str):
+    def rebuild(self, entity_alias_index: dict[str, EntityAliasEntry], canonical: str):
         entry = entity_alias_index.get(canonical)
         if not entry:
             return
@@ -118,7 +123,7 @@ class EntityAliasEntry:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> "EntityAliasEntry":
+    def from_dict(cls, data: dict) -> EntityAliasEntry:
         return cls(
             canonical=data.get("canonical", ""),
             aliases=data.get("aliases", []),
@@ -137,7 +142,7 @@ class EntityIndex:
         self._trie: EntityTrie | None = None
         self._alias_entries: dict[str, EntityAliasEntry] = {}
 
-    def load(self) -> "EntityIndex":
+    def load(self) -> EntityIndex:
         self._load_alias_index()
         self._build_trie()
         return self
@@ -196,7 +201,12 @@ class EntityIndex:
                 for name, entry in self._alias_entries.items()
             },
         }
-        self._alias_index_path().write_text(
-            json.dumps(alias_data, ensure_ascii=False, indent=2),
-            "utf-8",
-        )
+        path = self._alias_index_path()
+        content = json.dumps(alias_data, ensure_ascii=False, indent=2)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fd, tmp = tempfile.mkstemp(suffix=".tmp", prefix=path.name + ".", dir=path.parent)
+        try:
+            os.write(fd, content.encode("utf-8"))
+        finally:
+            os.close(fd)
+        os.replace(tmp, path)

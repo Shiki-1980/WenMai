@@ -1,0 +1,21 @@
+{
+  "entity": "酒店（未命名）",
+  "entity_type": "location",
+  "last_updated_chapter": 1,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "性爱场所",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "房间在他们身后关上的那一刻，所有的克制都碎了。” → 全过程性行为"
+    },
+    {
+      "predicate": "详细描述",
+      "object": "中档酒店，离暗流酒吧两公里，干净，前台不会多嘴",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "陈涛说了酒店的名字。...中档酒店，离酒吧两公里，干净，前台不会多嘴。"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "entity": "出租车",
+  "entity_type": "location",
+  "last_updated_chapter": 1,
+  "facts": [
+    {
+      "predicate": "详细描述",
+      "object": "司机四十多岁，播深夜广播",
+      "since_chapter": 1,
+      "source": "ch_001蒸馏",
+      "evidence": "司机是个四十多岁的中年男人，收音机里放着深夜广播"
+    }
+  ]
+}

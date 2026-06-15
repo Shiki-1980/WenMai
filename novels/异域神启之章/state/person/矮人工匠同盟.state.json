@@ -1,0 +1,28 @@
+{
+  "entity": "矮人工匠同盟",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/主线.md: ### 第一幕：开端 [[洛辰·星语]]在[[晨辉镇]]作为冒险者接取任务，期间遇到同样来自他地的游侠[[叶琳娜·风行者]]，二人组成临时小队探索[[迷雾沼泽]]边缘的遗迹。在遗迹中他们发现一块[[混乱之井]]碎片，碎片激活后，洛辰的[[锈蚀徽章]]突然发光，映射出一个由[[暗影议会]]印记组成的坐标。洛辰脑海中闪过碎片记忆：自己曾是[[光之女神]]的[[神子级]]守护者，因拒绝参与[[光明圣庭]",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

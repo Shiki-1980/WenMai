@@ -1,0 +1,28 @@
+{
+  "entity": "源能",
+  "entity_type": "person",
+  "last_updated_chapter": 0,
+  "facts": [
+    {
+      "predicate": "状态",
+      "object": "stub",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "详细描述",
+      "object": "",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    },
+    {
+      "predicate": "来源",
+      "object": "plot/世界观.md: 所有生命皆由 [[源能]] 驱动，源能是构成世界的基本粒子能量。冒险者的实力通过 [[源能阶位]] 划分，共9阶，每阶分三品（下品、中品、上品）。",
+      "since_chapter": 0,
+      "source": "init",
+      "evidence": ""
+    }
+  ]
+}

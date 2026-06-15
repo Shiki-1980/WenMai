@@ -14,10 +14,8 @@ JSON 是权威源，markdown 是投影。每次 state.json 更新后，
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
-from state_schema import EntityState, NovelSchema, PredicateDef
-
+from state_schema import EntityFact, EntityState, NovelSchema
 
 # ── 默认模板（当 schema 未定义模板时的 fallback）───────────────
 
@@ -220,7 +218,7 @@ class MarkdownRenderer:
                 return es.markdown_template
         return DEFAULT_TEMPLATES.get(entity_type, DEFAULT_TEMPLATES["person"])
 
-    def _group_facts_by_category(self, state: EntityState) -> dict[str, list["EntityFact"]]:
+    def _group_facts_by_category(self, state: EntityState) -> dict[str, list[EntityFact]]:
         """按 category 分组有效事实。"""
         groups: dict[str, list] = {}
         entity_type = state.entity_type
@@ -316,7 +314,7 @@ class MarkdownRenderer:
                 line = line.replace(placeholder, str(var_value) if var_value else "")
 
             # 跳过包含未替换 {{...}} 的行（schema 定义的谓词在当前 state 中没有值）
-            if "{{" not in line or "{{" not in line:
+            if "{{" not in line and "}}" not in line:
                 result.append(line)
 
             i += 1
@@ -325,6 +323,7 @@ class MarkdownRenderer:
 
 
 import re
+
 _EACH_RE = re.compile(r"^\s*\{\{#each\s+(.+?)\}\}\s*$")
 
 
